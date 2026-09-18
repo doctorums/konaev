@@ -9,154 +9,162 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Golos+Text:wght@400;500;600;700&family=Pixelify+Sans:wght@500;700&display=swap">
 <style>
 :root{
-  --tvmax:min(100%,calc((100dvh - 15rem) * 1.33));
   --room:#F3EBDD; --ink:#1E1A16; --mute:#5C5348;
-  --wood:#3A2E23; --wood-edge:#241B14; --bezel:#120F0C; --plate:#B3A896;
-  --remote:#2A241E; --key:#3A332B; --key-text:#F3EBDD;
+  --wood:#5A4531; --wood-hi:#7A5E43; --wood-edge:#2B1F14; --bezel:#151210;
+  --plastic:#D9CFB8; --plastic-edge:#8E8271; --plastic-txt:#231C15; --plate:#C9BFA8;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --room:#15110E; --ink:#F3EBDD; --mute:#B3A896;
-    --wood:#2A2119; --wood-edge:#17110C; --bezel:#0B0908; --plate:#B3A896;
-    --remote:#2A241E; --key:#443A30; --key-text:#F3EBDD;
+    --room:#14100D; --ink:#F3EBDD; --mute:#B3A896;
+    --wood:#3B2C1F; --wood-hi:#523E2C; --wood-edge:#180F09; --bezel:#0A0807;
+    --plastic:#BFB49C; --plastic-edge:#6E6354; --plastic-txt:#1B1610; --plate:#B3A896;
   }
 }
 :root[data-theme="dark"]{
-  --room:#15110E; --ink:#F3EBDD; --mute:#B3A896;
-  --wood:#2A2119; --wood-edge:#17110C; --bezel:#0B0908; --plate:#B3A896;
-  --remote:#2A241E; --key:#443A30; --key-text:#F3EBDD;
+  --room:#14100D; --ink:#F3EBDD; --mute:#B3A896;
+  --wood:#3B2C1F; --wood-hi:#523E2C; --wood-edge:#180F09; --bezel:#0A0807;
+  --plastic:#BFB49C; --plastic-edge:#6E6354; --plastic-txt:#1B1610; --plate:#B3A896;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--room);color:var(--ink);font-family:'Golos Text','Segoe UI',Tahoma,sans-serif;line-height:1.4}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 a{color:inherit;text-decoration:none}
-button{font:inherit;color:inherit;cursor:pointer;border:0}
 a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2px}
 .px{font-family:'Pixelify Sans','Courier New',monospace}
 .display{font-family:'Unbounded','Trebuchet MS',sans-serif}
 
-.page{min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:1fr auto;gap:.75rem;padding:.75rem;max-width:1400px;margin:0 auto}
+.page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;padding:.7rem}
 
-/* телевизор */
-/* корпус */
-.set{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:0}
-.ant{display:block;width:clamp(110px,26vw,190px);margin-bottom:-4px}
-.tv{display:flex;gap:.55rem;padding:.6rem;border-radius:16px 16px 8px 8px;background:var(--wood);border:3px solid var(--wood-edge);width:100%;max-width:var(--tvmax)}
-.tube{flex:1;min-width:0;display:flex;flex-direction:column;gap:.35rem}
-.bezel{width:100%;aspect-ratio:4/3;padding:.45rem;border-radius:12px;background:var(--bezel)}
-.screen{position:relative;width:100%;height:100%;border-radius:34px/22px;overflow:hidden;background:#0E1A38;color:#F3EBDD;touch-action:none;box-shadow:inset 0 0 50px rgba(0,0,0,.6)}
-.plate{display:flex;align-items:center;justify-content:space-between;padding:0 .3rem;color:var(--plate);font-size:.72rem;letter-spacing:.06em}
-.plate .display{font-weight:700;letter-spacing:-.3px}
-.panel{width:3rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;padding-top:.2rem}
-.knob{width:2.1rem;height:2.1rem;border-radius:50%;background:#C9BFA8;border:3px solid var(--wood-edge);position:relative;flex:none}
-.knob i{position:absolute;left:50%;top:2px;width:3px;height:.7rem;margin-left:-1.5px;background:var(--wood-edge);transform-origin:50% calc(1.05rem - 2px);transition:transform .25s}
-.knob.small{width:1.6rem;height:1.6rem;background:#8A8175}
-.grille{width:2.1rem;display:flex;flex-direction:column;gap:4px;padding-top:.2rem}
-.grille i{height:3px;background:var(--wood-edge)}
-.led{width:9px;height:9px;border-radius:50%;background:#E0543C;margin-top:.2rem;flex:none}
-.legs{display:flex;justify-content:space-between;width:100%;max-width:var(--tvmax);padding:0 3rem}
-.legs i{width:14px;height:15px;background:var(--wood-edge);border-radius:0 0 4px 4px}
+/* ─── корпус ─── */
+.ant{display:block;width:clamp(120px,30vw,210px);margin-bottom:-6px}
+.tv{
+  width:100%;max-width:var(--tvmax);
+  display:flex;flex-direction:column;gap:.6rem;
+  padding:.7rem;border-radius:14px 14px 6px 6px;
+  background:linear-gradient(160deg,var(--wood-hi),var(--wood) 42%,var(--wood-edge));
+  border:3px solid var(--wood-edge);
+  box-shadow:0 14px 30px rgba(0,0,0,.35)
+}
+.tube{flex:1;min-width:0;display:flex;flex-direction:column;gap:.3rem}
+.bezel{width:100%;aspect-ratio:4/3;padding:.5rem;border-radius:14px;background:var(--bezel);box-shadow:inset 0 2px 6px rgba(255,255,255,.08)}
+.screen{position:relative;width:100%;height:100%;border-radius:36px/24px;overflow:hidden;background:#0E1A38;color:#F3EBDD;touch-action:none;box-shadow:inset 0 0 55px rgba(0,0,0,.65)}
+.plate{display:flex;align-items:center;justify-content:space-between;padding:0 .35rem;color:var(--plate);font-size:.7rem;letter-spacing:.08em}
+.plate .display{font-weight:700;letter-spacing:-.3px;font-size:.85rem}
 
-.ch{position:relative;overflow-y:auto;padding:2.4rem 1.1rem 3rem;display:flex;flex-direction:column;justify-content:center;gap:.9rem}
+/* ─── панель управления в корпусе ─── */
+.ctrl-panel{display:flex;align-items:center;justify-content:center;gap:.9rem;padding:.2rem 0}
+
+/* вертикальный ползунок громкости */
+.vol-slider{position:relative;width:2.4rem;height:9.5rem;flex:none;border-radius:8px;background:var(--wood-edge);padding:.45rem .3rem;cursor:pointer;touch-action:none;display:flex;flex-direction:column;justify-content:space-between;align-items:center}
+.vol-slider .track{position:absolute;left:50%;top:.45rem;bottom:.45rem;width:6px;margin-left:-3px;border-radius:3px;background:#120C07;box-shadow:inset 0 1px 3px rgba(0,0,0,.8)}
+.vol-slider .fill{position:absolute;left:0;right:0;bottom:0;border-radius:3px;background:linear-gradient(180deg,#E5B52E,#B5772A)}
+.vol-slider .grip{position:absolute;left:50%;width:2rem;height:1rem;margin-left:-1rem;border-radius:3px;background:linear-gradient(180deg,#F1E8D2,var(--plastic) 55%,#9E937E);border-bottom:2px solid var(--plastic-edge);box-shadow:0 2px 4px rgba(0,0,0,.5);transition:bottom .12s}
+.vol-slider .grip:after{content:"";position:absolute;left:4px;right:4px;top:50%;height:2px;margin-top:-1px;background:rgba(0,0,0,.35)}
+.vol-slider span{position:relative;z-index:2;font-family:'Pixelify Sans','Courier New',monospace;font-size:.6rem;color:var(--plate);opacity:.8}
+
+/* круглый переключатель с делениями */
+.dial{position:relative;width:12.5rem;height:12.5rem;flex:none;touch-action:none}
+.dial .ring{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 50%,transparent 58%,var(--wood-edge) 59%)}
+.tick{position:absolute;width:3.2rem;height:2.2rem;margin:-1.1rem 0 0 -1.6rem;display:flex;align-items:center;justify-content:center;border-radius:4px;background:none;color:var(--plate);font-size:.58rem;font-weight:600;line-height:1.05;text-align:center;padding:0 2px;cursor:pointer}
+.tick b{font-family:'Pixelify Sans','Courier New',monospace;font-size:.95rem;display:block}
+.tick.cur{color:#F2C230}
+.tick.act{color:#8FD98A}
+.knob{position:absolute;left:50%;top:50%;width:7.2rem;height:7.2rem;margin:-3.6rem 0 0 -3.6rem;border-radius:50%;
+  background:radial-gradient(circle at 34% 28%,#F2EAD6,var(--plastic) 46%,#8E8271);
+  border:4px solid var(--wood-edge);box-shadow:0 4px 10px rgba(0,0,0,.5);cursor:grab}
+.knob:active{cursor:grabbing}
+.knob i{position:absolute;left:50%;top:6px;width:5px;height:1.5rem;margin-left:-2.5px;background:#2B1F14;border-radius:3px;transform-origin:50% calc(3.6rem - 10px);transition:transform .22s cubic-bezier(.34,1.5,.5,1)}
+.knob b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Pixelify Sans','Courier New',monospace;font-size:1.5rem;color:#2B1F14}
+.knob u{position:absolute;left:50%;bottom:.8rem;transform:translateX(-50%);font-size:.5rem;letter-spacing:.14em;color:#6E6354;text-decoration:none}
+
+/* включение и динамик */
+.side{display:flex;flex-direction:column;align-items:center;gap:.6rem;flex:none}
+.grille{width:2.4rem;height:5rem;border-radius:5px;background:repeating-linear-gradient(180deg,var(--wood-edge) 0 3px,transparent 3px 7px);opacity:.85}
+.pw{width:3.2rem;min-height:3.2rem;border-radius:7px;background:linear-gradient(180deg,#F1E8D2,var(--plastic) 55%,#A79B85);color:var(--plastic-txt);border-bottom:4px solid var(--plastic-edge);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}
+.pw:active,.screen.is-off~*.pw{transform:translateY(3px);border-bottom-width:1px}
+.led{width:10px;height:10px;border-radius:50%;background:#E0543C;box-shadow:0 0 7px rgba(224,84,60,.8)}
+.led.off{background:#4A2018;box-shadow:none}
+/* ─── содержимое экрана ─── */
+.ch{position:relative;overflow-y:auto;padding:2.3rem 1.2rem 3rem;display:flex;flex-direction:column;justify-content:center;gap:.8rem}
 .js .ch{position:absolute;inset:0;display:none}
 .js .ch.on{display:flex}
-h1,h2{margin:0;font-family:'Unbounded','Trebuchet MS',sans-serif;font-weight:800;letter-spacing:-.03em;line-height:1.08}
-h1{font-size:clamp(1.8rem,5.2vw,3.6rem);color:#F2C230}
-h2{font-size:clamp(1.35rem,3.6vw,2.4rem);color:#F2C230}
-.ch p{margin:0;font-size:clamp(1rem,2vw,1.3rem);max-width:38rem}
+h1,h2{margin:0;font-family:'Unbounded','Trebuchet MS',sans-serif;font-weight:800;letter-spacing:-.03em;line-height:1.08;color:#F2C230}
+h1{font-size:clamp(1.5rem,4.6vw,3.2rem)}
+h2{font-size:clamp(1.2rem,3.2vw,2.2rem)}
+.ch p{margin:0;font-size:clamp(.92rem,1.8vw,1.25rem);max-width:38rem}
 .cy{color:#5FD4D0}
-.small{font-size:.9rem!important;color:#B9C3DD}
-.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.55rem;font-size:clamp(1rem,2vw,1.25rem);max-width:38rem}
-.steps li{display:flex;gap:.7rem;align-items:baseline}
-.steps b{font-family:'Pixelify Sans','Courier New',monospace;color:#5FD4D0;min-width:1.4rem}
-.row{display:flex;flex-wrap:wrap;gap:.6rem}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 1.3rem;border-radius:10px;font-weight:700;font-size:1.05rem}
-.btn.r{background:#E0543C;color:#1E1A16}
-.btn.g{background:#6CCB5F;color:#1E1A16}
-.btn.y{background:#F2C230;color:#1E1A16}
-
-/* настроечная таблица */
+.small{font-size:.85rem!important;color:#B9C3DD}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.5rem;font-size:clamp(.92rem,1.8vw,1.2rem);max-width:38rem}
+.steps li{display:flex;gap:.6rem;align-items:baseline}
+.steps b{font-family:'Pixelify Sans','Courier New',monospace;color:#5FD4D0;min-width:1.3rem}
 .card{padding:0!important;gap:0!important;flex-direction:row!important;justify-content:stretch!important}
 .card .bar{flex:1}
-.card .box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(86%,30rem);padding:1rem 1.2rem;background:#0E1A38;border:3px solid #F3EBDD;text-align:center;display:flex;flex-direction:column;gap:.5rem}
-
-/* экранные слои */
+.card .box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(88%,30rem);padding:1rem 1.2rem;background:#0E1A38;border:3px solid #F3EBDD;text-align:center;display:flex;flex-direction:column;gap:.5rem}
 #noise{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;display:none;z-index:5}
 .scan{position:absolute;inset:0;pointer-events:none;z-index:6;background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.16) 3px)}
-.osd{position:absolute;top:.7rem;right:.9rem;z-index:7;font-size:1.25rem;font-weight:700;color:#6CCB5F;text-shadow:0 0 6px rgba(108,203,95,.6);transition:opacity .4s}
+.osd{position:absolute;top:.6rem;right:.9rem;z-index:7;font-size:1.15rem;font-weight:700;color:#6CCB5F;text-shadow:0 0 6px rgba(108,203,95,.6);transition:opacity .4s}
 .osd.hide{opacity:0}
-.clock{position:absolute;top:.7rem;left:.9rem;z-index:7;font-size:1.1rem;color:#F3EBDD;opacity:.85}
-.vol{position:absolute;left:50%;bottom:3.4rem;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:.5rem;color:#6CCB5F;font-size:1rem;transition:opacity .4s}
+.clock{position:absolute;top:.6rem;left:.9rem;z-index:7;font-size:1rem;color:#F3EBDD;opacity:.85}
+.vol{position:absolute;left:50%;bottom:3rem;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:.5rem;color:#6CCB5F;font-size:.95rem;transition:opacity .4s}
 .vol.hide{opacity:0}
-.vol i{display:inline-block;width:8px;height:16px;background:#1d3a1a;margin-right:3px}
+.vol i{display:inline-block;width:7px;height:15px;background:#1d3a1a;margin-right:3px}
 .vol i.on{background:#6CCB5F}
-.crawl{position:absolute;left:0;right:0;bottom:0;z-index:4;height:2.3rem;background:#F2C230;color:#1E1A16;overflow:hidden;display:flex;align-items:center;font-weight:600;white-space:nowrap}
+.crawl{position:absolute;left:0;right:0;bottom:0;z-index:4;height:2.1rem;background:#F2C230;color:#1E1A16;overflow:hidden;display:flex;align-items:center;font-weight:600;font-size:.9rem;white-space:nowrap}
 .crawl-in{display:inline-block;padding-left:100%;animation:crawl 46s linear infinite}
 .crawl-in span{margin-right:3rem}
 @keyframes crawl{from{transform:translateX(0)}to{transform:translateX(-100%)}}
-.off{position:absolute;inset:0;z-index:8;background:#050505;display:none;align-items:center;justify-content:center;text-align:center;padding:1.5rem;color:#8d8577;font-size:1rem}
+.off{position:absolute;inset:0;z-index:8;background:#050505;display:none;align-items:center;justify-content:center;text-align:center;padding:1.4rem;color:#8d8577;font-size:.95rem}
 .screen.is-off .off{display:flex;animation:shut .35s ease-out}
 @keyframes shut{from{clip-path:inset(0 0 0 0);background:#fff}60%{clip-path:inset(49% 0 49% 0);background:#fff}to{clip-path:inset(0 0 0 0);background:#050505}}
 @media (prefers-reduced-motion: reduce){
   .crawl-in{animation:none;padding-left:1rem}
   .screen.is-off .off{animation:none}
+  .knob i{transition:none}
 }
-
-/* пульт */
-.remote{display:flex;flex-direction:column;gap:.5rem;padding:.7rem;border-radius:18px;background:var(--remote);color:var(--key-text)}
-.keys{display:grid;gap:.4rem}
-.colors{grid-template-columns:repeat(3,minmax(0,1fr))}
-.nums{grid-template-columns:repeat(5,minmax(0,1fr))}
-.ctrl{grid-template-columns:repeat(5,minmax(0,1fr))}
-.key{min-height:48px;border-radius:10px;background:var(--key);color:var(--key-text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:.2rem;font-weight:700;font-size:.95rem;text-align:center}
-.key small{font-weight:500;font-size:.62rem;opacity:.8;line-height:1.1}
-.key:active{transform:translateY(1px);filter:brightness(1.25)}
-.key.cur{outline:2px solid #F2C230}
-.k-r{background:#E0543C;color:#1E1A16}.k-g{background:#6CCB5F;color:#1E1A16}.k-y{background:#F2C230;color:#1E1A16}.k-b{background:#6FA4F2;color:#1E1A16}
-.k-r,.k-g,.k-y,.k-b{font-size:.8rem}
-.hint{margin:0;font-size:.75rem;opacity:.7;text-align:center}
 #err{display:none;position:fixed;left:0;right:0;bottom:0;z-index:99;background:#B00020;color:#fff;font:14px monospace;padding:.5rem;white-space:pre-wrap}
 
+
+/* ─── размеры корпуса ─── */
+:root{--tvmax:min(100%,calc((100dvh - 22rem) * 1.34))}
+
 @media (min-width:900px){
-  .page{grid-template-rows:none;grid-template-columns:minmax(0,1fr) 19rem;height:100vh;height:100dvh;padding:1.5rem;gap:1.5rem;align-items:stretch}
-  .page{--tvmax:min(100%,calc((100dvh - 12rem) * 1.33))}
-  .tv{padding:1.1rem;border-radius:24px 24px 10px 10px;gap:1rem}
+  :root{--tvmax:min(100%,calc((100dvh - 7rem) * 1.72))}
+  .page{padding:1.2rem}
+  .tv{flex-direction:row;gap:1rem;padding:1.1rem;border-radius:20px 20px 8px 8px}
+  .ctrl-panel{flex-direction:column;justify-content:center;gap:1.1rem;width:15.5rem;flex:none}
+  .vol-slider{width:2.8rem;height:11rem}
+  .side{flex-direction:row;gap:.9rem}
+  .grille{width:5rem;height:3.2rem}
   .bezel{padding:.8rem;border-radius:18px}
-  .screen{border-radius:60px/34px}
-  .panel{width:4.2rem;gap:.8rem}
-  .knob{width:3rem;height:3rem}
-  .knob i{height:1rem;transform-origin:50% calc(1.5rem - 2px)}
-  .knob.small{width:2.2rem;height:2.2rem}
-  .grille{width:3rem;gap:6px}
-  .legs{padding:0 6rem}
-  .legs i{width:20px;height:20px}
-  .plate{font-size:.8rem}
-  .ch{padding:3.2rem 3rem 3.6rem}
-  .remote{justify-content:center;gap:.9rem;padding:1.2rem;border-radius:26px}
-  .nums{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .ctrl{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .ctrl .pw{grid-column:1 / -1}
-  .colors{grid-template-columns:repeat(1,minmax(0,1fr))}
-  .key{min-height:58px;font-size:1.05rem}
-  .key small{font-size:.7rem}
-  .k-r,.k-g,.k-y,.k-b{font-size:.95rem}
+  .screen{border-radius:60px/36px}
+  .ch{padding:3rem 2.6rem 3.4rem}
+  .legs{padding:0 14%}
+  .legs i{width:22px;height:20px}
+}
+@media (max-width:420px){
+  .dial{width:11rem;height:11rem}
+  .knob{width:6.2rem;height:6.2rem;margin:-3.1rem 0 0 -3.1rem}
+  .knob i{transform-origin:50% calc(3.1rem - 10px)}
+  .tick{width:2.7rem;margin-left:-1.35rem;font-size:.55rem}
+  .vol-slider{height:8.5rem;width:2.1rem}
 }
 </style>
 </head>
 <body>
 <div class="page">
 
-  <div class="set">
-    <svg class="ant" viewBox="0 0 150 52" aria-hidden="true">
-      <path d="M75 50 L30 6" stroke="#8A8175" stroke-width="4" stroke-linecap="round" fill="none"/>
-      <path d="M75 50 L124 12" stroke="#8A8175" stroke-width="4" stroke-linecap="round" fill="none"/>
-      <circle cx="30" cy="6" r="4" fill="#8A8175"/><circle cx="124" cy="12" r="4" fill="#8A8175"/>
-      <rect x="64" y="40" width="22" height="12" rx="3" fill="#5C5348"/>
-    </svg>
+  <svg class="ant" viewBox="0 0 150 52" aria-hidden="true">
+    <path d="M75 50 L28 5" stroke="#8A8175" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path d="M75 50 L126 11" stroke="#8A8175" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <circle cx="28" cy="5" r="4" fill="#8A8175"/><circle cx="126" cy="11" r="4" fill="#8A8175"/>
+    <rect x="64" y="40" width="22" height="12" rx="3" fill="#5C5348"/>
+  </svg>
+
   <div class="tv">
-   <div class="tube">
-    <div class="bezel">
-    <div class="screen" id="screen" aria-live="polite">
+    <div class="tube">
+      <div class="bezel">
+        <div class="screen" id="screen" aria-live="polite">
 
       <section class="ch card" data-n="00" data-name="НОЧЬ">
         <div class="bar" style="background:#E8E2D0"></div><div class="bar" style="background:#E0A526"></div><div class="bar" style="background:#3FA7A0"></div><div class="bar" style="background:#5B9A4A"></div><div class="bar" style="background:#B5477A"></div><div class="bar" style="background:#C8341E"></div><div class="bar" style="background:#2E4A8C"></div>
@@ -216,55 +224,52 @@ h2{font-size:clamp(1.35rem,3.6vw,2.4rem);color:#F2C230}
         <p class="small">Да, вы, скорее всего, пришли сюда из Инстаграма. Мы оценили иронию.</p>
       </section>
 
-      <canvas id="noise" width="160" height="100"></canvas>
-      <div class="scan"></div>
-      <div class="clock px" id="clock"></div>
-      <div class="osd px" id="osd"></div>
-      <div class="vol px hide" id="vol"><span>ЗВУК</span><span id="volbars"></span></div>
-      <div class="crawl"><div class="crawl-in">
-        <span>Не просит пароль. Не предлагает подписку.</span>
-        <span>У фильма есть сюжет. И конец.</span>
-        <span>Алгоритм не знает, чего вы хотите. Зато есть пульт.</span>
-        <span>Листать нечего. Придётся смотреть.</span>
-        <span>Обновление не требуется. Никогда.</span>
-      </div></div>
-      <div class="off">Тоже вариант. Тогда хотя бы прогуляйтесь.<br>Чтобы включить, нажмите кнопку питания ещё раз.</div>
+          <canvas id="noise" width="160" height="100"></canvas>
+          <div class="scan"></div>
+          <div class="clock px" id="clock"></div>
+          <div class="osd px" id="osd"></div>
+          <div class="vol px hide" id="vol"><span>ЗВУК</span><span id="volbars"></span></div>
+          <div class="crawl"><div class="crawl-in">
+            <span>Не просит пароль. Не предлагает подписку.</span>
+            <span>У фильма есть сюжет. И конец.</span>
+            <span>Алгоритм не знает, чего вы хотите. Зато есть пульт.</span>
+            <span>Листать нечего. Придётся смотреть.</span>
+            <span>Обновление не требуется. Никогда.</span>
+          </div></div>
+          <div class="off">Тоже вариант. Тогда хотя бы прогуляйтесь.<br>Чтобы включить, нажмите кнопку питания ещё раз.</div>
+        </div>
+      </div>
+      <div class="plate"><span class="display">konaev.tv</span><span>КОНАЕВ · КАБЕЛЬНОЕ</span></div>
     </div>
+
+    <div class="ctrl-panel">
+
+      <div class="vol-slider" id="vslider" role="slider" aria-label="Громкость" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" tabindex="0">
+        <span>+</span>
+        <div class="track"><div class="fill" id="vfill" style="height:0%"></div></div>
+        <div class="grip" id="vgrip" style="bottom:.45rem"></div>
+        <span>−</span>
+      </div>
+
+      <div class="dial" id="dial">
+        <div class="ring" aria-hidden="true"></div>
+        <div class="knob" id="knob" role="listbox" aria-label="Переключатель каналов" tabindex="0">
+          <i id="needle" aria-hidden="true"></i>
+          <b id="knobnum">1</b>
+          <u>КАНАЛЫ</u>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="grille" aria-hidden="true"></div>
+        <button class="pw" id="power" aria-label="Питание">ВКЛ</button>
+        <span class="led" id="led" aria-hidden="true"></span>
+      </div>
     </div>
-    <div class="plate"><span class="display">konaev.tv</span><span>КОНАЕВ · КАБЕЛЬНОЕ</span></div>
-   </div>
-   <div class="panel">
-     <div class="knob" id="knob" aria-hidden="true"><i id="dial"></i></div>
-     <div class="knob small" aria-hidden="true"></div>
-     <div class="grille" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-     <span class="led" id="led" aria-hidden="true"></span>
-   </div>
-  </div>
-  <div class="legs" aria-hidden="true"><i></i><i></i></div>
   </div>
 
-  <div class="remote">
-    <div class="keys colors">
-      <button class="key k-r" data-go="2">Подключить</button>
-      <button class="key k-g" data-msg="WHATSAPP: НОМЕР НЕ ЗАДАН">WhatsApp</button>
-      <button class="key k-y" data-msg="ТЕЛЕФОН: НОМЕР НЕ ЗАДАН">Позвонить</button>
-    </div>
-    <div class="keys nums">
-      <button class="key" data-go="1">1<small>главный</small></button>
-      <button class="key" data-go="2">2<small>подключить</small></button>
-      <button class="key" data-go="3">3<small>родителям</small></button>
-      <button class="key" data-go="4">4<small>ремонт</small></button>
-      <button class="key" data-go="5">5<small>важное</small></button>
-    </div>
-    <div class="keys ctrl">
-      <button class="key pw" id="power" aria-label="Питание">ВКЛ<small>питание</small></button>
-      <button class="key" id="vdn" aria-label="Тише">−<small>звук</small></button>
-      <button class="key" id="vup" aria-label="Громче">+<small>звук</small></button>
-      <button class="key" id="cdn" aria-label="Предыдущий канал">‹<small>канал</small></button>
-      <button class="key" id="cup" aria-label="Следующий канал">›<small>канал</small></button>
-    </div>
-    <p class="hint">Свайп по экрану тоже переключает каналы. Рефлекс не пропадёт зря.</p>
-  </div>
+  <div class="legs" aria-hidden="true"><i></i><i></i></div>
+  <p class="hint">Крутите ручку или свайпайте по экрану. Клац переключает канал.</p>
 </div>
 <div id="err"></div>
 
@@ -276,31 +281,143 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
   var osd=document.getElementById('osd'),volEl=document.getElementById('vol'),volBars=document.getElementById('volbars');
   var noise=document.getElementById('noise'),ctx=noise.getContext('2d');
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var cur=1,busy=false,swipes=0,vol=0,ac=null,osdT=null,volT=null,start=Date.now();
+  var cur=1,busy=false,swipes=0,vol=0,ac=null,osdT=null,volT=null,backT=null,start=Date.now();
+
+  /* позиции переключателя: 5 каналов + два действия */
+  var POS=[
+    {t:'1',s:'главный',go:1},
+    {t:'2',s:'подключить',go:2},
+    {t:'3',s:'родителям',go:3},
+    {t:'4',s:'ремонт',go:4},
+    {t:'5',s:'важное',go:5},
+    {t:'W',s:'WhatsApp',msg:'WHATSAPP: НОМЕР НЕ ЗАДАН'},
+    {t:'T',s:'позвонить',msg:'ТЕЛЕФОН: НОМЕР НЕ ЗАДАН'}
+  ];
+  var STEP=44, A0=-(STEP*(POS.length-1))/2, pos=0;
+  var dialEl=document.getElementById('dial'),knob=document.getElementById('knob'),
+      needle=document.getElementById('needle'),knobnum=document.getElementById('knobnum'),
+      led=document.getElementById('led');
+
+  function ang(i){return A0+i*STEP;}
+  (function buildTicks(){
+    var r=dialEl.clientWidth?dialEl.clientWidth/2-18:88;
+    POS.forEach(function(p,i){
+      var el=document.createElement('button');
+      el.className='tick';el.setAttribute('data-i',i);el.type='button';
+      el.innerHTML='<span><b>'+p.t+'</b>'+p.s+'</span>';
+      var a=(ang(i)-90)*Math.PI/180;
+      el.style.left='calc(50% + '+Math.cos(a)*r+'px)';
+      el.style.top='calc(50% + '+Math.sin(a)*r+'px)';
+      el.onclick=function(){select(i);};
+      dialEl.appendChild(el);
+    });
+  })();
+  function paintTicks(){
+    [].forEach.call(dialEl.querySelectorAll('.tick'),function(el,i){
+      el.className='tick'+(i===pos?(POS[i].msg?' act':' cur'):'');
+    });
+  }
+  function clack(){
+    if(navigator.vibrate){try{navigator.vibrate(12);}catch(e){}}
+    if(!ac||vol===0)return;
+    try{
+      var n=Math.floor(ac.sampleRate*0.045),b=ac.createBuffer(1,n,ac.sampleRate),d=b.getChannelData(0);
+      for(var i=0;i<n;i++){d[i]=(Math.random()*2-1)*Math.pow(1-i/n,7);}
+      var s=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();
+      f.type='bandpass';f.frequency.value=1700;
+      g.gain.value=Math.min(1,vol/10)*0.5;
+      s.buffer=b;s.connect(f);f.connect(g);g.connect(ac.destination);s.start();
+    }catch(e){}
+  }
+  function turnTo(i){pos=i;needle.style.transform='rotate('+ang(i)+'deg)';knobnum.textContent=POS[i].t;paintTicks();}
+  function select(i){
+    if(screen.className.indexOf('is-off')>=0)return;
+    if(i===pos)return;
+    clack();turnTo(i);
+    var p=POS[i];
+    if(p.go!==undefined){go(p.go);}
+    else{showOsd(p.msg);clearTimeout(backT);backT=setTimeout(function(){turnTo(curPos());},1600);}
+  }
+  function curPos(){for(var i=0;i<POS.length;i++){if(POS[i].go===cur)return i;}return 0;}
+
+  /* вращение ручки пальцем */
+  var dragging=false;
+  function angleFrom(e){
+    var r=dialEl.getBoundingClientRect(),
+        x=(e.touches?e.touches[0].clientX:e.clientX)-(r.left+r.width/2),
+        y=(e.touches?e.touches[0].clientY:e.clientY)-(r.top+r.height/2);
+    return Math.atan2(x,-y)*180/Math.PI;
+  }
+  function fromAngle(a){
+    var i=Math.round((a-A0)/STEP);
+    return Math.max(0,Math.min(POS.length-1,i));
+  }
+  function down(e){dragging=true;move(e);}
+  function move(e){if(!dragging)return;e.preventDefault();var i=fromAngle(angleFrom(e));if(i!==pos)select(i);}
+  function up(){dragging=false;}
+  knob.addEventListener('touchstart',down,{passive:true});
+  knob.addEventListener('touchmove',move,{passive:false});
+  knob.addEventListener('touchend',up);
+  knob.addEventListener('mousedown',function(e){e.preventDefault();down(e);});
+  document.addEventListener('mousemove',move);
+  document.addEventListener('mouseup',up);
+  knob.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();select(Math.min(POS.length-1,pos+1));}
+    else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();select(Math.max(0,pos-1));}
+  });
+
+  /* громкость: тянуть и нажимать на шкалу */
+  var vs=document.getElementById('vslider'),vfill=document.getElementById('vfill'),vgrip=document.getElementById('vgrip');
+  function setVol(v){
+    vol=Math.max(0,Math.min(10,Math.round(v)));
+    var pc=vol/10;
+    vfill.style.height=(pc*100)+'%';
+    vgrip.style.bottom='calc(.45rem + '+(pc*100)+'% - '+(pc*1)+'rem)';
+    vs.setAttribute('aria-valuenow',vol);
+    showVol();
+  }
+  function volFrom(e){
+    if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(err){}}
+    var r=vs.getBoundingClientRect(),y=(e.touches?e.touches[0].clientY:e.clientY);
+    setVol((1-(y-r.top)/r.height)*10);
+  }
+  var vdrag=false;
+  vs.addEventListener('touchstart',function(e){vdrag=true;volFrom(e);},{passive:true});
+  vs.addEventListener('touchmove',function(e){if(vdrag){e.preventDefault();volFrom(e);}},{passive:false});
+  vs.addEventListener('touchend',function(){vdrag=false;hiss();});
+  vs.addEventListener('mousedown',function(e){vdrag=true;volFrom(e);});
+  document.addEventListener('mousemove',function(e){if(vdrag)volFrom(e);});
+  document.addEventListener('mouseup',function(){if(vdrag){vdrag=false;hiss();}});
+  vs.addEventListener('keydown',function(e){
+    if(e.key==='ArrowUp'){e.preventDefault();setVol(vol+1);hiss();}
+    else if(e.key==='ArrowDown'){e.preventDefault();setVol(vol-1);}
+  });
 
   function almaty(){
     try{return new Intl.DateTimeFormat('ru-RU',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Asia/Almaty'}).format(new Date());}
     catch(e){var d=new Date();return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
   }
   function showOsd(t){osd.textContent=t;osd.className='osd px';clearTimeout(osdT);osdT=setTimeout(function(){osd.className='osd px hide';},2600);}
+  function showVol(){
+    var h='';for(var i=1;i<=10;i++)h+='<i'+(i<=vol?' class="on"':'')+'></i>';
+    volBars.innerHTML=h;volEl.className='vol px';clearTimeout(volT);volT=setTimeout(function(){volEl.className='vol px hide';},1800);
+  }
   function render(){
     chans.forEach(function(c,i){c.className=c.className.replace(/\s?on\b/,'')+(i===cur?' on':'');});
-    [].forEach.call(document.querySelectorAll('.nums .key'),function(k){k.className='key'+(+k.getAttribute('data-go')===cur?' cur':'');});
     var c=chans[cur];showOsd(c.getAttribute('data-n')+' '+c.getAttribute('data-name'));
-    var d=document.getElementById('dial');if(d)d.style.transform='rotate('+(cur*48)+'deg)';
   }
   function hiss(){
     if(!ac||vol===0)return;
-    try{var n=Math.floor(ac.sampleRate*0.28),b=ac.createBuffer(1,n,ac.sampleRate),d=b.getChannelData(0);
+    try{var n=Math.floor(ac.sampleRate*0.26),b=ac.createBuffer(1,n,ac.sampleRate),d=b.getChannelData(0);
       for(var i=0;i<n;i++)d[i]=Math.random()*2-1;
-      var s=ac.createBufferSource(),g=ac.createGain();g.gain.value=vol/10*0.12;s.buffer=b;s.connect(g);g.connect(ac.destination);s.start();}catch(e){}
+      var s=ac.createBufferSource(),g=ac.createGain();g.gain.value=vol/10*0.1;s.buffer=b;s.connect(g);g.connect(ac.destination);s.start();}catch(e){}
   }
   function go(n){
     if(busy)return;
     if(screen.className.indexOf('is-off')>=0)return;
     n=(n+chans.length)%chans.length;
     hiss();
-    if(reduce){cur=n;render();return;}
+    if(reduce){cur=n;render();turnTo(curPos());return;}
     busy=true;noise.style.display='block';
     var t0=Date.now(),sw=false;
     (function frame(){
@@ -308,29 +425,18 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
       for(var i=0;i<d.length;i+=4){var v=Math.random()*255|0;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;}
       ctx.putImageData(img,0,0);
       var dt=Date.now()-t0;
-      if(!sw&&dt>120){sw=true;cur=n;render();}
-      if(dt<330){requestAnimationFrame(frame);}else{noise.style.display='none';busy=false;}
+      if(!sw&&dt>110){sw=true;cur=n;render();}
+      if(dt<320){requestAnimationFrame(frame);}else{noise.style.display='none';busy=false;}
     })();
   }
-  function showVol(){
-    var h='';for(var i=1;i<=10;i++)h+='<i'+(i<=vol?' class="on"':'')+'></i>';
-    volBars.innerHTML=h;volEl.className='vol px';clearTimeout(volT);volT=setTimeout(function(){volEl.className='vol px hide';},1800);
-  }
 
-  document.getElementById('cup').onclick=function(){go(cur+1);};
-  document.getElementById('cdn').onclick=function(){go(cur-1);};
-  document.getElementById('vup').onclick=function(){
-    if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}
-    vol=Math.min(10,vol+1);showVol();hiss();
-  };
-  document.getElementById('vdn').onclick=function(){vol=Math.max(0,vol-1);showVol();};
   document.getElementById('power').onclick=function(){
     var off=screen.className.indexOf('is-off')>=0;
+    clack();
     screen.className=off?'screen':'screen is-off';
-    if(off)render();
+    led.className=off?'led':'led off';
+    if(off){render();turnTo(curPos());}
   };
-  [].forEach.call(document.querySelectorAll('[data-go]'),function(k){k.onclick=function(){go(+k.getAttribute('data-go'));};});
-  [].forEach.call(document.querySelectorAll('[data-msg]'),function(k){k.addEventListener('click',function(e){e.preventDefault();showOsd(k.getAttribute('data-msg'));});});
 
   var ty=0,tx=0;
   screen.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
@@ -338,14 +444,16 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
     var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
     if(Math.max(Math.abs(dx),Math.abs(dy))<40)return;
     swipes++;updSwipes();
-    var fwd=Math.abs(dy)>Math.abs(dx)?dy<0:dx<0;go(cur+(fwd?1:-1));
+    var fwd=Math.abs(dy)>Math.abs(dx)?dy<0:dx<0;
+    var i=Math.max(0,Math.min(4,curPos()+(fwd?1:-1)));select(i);
   },{passive:true});
   var wt=0;
-  screen.addEventListener('wheel',function(e){e.preventDefault();var now=Date.now();if(now-wt<700)return;wt=now;swipes++;updSwipes();go(cur+(e.deltaY>0?1:-1));},{passive:false});
+  screen.addEventListener('wheel',function(e){
+    e.preventDefault();var now=Date.now();if(now-wt<700)return;wt=now;swipes++;updSwipes();
+    var i=Math.max(0,Math.min(4,curPos()+(e.deltaY>0?1:-1)));select(i);
+  },{passive:false});
   document.addEventListener('keydown',function(e){
-    if(e.key==='ArrowRight'||e.key==='ArrowDown')go(cur+1);
-    else if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(cur-1);
-    else if(/^[0-5]$/.test(e.key))go(+e.key);
+    if(/^[1-5]$/.test(e.key))select(+e.key-1);
   });
 
   function updSwipes(){
@@ -361,10 +469,7 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
   setInterval(tick,1000);tick();
 
   var lang=(navigator.language||navigator.userLanguage||'ru').toLowerCase();
-  if(lang.indexOf('kk')===0||lang.indexOf('kz')===0){
-    document.documentElement.lang='ru';
-    showOsd('ҚАЗ: ТЕКСТ ЕЩЁ НЕ НАПИСАН');
-  }
+  if(lang.indexOf('kk')===0||lang.indexOf('kz')===0){showOsd('ҚАЗ: ТЕКСТ ЕЩЁ НЕ НАПИСАН');}
 
   var hr=parseInt(almaty().slice(0,2),10);
   if(hr>=0&&hr<6){
@@ -372,8 +477,17 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
     document.getElementById('night-h').textContent='Эфир окончен';
     document.getElementById('night-p').textContent='В Конаеве ночь. Идите спать. Если очень нужно, переключите канал: заявку примем и ночью, перезвоним утром.';
   }
-  render();
+  render();turnTo(cur===0?0:curPos());
+  window.addEventListener('resize',function(){
+    var r=dialEl.clientWidth/2-18;
+    [].forEach.call(dialEl.querySelectorAll('.tick'),function(el,i){
+      var a=(ang(i)-90)*Math.PI/180;
+      el.style.left='calc(50% + '+Math.cos(a)*r+'px)';
+      el.style.top='calc(50% + '+Math.sin(a)*r+'px)';
+    });
+  });
 })();
 </script>
+
 </body>
 </html>
