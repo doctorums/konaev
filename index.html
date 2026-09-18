@@ -3,23 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title>konaev.tv — сайт-телевизор, прототип</title>
 <script>document.documentElement.className='js';</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Golos+Text:wght@400;500;600;700&family=Pixelify+Sans:wght@500;700&display=swap">
 <style>
 :root{
   --room:#F3EBDD; --ink:#1E1A16; --mute:#5C5348;
-  --tv:#1E1A16; --tv-edge:#1E1A16; --remote:#2A241E; --key:#3A332B; --key-text:#F3EBDD;
+  --wood:#3A2E23; --wood-edge:#241B14; --bezel:#120F0C; --plate:#B3A896;
+  --remote:#2A241E; --key:#3A332B; --key-text:#F3EBDD;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --room:#15110E; --ink:#F3EBDD; --mute:#B3A896;
-    --tv:#2A241E; --tv-edge:#4A4037; --remote:#2A241E; --key:#443A30; --key-text:#F3EBDD;
+    --wood:#2A2119; --wood-edge:#17110C; --bezel:#0B0908; --plate:#B3A896;
+    --remote:#2A241E; --key:#443A30; --key-text:#F3EBDD;
   }
 }
 :root[data-theme="dark"]{
   --room:#15110E; --ink:#F3EBDD; --mute:#B3A896;
-  --tv:#2A241E; --tv-edge:#4A4037; --remote:#2A241E; --key:#443A30; --key-text:#F3EBDD;
+  --wood:#2A2119; --wood-edge:#17110C; --bezel:#0B0908; --plate:#B3A896;
+  --remote:#2A241E; --key:#443A30; --key-text:#F3EBDD;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -32,12 +36,24 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
 
 .page{min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:1fr auto;gap:.75rem;padding:.75rem;max-width:1400px;margin:0 auto}
 
-/* телевизор */
-.tv{display:flex;flex-direction:column;gap:.5rem;padding:.7rem .7rem .5rem;border-radius:22px;background:var(--tv);border:2px solid var(--tv-edge);min-height:0}
-.screen{position:relative;flex:1;min-height:24rem;border-radius:16px;overflow:hidden;background:#0E1A38;color:#F3EBDD;touch-action:none;box-shadow:inset 0 0 60px rgba(0,0,0,.55)}
-.plate{display:flex;align-items:center;justify-content:space-between;padding:0 .5rem;color:#B3A896;font-size:.8rem}
-.plate .display{font-weight:700;color:#F3EBDD;letter-spacing:-.3px}
-.led{display:inline-block;width:8px;height:8px;border-radius:50%;background:#E0543C;margin-right:.4rem}
+/* корпус */
+.set{display:flex;flex-direction:column;min-height:0}
+.ant{display:block;margin:0 auto -4px;width:clamp(110px,26vw,190px)}
+.tv{display:flex;gap:.55rem;padding:.6rem;border-radius:16px 16px 8px 8px;background:var(--wood);border:3px solid var(--wood-edge);min-height:0}
+.tube{flex:1;min-width:0;display:flex;flex-direction:column;gap:.35rem;min-height:0}
+.bezel{flex:1;min-height:0;padding:.45rem;border-radius:12px;background:var(--bezel);display:flex}
+.screen{position:relative;flex:1;min-height:19rem;border-radius:34px/22px;overflow:hidden;background:#0E1A38;color:#F3EBDD;touch-action:none;box-shadow:inset 0 0 50px rgba(0,0,0,.6)}
+.plate{display:flex;align-items:center;justify-content:space-between;padding:0 .3rem;color:var(--plate);font-size:.72rem;letter-spacing:.06em}
+.plate .display{font-weight:700;letter-spacing:-.3px}
+.panel{width:3rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;padding-top:.2rem}
+.knob{width:2.1rem;height:2.1rem;border-radius:50%;background:#C9BFA8;border:3px solid var(--wood-edge);position:relative;flex:none}
+.knob i{position:absolute;left:50%;top:2px;width:3px;height:.7rem;margin-left:-1.5px;background:var(--wood-edge);transform-origin:50% calc(1.05rem - 2px);transition:transform .25s}
+.knob.small{width:1.6rem;height:1.6rem;background:#8A8175}
+.grille{width:2.1rem;display:flex;flex-direction:column;gap:4px;padding-top:.2rem}
+.grille i{height:3px;background:var(--wood-edge)}
+.led{width:9px;height:9px;border-radius:50%;background:#E0543C;margin-top:.2rem;flex:none}
+.legs{display:flex;justify-content:space-between;padding:0 3rem}
+.legs i{width:14px;height:15px;background:var(--wood-edge);border-radius:0 0 4px 4px}
 
 .ch{position:relative;padding:2.6rem 1.2rem 3.2rem;display:flex;flex-direction:column;justify-content:center;gap:.9rem}
 .js .ch{position:absolute;inset:0;display:none}
@@ -87,38 +103,56 @@ h2{font-size:clamp(1.35rem,3.6vw,2.4rem);color:#F2C230}
 /* пульт */
 .remote{display:flex;flex-direction:column;gap:.5rem;padding:.7rem;border-radius:18px;background:var(--remote);color:var(--key-text)}
 .keys{display:grid;gap:.4rem}
-.colors{grid-template-columns:repeat(4,minmax(0,1fr))}
+.colors{grid-template-columns:repeat(3,minmax(0,1fr))}
 .nums{grid-template-columns:repeat(5,minmax(0,1fr))}
 .ctrl{grid-template-columns:repeat(5,minmax(0,1fr))}
 .key{min-height:48px;border-radius:10px;background:var(--key);color:var(--key-text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:.2rem;font-weight:700;font-size:.95rem;text-align:center}
 .key small{font-weight:500;font-size:.62rem;opacity:.8;line-height:1.1}
 .key:active{transform:translateY(1px);filter:brightness(1.25)}
 .key.cur{outline:2px solid #F2C230}
-.k-r{background:#E0543C;color:#1E1A16}.k-g{background:#6CCB5F;color:#1E1A16}.k-y{background:#F2C230;color:#1E1A16}.k-b{background:#6FA4F2;color:#1E1A16}
-.k-r,.k-g,.k-y,.k-b{font-size:.8rem}
+.k-r{background:#E0543C;color:#1E1A16}.k-g{background:#6CCB5F;color:#1E1A16}.k-y{background:#F2C230;color:#1E1A16}
+.k-r,.k-g,.k-y{font-size:.8rem}
 .hint{margin:0;font-size:.75rem;opacity:.7;text-align:center}
 #err{display:none;position:fixed;left:0;right:0;bottom:0;z-index:99;background:#B00020;color:#fff;font:14px monospace;padding:.5rem;white-space:pre-wrap}
 
 @media (min-width:900px){
   .page{grid-template-rows:none;grid-template-columns:minmax(0,1fr) 19rem;height:100vh;height:100dvh;padding:1.5rem;gap:1.5rem;align-items:stretch}
-  .tv{padding:1.2rem 1.2rem .8rem;border-radius:32px}
-  .screen{border-radius:22px}
+  .tv{padding:1.1rem;border-radius:24px 24px 10px 10px;gap:1rem}
+  .bezel{padding:.8rem;border-radius:18px}
+  .screen{min-height:0;border-radius:60px/34px}
+  .panel{width:4.2rem;gap:.8rem}
+  .knob{width:3rem;height:3rem}
+  .knob i{height:1rem;transform-origin:50% calc(1.5rem - 2px)}
+  .knob.small{width:2.2rem;height:2.2rem}
+  .grille{width:3rem;gap:6px}
+  .legs{padding:0 6rem}
+  .legs i{width:20px;height:20px}
+  .plate{font-size:.8rem}
   .ch{padding:3.2rem 3rem 3.6rem}
   .remote{justify-content:center;gap:.9rem;padding:1.2rem;border-radius:26px}
   .nums{grid-template-columns:repeat(3,minmax(0,1fr))}
   .ctrl{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ctrl .pw{grid-column:1 / -1}
-  .colors{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .colors{grid-template-columns:repeat(1,minmax(0,1fr))}
   .key{min-height:58px;font-size:1.05rem}
   .key small{font-size:.7rem}
-  .k-r,.k-g,.k-y,.k-b{font-size:.95rem}
+  .k-r,.k-g,.k-y{font-size:.95rem}
 }
 </style>
 </head>
 <body>
 <div class="page">
 
+  <div class="set">
+    <svg class="ant" viewBox="0 0 150 52" aria-hidden="true">
+      <path d="M75 50 L30 6" stroke="#8A8175" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path d="M75 50 L124 12" stroke="#8A8175" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <circle cx="30" cy="6" r="4" fill="#8A8175"/><circle cx="124" cy="12" r="4" fill="#8A8175"/>
+      <rect x="64" y="40" width="22" height="12" rx="3" fill="#5C5348"/>
+    </svg>
   <div class="tv">
+   <div class="tube">
+    <div class="bezel">
     <div class="screen" id="screen" aria-live="polite">
 
       <section class="ch card" data-n="00" data-name="НОЧЬ">
@@ -193,7 +227,17 @@ h2{font-size:clamp(1.35rem,3.6vw,2.4rem);color:#F2C230}
       </div></div>
       <div class="off">Тоже вариант. Тогда хотя бы прогуляйтесь.<br>Чтобы включить, нажмите кнопку питания ещё раз.</div>
     </div>
-    <div class="plate"><span class="display">konaev.tv</span><span><i class="led"></i>в эфире</span></div>
+    </div>
+    <div class="plate"><span class="display">konaev.tv</span><span>КОНАЕВ · КАБЕЛЬНОЕ</span></div>
+   </div>
+   <div class="panel">
+     <div class="knob" id="knob" aria-hidden="true"><i id="dial"></i></div>
+     <div class="knob small" aria-hidden="true"></div>
+     <div class="grille" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+     <span class="led" id="led" aria-hidden="true"></span>
+   </div>
+  </div>
+  <div class="legs" aria-hidden="true"><i></i><i></i></div>
   </div>
 
   <div class="remote">
@@ -201,7 +245,6 @@ h2{font-size:clamp(1.35rem,3.6vw,2.4rem);color:#F2C230}
       <button class="key k-r" data-go="2">Подключить</button>
       <button class="key k-g" data-msg="WHATSAPP: НОМЕР НЕ ЗАДАН">WhatsApp</button>
       <button class="key k-y" data-msg="ТЕЛЕФОН: НОМЕР НЕ ЗАДАН">Позвонить</button>
-      <button class="key k-b" data-msg="ҚАЗ: ВЕРСИЮ ПИШЕТ НОСИТЕЛЬ">ҚАЗ</button>
     </div>
     <div class="keys nums">
       <button class="key" data-go="1">1<small>главный</small></button>
@@ -241,6 +284,7 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
     chans.forEach(function(c,i){c.className=c.className.replace(/\s?on\b/,'')+(i===cur?' on':'');});
     [].forEach.call(document.querySelectorAll('.nums .key'),function(k){k.className='key'+(+k.getAttribute('data-go')===cur?' cur':'');});
     var c=chans[cur];showOsd(c.getAttribute('data-n')+' '+c.getAttribute('data-name'));
+    var d=document.getElementById('dial');if(d)d.style.transform='rotate('+(cur*48)+'deg)';
   }
   function hiss(){
     if(!ac||vol===0)return;
@@ -312,6 +356,12 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
     document.getElementById('onsite').textContent=Math.floor(s/60)+':'+('0'+s%60).slice(-2);
   }
   setInterval(tick,1000);tick();
+
+  var lang=(navigator.language||navigator.userLanguage||'ru').toLowerCase();
+  if(lang.indexOf('kk')===0||lang.indexOf('kz')===0){
+    document.documentElement.lang='ru';
+    showOsd('ҚАЗ: ТЕКСТ ЕЩЁ НЕ НАПИСАН');
+  }
 
   var hr=parseInt(almaty().slice(0,2),10);
   if(hr>=0&&hr<6){
