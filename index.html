@@ -144,6 +144,10 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem)}
 #err{display:none;position:fixed;left:0;right:0;bottom:0;z-index:99;background:#B00020;color:#fff;font:14px monospace;padding:.5rem;white-space:pre-wrap}
 
 
+.legs{display:flex;justify-content:space-between;width:100%;max-width:var(--tvmax);padding:0 16%;margin-top:-2px}
+.legs i{width:16px;height:14px;background:var(--wood-edge);border-radius:0 0 6px 6px;box-shadow:0 4px 6px rgba(0,0,0,.4)}
+.hint{margin:.35rem 0 0;font-size:.72rem;color:var(--mute);text-align:center;max-width:26rem}
+
 /* ─── размеры корпуса ─── */
 :root{--tvmax:min(100%,calc((100dvh - 15rem) * 1.34))}
 
@@ -158,8 +162,8 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem)}
   .bezel{padding:.8rem;border-radius:18px}
   .screen{border-radius:60px/36px}
   .ch{padding:3rem 2.6rem 3.4rem}
-  .legs{padding:0 14%}
-  .legs i{width:22px;height:20px}
+  .legs{padding:0 18%}
+  .legs i{width:24px;height:20px}
 }
 @media (max-width:420px){
   .dial{width:10.2rem;height:10.2rem}
