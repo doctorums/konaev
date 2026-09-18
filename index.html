@@ -31,7 +31,7 @@ body{background:var(--room);color:var(--ink);font-family:'Golos Text','Segoe UI'
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 a{color:inherit;text-decoration:none}
 a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2px}
-.px{font-family:'Pixelify Sans','Courier New',monospace}
+.px{font-family:'Courier New',ui-monospace,monospace;font-weight:700}
 .display{font-family:'Unbounded','Trebuchet MS',sans-serif}
 
 .page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;padding:.5rem}
@@ -60,11 +60,8 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
 .tick{position:absolute;display:flex;align-items:center;gap:.22rem;padding:.1rem .15rem;border-radius:4px;background:none;cursor:pointer;
   color:var(--plate);font-size:.55rem;font-weight:700;letter-spacing:.01em;line-height:1;white-space:nowrap;
   text-shadow:0 1px 0 rgba(0,0,0,.7);transition:color .9s ease,opacity .9s ease,font-size .25s ease,letter-spacing .25s ease,text-shadow .9s ease;opacity:.7}
-.tick b{font-family:'Pixelify Sans','Courier New',monospace;font-size:.78rem;line-height:1;order:2}
-.tick.flip b{order:0}
 .tick.flip{flex-direction:row-reverse}
 .tick.cur{transition:color .12s,opacity .12s,font-size .2s,letter-spacing .2s,text-shadow .12s;color:#F2C230;opacity:1;font-size:.72rem;letter-spacing:.03em;text-shadow:0 0 8px rgba(242,194,48,.55),0 1px 0 rgba(0,0,0,.7)}
-.tick.cur b{font-size:1rem}
 .tick.act{transition:color .12s,opacity .12s,font-size .2s,letter-spacing .2s,text-shadow .12s;color:#8FD98A;opacity:1;font-size:.72rem;letter-spacing:.03em;text-shadow:0 0 8px rgba(143,217,138,.5),0 1px 0 rgba(0,0,0,.7)}
 .tick.act b{font-size:1rem}
 .tick.hl{color:#EDE6D6;opacity:1;text-shadow:0 0 6px rgba(237,230,214,.35),0 1px 0 rgba(0,0,0,.7)}
@@ -79,7 +76,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
   border:4px solid var(--wood-edge);box-shadow:0 4px 10px rgba(0,0,0,.5);cursor:grab}
 .knob:active{cursor:grabbing}
 .knob i{position:absolute;left:50%;top:5px;width:4px;height:1.1rem;margin-left:-2px;background:#2B1F14;border-radius:3px;transform-origin:50% calc(2.3rem - 9px);transition:transform .22s cubic-bezier(.34,1.5,.5,1)}
-.knob b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Pixelify Sans','Courier New',monospace;font-size:1.05rem;color:#2B1F14}
+.knob b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Unbounded','Trebuchet MS',sans-serif;font-weight:700;font-size:1rem;color:#2B1F14}
 
 
 /* горизонтальный ползунок громкости */
@@ -351,7 +348,7 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
       var m=document.createElement('div');m.className='mark';dialEl.appendChild(m);
       var el=document.createElement('button');
       el.className='tick'+(ang(i)<0?' flip':'');el.setAttribute('data-i',i);el.type='button';
-      el.innerHTML='<b>'+p.t+'</b><span>'+p.s+'</span>';
+      el.textContent=p.s;
       el.onclick=function(){select(i);};
       dialEl.appendChild(el);
     });
