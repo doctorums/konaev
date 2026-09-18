@@ -53,20 +53,13 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
 .plate .display{font-weight:700;letter-spacing:-.3px;font-size:.85rem}
 
 /* ─── панель управления в корпусе ─── */
-.ctrl-panel{display:flex;align-items:center;justify-content:center;gap:.7rem;padding:.1rem 0}
+.ctrl-panel{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:.2rem 0}
+.sp{flex:1 1 auto;min-height:.2rem}
 
-/* вертикальный ползунок громкости */
-.vol-slider{position:relative;width:1.9rem;height:7.6rem;flex:none;border-radius:8px;background:var(--wood-edge);padding:.45rem .3rem;cursor:pointer;touch-action:none;display:flex;flex-direction:column;justify-content:space-between;align-items:center}
-.vol-slider .track{position:absolute;left:50%;top:.45rem;bottom:.45rem;width:6px;margin-left:-3px;border-radius:3px;background:#120C07;box-shadow:inset 0 1px 3px rgba(0,0,0,.8)}
-.vol-slider .fill{position:absolute;left:0;right:0;bottom:0;border-radius:3px;background:linear-gradient(180deg,#E5B52E,#B5772A)}
-.vol-slider .grip{position:absolute;left:50%;width:2rem;height:1rem;margin-left:-1rem;border-radius:3px;background:linear-gradient(180deg,#F1E8D2,var(--plastic) 55%,#9E937E);border-bottom:2px solid var(--plastic-edge);box-shadow:0 2px 4px rgba(0,0,0,.5);transition:bottom .12s}
-.vol-slider .grip:after{content:"";position:absolute;left:4px;right:4px;top:50%;height:2px;margin-top:-1px;background:rgba(0,0,0,.35)}
-.vol-slider span{position:relative;z-index:2;font-family:'Pixelify Sans','Courier New',monospace;font-size:.6rem;color:var(--plate);opacity:.8}
-
-/* круглый переключатель с делениями */
+/* круглый переключатель */
 .dial{position:relative;width:9.4rem;height:9.4rem;flex:none;touch-action:none}
-.dial .ring{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 50%,transparent 58%,var(--wood-edge) 59%)}
-.tick{position:absolute;width:2.6rem;height:1.9rem;margin:-.95rem 0 0 -1.3rem;display:flex;align-items:center;justify-content:center;border-radius:4px;background:none;color:var(--plate);font-size:.58rem;font-weight:600;line-height:1.05;text-align:center;padding:0 2px;cursor:pointer}
+.dial .ring{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 50%,transparent 57%,var(--wood-edge) 58%)}
+.tick{position:absolute;width:2.6rem;height:1.9rem;margin:-.95rem 0 0 -1.3rem;display:flex;align-items:center;justify-content:center;border-radius:4px;background:none;color:var(--plate);font-size:.55rem;font-weight:600;line-height:1.05;text-align:center;padding:0 2px;cursor:pointer}
 .tick b{font-family:'Pixelify Sans','Courier New',monospace;font-size:.8rem;display:block}
 .tick.cur{color:#F2C230}
 .tick.act{color:#8FD98A}
@@ -76,15 +69,28 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
 .knob:active{cursor:grabbing}
 .knob i{position:absolute;left:50%;top:5px;width:4px;height:1.1rem;margin-left:-2px;background:#2B1F14;border-radius:3px;transform-origin:50% calc(2.7rem - 9px);transition:transform .22s cubic-bezier(.34,1.5,.5,1)}
 .knob b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Pixelify Sans','Courier New',monospace;font-size:1.15rem;color:#2B1F14}
-.knob u{position:absolute;left:50%;bottom:.5rem;transform:translateX(-50%);font-size:.5rem;letter-spacing:.14em;color:#6E6354;text-decoration:none}
+.knob u{position:absolute;left:50%;bottom:.5rem;transform:translateX(-50%);font-size:.45rem;letter-spacing:.14em;color:#6E6354;text-decoration:none}
 
-/* включение и динамик */
-.side{display:flex;flex-direction:column;align-items:center;gap:.6rem;flex:none}
-.grille{width:1.9rem;height:3.4rem;border-radius:5px;background:repeating-linear-gradient(180deg,var(--wood-edge) 0 3px,transparent 3px 7px);opacity:.85}
-.pw{width:2.7rem;min-height:2.7rem;border-radius:7px;background:linear-gradient(180deg,#F1E8D2,var(--plastic) 55%,#A79B85);color:var(--plastic-txt);border-bottom:4px solid var(--plastic-edge);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}
-.pw:active,.screen.is-off~*.pw{transform:translateY(3px);border-bottom-width:1px}
+/* горизонтальный ползунок громкости */
+.vol-slider{position:relative;width:100%;max-width:11rem;height:2.1rem;flex:none;border-radius:7px;background:var(--wood-edge);padding:0 .5rem;cursor:pointer;touch-action:none;display:flex;align-items:center;justify-content:space-between}
+.vol-slider .track{position:absolute;left:.5rem;right:.5rem;top:50%;height:6px;margin-top:-3px;border-radius:3px;background:#120C07;box-shadow:inset 0 1px 3px rgba(0,0,0,.8)}
+.vol-slider .fill{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:linear-gradient(90deg,#B5772A,#E5B52E)}
+.vol-slider .grip{position:absolute;top:50%;width:1rem;height:1.5rem;margin-top:-.75rem;border-radius:3px;background:linear-gradient(180deg,#F1E8D2,var(--plastic) 55%,#9E937E);border-bottom:2px solid var(--plastic-edge);box-shadow:0 2px 4px rgba(0,0,0,.5);transition:left .12s}
+.vol-slider .grip:after{content:"";position:absolute;top:4px;bottom:4px;left:50%;width:2px;margin-left:-1px;background:rgba(0,0,0,.35)}
+.vol-slider span{position:relative;z-index:2;font-family:'Pixelify Sans','Courier New',monospace;font-size:.6rem;color:var(--plate);opacity:.85}
+
+/* динамик */
+.grille{width:100%;max-width:11rem;height:3.2rem;border-radius:6px;
+  background:repeating-linear-gradient(180deg,var(--wood-edge) 0 3px,rgba(255,255,255,.04) 3px 7px);
+  box-shadow:inset 0 1px 4px rgba(0,0,0,.6)}
+
+/* питание внизу */
+.pwrow{display:flex;align-items:center;gap:.6rem}
+.pw{min-width:4.4rem;min-height:2.6rem;padding:0 .7rem;border-radius:7px;background:linear-gradient(180deg,#F1E8D2,var(--plastic) 55%,#A79B85);color:var(--plastic-txt);border-bottom:4px solid var(--plastic-edge);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+.pw:active{transform:translateY(3px);border-bottom-width:1px}
 .led{width:10px;height:10px;border-radius:50%;background:#E0543C;box-shadow:0 0 7px rgba(224,84,60,.8)}
 .led.off{background:#4A2018;box-shadow:none}
+
 /* ─── содержимое экрана ─── */
 .ch{position:relative;overflow-y:auto;padding:2.3rem 1.2rem 3rem;display:flex;flex-direction:column;justify-content:center;gap:.8rem}
 .js .ch{position:absolute;inset:0;display:none}
@@ -98,6 +104,10 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem)}
 .steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.5rem;font-size:clamp(.92rem,1.8vw,1.2rem);max-width:38rem}
 .steps li{display:flex;gap:.6rem;align-items:baseline}
 .steps b{font-family:'Pixelify Sans','Courier New',monospace;color:#5FD4D0;min-width:1.3rem}
+.row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.2rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 1.2rem;border-radius:10px;font-weight:700;font-size:1rem;color:#1E1A16;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.35)}
+.btn.r{background:#E0543C}.btn.g{background:#6CCB5F}.btn.y{background:#F2C230}
 .card{padding:0!important;gap:0!important;flex-direction:row!important;justify-content:stretch!important}
 .card .bar{flex:1}
 .card .box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(88%,30rem);padding:1rem 1.2rem;background:#0E1A38;border:3px solid #F3EBDD;text-align:center;display:flex;flex-direction:column;gap:.5rem}
@@ -132,10 +142,10 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem)}
   :root{--tvmax:min(100%,calc((100dvh - 5.5rem) * 1.82))}
   .page{padding:1.2rem}
   .tv{flex-direction:row;gap:.8rem;padding:.9rem;border-radius:20px 20px 8px 8px}
-  .ctrl-panel{flex-direction:column;justify-content:center;gap:.9rem;width:11.5rem;flex:none}
-  .vol-slider{width:2.2rem;height:9rem}
-  .side{flex-direction:row;gap:.9rem}
-  .grille{width:3.6rem;height:2.6rem}
+  .ctrl-panel{width:12rem;flex:none;gap:.7rem}
+  .vol-slider{height:2.3rem;max-width:12rem}
+
+  .grille{max-width:12rem;height:4rem}
   .bezel{padding:.8rem;border-radius:18px}
   .screen{border-radius:60px/36px}
   .ch{padding:3rem 2.6rem 3.4rem}
@@ -148,8 +158,9 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem)}
   .knob i{transform-origin:50% calc(2.45rem - 9px)}
   .knob u{display:none}
   .tick{width:2.3rem;height:1.7rem;margin:-.85rem 0 0 -1.15rem;font-size:.5rem}
-  .vol-slider{height:6.8rem;width:1.7rem}
-  .pw{width:2.4rem;min-height:2.4rem;font-size:.7rem}
+  .vol-slider{height:2rem;max-width:9.5rem}
+  .pw{min-width:4rem;min-height:2.4rem;font-size:.78rem}
+  .grille{height:2.6rem;max-width:9.5rem}
 }
 </style>
 </head>
@@ -245,13 +256,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem)}
     </div>
 
     <div class="ctrl-panel">
-
-      <div class="vol-slider" id="vslider" role="slider" aria-label="Громкость" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" tabindex="0">
-        <span>+</span>
-        <div class="track"><div class="fill" id="vfill" style="height:0%"></div></div>
-        <div class="grip" id="vgrip" style="bottom:.45rem"></div>
-        <span>−</span>
-      </div>
+      <div class="sp" style="flex:0.38" aria-hidden="true"></div>
 
       <div class="dial" id="dial">
         <div class="ring" aria-hidden="true"></div>
@@ -262,8 +267,18 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem)}
         </div>
       </div>
 
-      <div class="side">
-        <div class="grille" aria-hidden="true"></div>
+      <div class="vol-slider" id="vslider" role="slider" aria-label="Громкость" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" tabindex="0">
+        <span>−</span>
+        <div class="track"><div class="fill" id="vfill" style="width:0%"></div></div>
+        <div class="grip" id="vgrip" style="left:.5rem"></div>
+        <span>+</span>
+      </div>
+
+      <div class="grille" aria-hidden="true"></div>
+
+      <div class="sp" style="flex:0.62" aria-hidden="true"></div>
+
+      <div class="pwrow">
         <button class="pw" id="power" aria-label="Питание">ВКЛ</button>
         <span class="led" id="led" aria-hidden="true"></span>
       </div>
@@ -373,15 +388,15 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
   function setVol(v){
     vol=Math.max(0,Math.min(10,Math.round(v)));
     var pc=vol/10;
-    vfill.style.height=(pc*100)+'%';
-    vgrip.style.bottom='calc(.45rem + '+(pc*100)+'% - '+(pc*1)+'rem)';
+    vfill.style.width=(pc*100)+'%';
+    vgrip.style.left='calc(.5rem + (100% - 2rem) * '+pc+')';
     vs.setAttribute('aria-valuenow',vol);
     showVol();
   }
   function volFrom(e){
     if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(err){}}
-    var r=vs.getBoundingClientRect(),y=(e.touches?e.touches[0].clientY:e.clientY);
-    setVol((1-(y-r.top)/r.height)*10);
+    var r=vs.getBoundingClientRect(),x=(e.touches?e.touches[0].clientX:e.clientX);
+    setVol(((x-r.left-8)/(r.width-16))*10);
   }
   var vdrag=false;
   vs.addEventListener('touchstart',function(e){vdrag=true;volFrom(e);},{passive:true});
@@ -391,8 +406,8 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
   document.addEventListener('mousemove',function(e){if(vdrag)volFrom(e);});
   document.addEventListener('mouseup',function(){if(vdrag){vdrag=false;hiss();}});
   vs.addEventListener('keydown',function(e){
-    if(e.key==='ArrowUp'){e.preventDefault();setVol(vol+1);hiss();}
-    else if(e.key==='ArrowDown'){e.preventDefault();setVol(vol-1);}
+    if(e.key==='ArrowRight'||e.key==='ArrowUp'){e.preventDefault();setVol(vol+1);hiss();}
+    else if(e.key==='ArrowLeft'||e.key==='ArrowDown'){e.preventDefault();setVol(vol-1);}
   });
 
   function almaty(){
