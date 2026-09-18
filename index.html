@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Golos+Text:wght@400;500;600;700&family=Pixelify+Sans:wght@500;700&display=swap">
 <style>
 :root{
+  --tvmax:min(100%,calc((100dvh - 15rem) * 1.33));
   --room:#F3EBDD; --ink:#1E1A16; --mute:#5C5348;
   --wood:#3A2E23; --wood-edge:#241B14; --bezel:#120F0C; --plate:#B3A896;
   --remote:#2A241E; --key:#3A332B; --key-text:#F3EBDD;
@@ -38,12 +39,12 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
 
 /* телевизор */
 /* корпус */
-.set{display:flex;flex-direction:column;min-height:0}
-.ant{display:block;margin:0 auto -4px;width:clamp(110px,26vw,190px)}
-.tv{display:flex;gap:.55rem;padding:.6rem;border-radius:16px 16px 8px 8px;background:var(--wood);border:3px solid var(--wood-edge);min-height:0}
-.tube{flex:1;min-width:0;display:flex;flex-direction:column;gap:.35rem;min-height:0}
-.bezel{flex:1;min-height:0;padding:.45rem;border-radius:12px;background:var(--bezel);display:flex}
-.screen{position:relative;flex:1;min-height:19rem;border-radius:34px/22px;overflow:hidden;background:#0E1A38;color:#F3EBDD;touch-action:none;box-shadow:inset 0 0 50px rgba(0,0,0,.6)}
+.set{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:0}
+.ant{display:block;width:clamp(110px,26vw,190px);margin-bottom:-4px}
+.tv{display:flex;gap:.55rem;padding:.6rem;border-radius:16px 16px 8px 8px;background:var(--wood);border:3px solid var(--wood-edge);width:100%;max-width:var(--tvmax)}
+.tube{flex:1;min-width:0;display:flex;flex-direction:column;gap:.35rem}
+.bezel{width:100%;aspect-ratio:4/3;padding:.45rem;border-radius:12px;background:var(--bezel)}
+.screen{position:relative;width:100%;height:100%;border-radius:34px/22px;overflow:hidden;background:#0E1A38;color:#F3EBDD;touch-action:none;box-shadow:inset 0 0 50px rgba(0,0,0,.6)}
 .plate{display:flex;align-items:center;justify-content:space-between;padding:0 .3rem;color:var(--plate);font-size:.72rem;letter-spacing:.06em}
 .plate .display{font-weight:700;letter-spacing:-.3px}
 .panel{width:3rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;padding-top:.2rem}
@@ -53,10 +54,10 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
 .grille{width:2.1rem;display:flex;flex-direction:column;gap:4px;padding-top:.2rem}
 .grille i{height:3px;background:var(--wood-edge)}
 .led{width:9px;height:9px;border-radius:50%;background:#E0543C;margin-top:.2rem;flex:none}
-.legs{display:flex;justify-content:space-between;padding:0 3rem}
+.legs{display:flex;justify-content:space-between;width:100%;max-width:var(--tvmax);padding:0 3rem}
 .legs i{width:14px;height:15px;background:var(--wood-edge);border-radius:0 0 4px 4px}
 
-.ch{position:relative;padding:2.6rem 1.2rem 3.2rem;display:flex;flex-direction:column;justify-content:center;gap:.9rem}
+.ch{position:relative;overflow-y:auto;padding:2.4rem 1.1rem 3rem;display:flex;flex-direction:column;justify-content:center;gap:.9rem}
 .js .ch{position:absolute;inset:0;display:none}
 .js .ch.on{display:flex}
 h1,h2{margin:0;font-family:'Unbounded','Trebuchet MS',sans-serif;font-weight:800;letter-spacing:-.03em;line-height:1.08}
@@ -118,9 +119,10 @@ h2{font-size:clamp(1.35rem,3.6vw,2.4rem);color:#F2C230}
 
 @media (min-width:900px){
   .page{grid-template-rows:none;grid-template-columns:minmax(0,1fr) 19rem;height:100vh;height:100dvh;padding:1.5rem;gap:1.5rem;align-items:stretch}
+  .page{--tvmax:min(100%,calc((100dvh - 12rem) * 1.33))}
   .tv{padding:1.1rem;border-radius:24px 24px 10px 10px;gap:1rem}
   .bezel{padding:.8rem;border-radius:18px}
-  .screen{min-height:0;border-radius:60px/34px}
+  .screen{border-radius:60px/34px}
   .panel{width:4.2rem;gap:.8rem}
   .knob{width:3rem;height:3rem}
   .knob i{height:1rem;transform-origin:50% calc(1.5rem - 2px)}
