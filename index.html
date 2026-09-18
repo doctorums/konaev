@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>konaev.tv — сайт-телевизор, прототип</title>
+<script>document.documentElement.className='js';</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Golos+Text:wght@400;500;600;700&family=Pixelify+Sans:wght@500;700&display=swap">
+<style>
+:root{
+  --room:#F3EBDD; --ink:#1E1A16; --mute:#5C5348;
+  --tv:#1E1A16; --tv-edge:#1E1A16; --remote:#2A241E; --key:#3A332B; --key-text:#F3EBDD;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --room:#15110E; --ink:#F3EBDD; --mute:#B3A896;
+    --tv:#2A241E; --tv-edge:#4A4037; --remote:#2A241E; --key:#443A30; --key-text:#F3EBDD;
+  }
+}
+:root[data-theme="dark"]{
+  --room:#15110E; --ink:#F3EBDD; --mute:#B3A896;
+  --tv:#2A241E; --tv-edge:#4A4037; --remote:#2A241E; --key:#443A30; --key-text:#F3EBDD;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--room);color:var(--ink);font-family:'Golos Text','Segoe UI',Tahoma,sans-serif;line-height:1.4}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0}
+a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2px}
+.px{font-family:'Pixelify Sans','Courier New',monospace}
+.display{font-family:'Unbounded','Trebuchet MS',sans-serif}
+
+.page{min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:1fr auto;gap:.75rem;padding:.75rem;max-width:1400px;margin:0 auto}
+
+/* телевизор */
+.tv{display:flex;flex-direction:column;gap:.5rem;padding:.7rem .7rem .5rem;border-radius:22px;background:var(--tv);border:2px solid var(--tv-edge);min-height:0}
+.screen{position:relative;flex:1;min-height:24rem;border-radius:16px;overflow:hidden;background:#0E1A38;color:#F3EBDD;touch-action:none;box-shadow:inset 0 0 60px rgba(0,0,0,.55)}
+.plate{display:flex;align-items:center;justify-content:space-between;padding:0 .5rem;color:#B3A896;font-size:.8rem}
+.plate .display{font-weight:700;color:#F3EBDD;letter-spacing:-.3px}
+.led{display:inline-block;width:8px;height:8px;border-radius:50%;background:#E0543C;margin-right:.4rem}
+
+.ch{position:relative;padding:2.6rem 1.2rem 3.2rem;display:flex;flex-direction:column;justify-content:center;gap:.9rem}
+.js .ch{position:absolute;inset:0;display:none}
+.js .ch.on{display:flex}
+h1,h2{margin:0;font-family:'Unbounded','Trebuchet MS',sans-serif;font-weight:800;letter-spacing:-.03em;line-height:1.08}
+h1{font-size:clamp(1.8rem,5.2vw,3.6rem);color:#F2C230}
+h2{font-size:clamp(1.35rem,3.6vw,2.4rem);color:#F2C230}
+.ch p{margin:0;font-size:clamp(1rem,2vw,1.3rem);max-width:38rem}
+.cy{color:#5FD4D0}
+.small{font-size:.9rem!important;color:#B9C3DD}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.55rem;font-size:clamp(1rem,2vw,1.25rem);max-width:38rem}
+.steps li{display:flex;gap:.7rem;align-items:baseline}
+.steps b{font-family:'Pixelify Sans','Courier New',monospace;color:#5FD4D0;min-width:1.4rem}
+.row{display:flex;flex-wrap:wrap;gap:.6rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 1.3rem;border-radius:10px;font-weight:700;font-size:1.05rem}
+.btn.r{background:#E0543C;color:#1E1A16}
+.btn.g{background:#6CCB5F;color:#1E1A16}
+.btn.y{background:#F2C230;color:#1E1A16}
+
+/* настроечная таблица */
+.card{padding:0!important;gap:0!important;flex-direction:row!important;justify-content:stretch!important}
+.card .bar{flex:1}
+.card .box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(86%,30rem);padding:1rem 1.2rem;background:#0E1A38;border:3px solid #F3EBDD;text-align:center;display:flex;flex-direction:column;gap:.5rem}
+
+/* экранные слои */
+#noise{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;display:none;z-index:5}
+.scan{position:absolute;inset:0;pointer-events:none;z-index:6;background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.16) 3px)}
+.osd{position:absolute;top:.7rem;right:.9rem;z-index:7;font-size:1.25rem;font-weight:700;color:#6CCB5F;text-shadow:0 0 6px rgba(108,203,95,.6);transition:opacity .4s}
+.osd.hide{opacity:0}
+.clock{position:absolute;top:.7rem;left:.9rem;z-index:7;font-size:1.1rem;color:#F3EBDD;opacity:.85}
+.vol{position:absolute;left:50%;bottom:3.4rem;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:.5rem;color:#6CCB5F;font-size:1rem;transition:opacity .4s}
+.vol.hide{opacity:0}
+.vol i{display:inline-block;width:8px;height:16px;background:#1d3a1a;margin-right:3px}
+.vol i.on{background:#6CCB5F}
+.crawl{position:absolute;left:0;right:0;bottom:0;z-index:4;height:2.3rem;background:#F2C230;color:#1E1A16;overflow:hidden;display:flex;align-items:center;font-weight:600;white-space:nowrap}
+.crawl-in{display:inline-block;padding-left:100%;animation:crawl 46s linear infinite}
+.crawl-in span{margin-right:3rem}
+@keyframes crawl{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+.off{position:absolute;inset:0;z-index:8;background:#050505;display:none;align-items:center;justify-content:center;text-align:center;padding:1.5rem;color:#8d8577;font-size:1rem}
+.screen.is-off .off{display:flex;animation:shut .35s ease-out}
+@keyframes shut{from{clip-path:inset(0 0 0 0);background:#fff}60%{clip-path:inset(49% 0 49% 0);background:#fff}to{clip-path:inset(0 0 0 0);background:#050505}}
+@media (prefers-reduced-motion: reduce){
+  .crawl-in{animation:none;padding-left:1rem}
+  .screen.is-off .off{animation:none}
+}
+
+/* пульт */
+.remote{display:flex;flex-direction:column;gap:.5rem;padding:.7rem;border-radius:18px;background:var(--remote);color:var(--key-text)}
+.keys{display:grid;gap:.4rem}
+.colors{grid-template-columns:repeat(4,minmax(0,1fr))}
+.nums{grid-template-columns:repeat(5,minmax(0,1fr))}
+.ctrl{grid-template-columns:repeat(5,minmax(0,1fr))}
+.key{min-height:48px;border-radius:10px;background:var(--key);color:var(--key-text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:.2rem;font-weight:700;font-size:.95rem;text-align:center}
+.key small{font-weight:500;font-size:.62rem;opacity:.8;line-height:1.1}
+.key:active{transform:translateY(1px);filter:brightness(1.25)}
+.key.cur{outline:2px solid #F2C230}
+.k-r{background:#E0543C;color:#1E1A16}.k-g{background:#6CCB5F;color:#1E1A16}.k-y{background:#F2C230;color:#1E1A16}.k-b{background:#6FA4F2;color:#1E1A16}
+.k-r,.k-g,.k-y,.k-b{font-size:.8rem}
+.hint{margin:0;font-size:.75rem;opacity:.7;text-align:center}
+#err{display:none;position:fixed;left:0;right:0;bottom:0;z-index:99;background:#B00020;color:#fff;font:14px monospace;padding:.5rem;white-space:pre-wrap}
+
+@media (min-width:900px){
+  .page{grid-template-rows:none;grid-template-columns:minmax(0,1fr) 19rem;height:100vh;height:100dvh;padding:1.5rem;gap:1.5rem;align-items:stretch}
+  .tv{padding:1.2rem 1.2rem .8rem;border-radius:32px}
+  .screen{border-radius:22px}
+  .ch{padding:3.2rem 3rem 3.6rem}
+  .remote{justify-content:center;gap:.9rem;padding:1.2rem;border-radius:26px}
+  .nums{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ctrl{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ctrl .pw{grid-column:1 / -1}
+  .colors{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .key{min-height:58px;font-size:1.05rem}
+  .key small{font-size:.7rem}
+  .k-r,.k-g,.k-y,.k-b{font-size:.95rem}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="tv">
+    <div class="screen" id="screen" aria-live="polite">
+
+      <section class="ch card" data-n="00" data-name="НОЧЬ">
+        <div class="bar" style="background:#E8E2D0"></div><div class="bar" style="background:#E0A526"></div><div class="bar" style="background:#3FA7A0"></div><div class="bar" style="background:#5B9A4A"></div><div class="bar" style="background:#B5477A"></div><div class="bar" style="background:#C8341E"></div><div class="bar" style="background:#2E4A8C"></div>
+        <div class="box">
+          <h2 id="night-h">Настроечная таблица</h2>
+          <p id="night-p" style="font-size:1rem">С полуночи до шести утра сайт показывает её сам и советует спать. Заявки принимаем и ночью, перезвоним утром.</p>
+        </div>
+      </section>
+
+      <section class="ch" data-n="01" data-name="ГЛАВНЫЙ">
+        <h1>Досмотри<br>хоть что-нибудь<br>до конца.</h1>
+        <p>Кабельное телевидение в Конаеве. 90 каналов, ноль обновлений. Не зависает, не просит пароль, не предлагает подписку.</p>
+        <p class="cy">Листать здесь нечего. Переключайте каналы пультом.</p>
+      </section>
+
+      <section class="ch" data-n="02" data-name="ПОДКЛЮЧИТЬ">
+        <h2>Подключение без приложений</h2>
+        <ol class="steps">
+          <li><b>1</b><span>Напишите в WhatsApp или позвоните. Адрес и удобное время, больше ничего не нужно.</span></li>
+          <li><b>2</b><span>Мастер приходит: [СРОК]. Работаем по всему Конаеву.</span></li>
+          <li><b>3</b><span>Включаете телевизор. Он показывает. Всё.</span></li>
+        </ol>
+        <div class="row">
+          <a class="btn g ph" href="#" data-msg="WHATSAPP: НОМЕР НЕ ЗАДАН">Написать в WhatsApp</a>
+          <a class="btn y ph" href="#" data-msg="ТЕЛЕФОН: НОМЕР НЕ ЗАДАН">Позвонить [ТЕЛЕФОН]</a>
+        </div>
+        <p class="small">Условия расскажем по телефону или в WhatsApp, это минута.</p>
+      </section>
+
+      <section class="ch" data-n="03" data-name="РОДИТЕЛЯМ">
+        <h2>Подключаете родителям?</h2>
+        <p>Им не нужно ничего устанавливать, обновлять и вспоминать. Одна кнопка на пульте, как было всегда.</p>
+        <p>Оплачивать можете вы, из любого города, через Kaspi. Мама больше не позвонит с вопросом, куда пропал ютуб.</p>
+        <div class="row">
+          <a class="btn g ph" href="#" data-msg="WHATSAPP: НОМЕР НЕ ЗАДАН">Подключить родителям</a>
+        </div>
+      </section>
+
+      <section class="ch" data-n="04" data-name="РЕМОНТ">
+        <h2>Не работает телевизор?</h2>
+        <ol class="steps">
+          <li><b>1</b><span>Он включён в розетку? Мы не шутим. Хотя шутим. Но проверьте.</span></li>
+          <li><b>2</b><span>Кабель плотно сидит в гнезде антенны?</span></li>
+          <li><b>3</b><span>Не показывает один канал или все сразу?</span></li>
+        </ol>
+        <div class="row">
+          <a class="btn r ph" href="#" data-msg="ЗАЯВКА: ФОРМА ЕЩЁ НЕ ПОДКЛЮЧЕНА">Вызвать мастера</a>
+          <a class="btn g ph" href="#" data-msg="WHATSAPP: НОМЕР НЕ ЗАДАН">Написать в WhatsApp</a>
+        </div>
+      </section>
+
+      <section class="ch" data-n="05" data-name="ВАЖНОЕ">
+        <h2>Предупреждение</h2>
+        <p>Три часа шортсов подряд сушат мозг. Это не медицинский факт. Это жизненный опыт.</p>
+        <p class="cy px" style="font-size:1.2rem">Вы на этом сайте уже <span id="onsite">0:00</span>.</p>
+        <p class="cy px" style="font-size:1.2rem" id="swipes">Попыток листать: 0. Уважаем.</p>
+        <p class="small">Да, вы, скорее всего, пришли сюда из Инстаграма. Мы оценили иронию.</p>
+      </section>
+
+      <canvas id="noise" width="160" height="100"></canvas>
+      <div class="scan"></div>
+      <div class="clock px" id="clock"></div>
+      <div class="osd px" id="osd"></div>
+      <div class="vol px hide" id="vol"><span>ЗВУК</span><span id="volbars"></span></div>
+      <div class="crawl"><div class="crawl-in">
+        <span>Не просит пароль. Не предлагает подписку.</span>
+        <span>У фильма есть сюжет. И конец.</span>
+        <span>Алгоритм не знает, чего вы хотите. Зато есть пульт.</span>
+        <span>Листать нечего. Придётся смотреть.</span>
+        <span>Обновление не требуется. Никогда.</span>
+      </div></div>
+      <div class="off">Тоже вариант. Тогда хотя бы прогуляйтесь.<br>Чтобы включить, нажмите кнопку питания ещё раз.</div>
+    </div>
+    <div class="plate"><span class="display">konaev.tv</span><span><i class="led"></i>в эфире</span></div>
+  </div>
+
+  <div class="remote">
+    <div class="keys colors">
+      <button class="key k-r" data-go="2">Подключить</button>
+      <button class="key k-g" data-msg="WHATSAPP: НОМЕР НЕ ЗАДАН">WhatsApp</button>
+      <button class="key k-y" data-msg="ТЕЛЕФОН: НОМЕР НЕ ЗАДАН">Позвонить</button>
+      <button class="key k-b" data-msg="ҚАЗ: ВЕРСИЮ ПИШЕТ НОСИТЕЛЬ">ҚАЗ</button>
+    </div>
+    <div class="keys nums">
+      <button class="key" data-go="1">1<small>главный</small></button>
+      <button class="key" data-go="2">2<small>подключить</small></button>
+      <button class="key" data-go="3">3<small>родителям</small></button>
+      <button class="key" data-go="4">4<small>ремонт</small></button>
+      <button class="key" data-go="5">5<small>важное</small></button>
+    </div>
+    <div class="keys ctrl">
+      <button class="key pw" id="power" aria-label="Питание">ВКЛ<small>питание</small></button>
+      <button class="key" id="vdn" aria-label="Тише">−<small>звук</small></button>
+      <button class="key" id="vup" aria-label="Громче">+<small>звук</small></button>
+      <button class="key" id="cdn" aria-label="Предыдущий канал">‹<small>канал</small></button>
+      <button class="key" id="cup" aria-label="Следующий канал">›<small>канал</small></button>
+    </div>
+    <p class="hint">Свайп по экрану тоже переключает каналы. Рефлекс не пропадёт зря.</p>
+  </div>
+</div>
+<div id="err"></div>
+
+<script>
+window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.display='block';e.textContent='Ошибка: '+m+' (строка '+l+')';};
+(function(){
+  var screen=document.getElementById('screen');
+  var chans=[].slice.call(document.querySelectorAll('.ch'));
+  var osd=document.getElementById('osd'),volEl=document.getElementById('vol'),volBars=document.getElementById('volbars');
+  var noise=document.getElementById('noise'),ctx=noise.getContext('2d');
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cur=1,busy=false,swipes=0,vol=0,ac=null,osdT=null,volT=null,start=Date.now();
+
+  function almaty(){
+    try{return new Intl.DateTimeFormat('ru-RU',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Asia/Almaty'}).format(new Date());}
+    catch(e){var d=new Date();return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
+  }
+  function showOsd(t){osd.textContent=t;osd.className='osd px';clearTimeout(osdT);osdT=setTimeout(function(){osd.className='osd px hide';},2600);}
+  function render(){
+    chans.forEach(function(c,i){c.className=c.className.replace(/\s?on\b/,'')+(i===cur?' on':'');});
+    [].forEach.call(document.querySelectorAll('.nums .key'),function(k){k.className='key'+(+k.getAttribute('data-go')===cur?' cur':'');});
+    var c=chans[cur];showOsd(c.getAttribute('data-n')+' '+c.getAttribute('data-name'));
+  }
+  function hiss(){
+    if(!ac||vol===0)return;
+    try{var n=Math.floor(ac.sampleRate*0.28),b=ac.createBuffer(1,n,ac.sampleRate),d=b.getChannelData(0);
+      for(var i=0;i<n;i++)d[i]=Math.random()*2-1;
+      var s=ac.createBufferSource(),g=ac.createGain();g.gain.value=vol/10*0.12;s.buffer=b;s.connect(g);g.connect(ac.destination);s.start();}catch(e){}
+  }
+  function go(n){
+    if(busy)return;
+    if(screen.className.indexOf('is-off')>=0)return;
+    n=(n+chans.length)%chans.length;
+    hiss();
+    if(reduce){cur=n;render();return;}
+    busy=true;noise.style.display='block';
+    var t0=Date.now(),sw=false;
+    (function frame(){
+      var img=ctx.createImageData(160,100),d=img.data;
+      for(var i=0;i<d.length;i+=4){var v=Math.random()*255|0;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;}
+      ctx.putImageData(img,0,0);
+      var dt=Date.now()-t0;
+      if(!sw&&dt>120){sw=true;cur=n;render();}
+      if(dt<330){requestAnimationFrame(frame);}else{noise.style.display='none';busy=false;}
+    })();
+  }
+  function showVol(){
+    var h='';for(var i=1;i<=10;i++)h+='<i'+(i<=vol?' class="on"':'')+'></i>';
+    volBars.innerHTML=h;volEl.className='vol px';clearTimeout(volT);volT=setTimeout(function(){volEl.className='vol px hide';},1800);
+  }
+
+  document.getElementById('cup').onclick=function(){go(cur+1);};
+  document.getElementById('cdn').onclick=function(){go(cur-1);};
+  document.getElementById('vup').onclick=function(){
+    if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+    vol=Math.min(10,vol+1);showVol();hiss();
+  };
+  document.getElementById('vdn').onclick=function(){vol=Math.max(0,vol-1);showVol();};
+  document.getElementById('power').onclick=function(){
+    var off=screen.className.indexOf('is-off')>=0;
+    screen.className=off?'screen':'screen is-off';
+    if(off)render();
+  };
+  [].forEach.call(document.querySelectorAll('[data-go]'),function(k){k.onclick=function(){go(+k.getAttribute('data-go'));};});
+  [].forEach.call(document.querySelectorAll('[data-msg]'),function(k){k.addEventListener('click',function(e){e.preventDefault();showOsd(k.getAttribute('data-msg'));});});
+
+  var ty=0,tx=0;
+  screen.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+  screen.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+    if(Math.max(Math.abs(dx),Math.abs(dy))<40)return;
+    swipes++;updSwipes();
+    var fwd=Math.abs(dy)>Math.abs(dx)?dy<0:dx<0;go(cur+(fwd?1:-1));
+  },{passive:true});
+  var wt=0;
+  screen.addEventListener('wheel',function(e){e.preventDefault();var now=Date.now();if(now-wt<700)return;wt=now;swipes++;updSwipes();go(cur+(e.deltaY>0?1:-1));},{passive:false});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')go(cur+1);
+    else if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(cur-1);
+    else if(/^[0-5]$/.test(e.key))go(+e.key);
+  });
+
+  function updSwipes(){
+    var t='Попыток листать: '+swipes+'. ';
+    t+=swipes===0?'Уважаем.':swipes<5?'Рефлекс, мы понимаем.':swipes<15?'Это уже привычка.':'Вам точно нужен телевизор.';
+    document.getElementById('swipes').textContent=t;
+  }
+  function tick(){
+    document.getElementById('clock').textContent=almaty();
+    var s=Math.floor((Date.now()-start)/1000);
+    document.getElementById('onsite').textContent=Math.floor(s/60)+':'+('0'+s%60).slice(-2);
+  }
+  setInterval(tick,1000);tick();
+
+  var hr=parseInt(almaty().slice(0,2),10);
+  if(hr>=0&&hr<6){
+    cur=0;
+    document.getElementById('night-h').textContent='Эфир окончен';
+    document.getElementById('night-p').textContent='В Конаеве ночь. Идите спать. Если очень нужно, переключите канал: заявку примем и ночью, перезвоним утром.';
+  }
+  render();
+})();
+</script>
+</body>
+</html>
