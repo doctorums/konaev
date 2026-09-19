@@ -135,11 +135,12 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 .vol.hide{opacity:0}
 .vol i{display:inline-block;width:7px;height:15px;background:#1d3a1a;margin-right:3px}
 .vol i.on{background:#6CCB5F}
-.crawl{position:absolute;left:0;right:0;bottom:0;z-index:4;height:clamp(1.5rem,7cqh,3.4rem);background:#F2C230;color:#1E1A16;overflow:hidden;display:flex;align-items:center;font-weight:600;font-size:clamp(.62rem,4cqh,1.5rem);white-space:nowrap}
-.crawl-in{display:inline-block;padding-left:18%;animation:crawl 52s linear infinite}
-.crawl-in span{margin-right:3rem}
+.crawl{position:absolute;left:0;right:0;bottom:0;z-index:4;overflow:hidden;height:clamp(1.5rem,7cqh,3.4rem);background:#F2C230;color:#1E1A16;overflow:hidden;display:flex;align-items:center;font-weight:600;font-size:clamp(.62rem,4cqh,1.5rem);white-space:nowrap}
+.crawl-in{display:flex;flex:none;align-items:center;white-space:nowrap;will-change:transform;
+  animation:crawl 52s linear infinite;animation-play-state:running}
+.crawl-in span{padding-right:3rem;flex:none}
 .crawl-in .display{font-weight:700;letter-spacing:.04em}
-@keyframes crawl{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@keyframes crawl{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
 .off{position:absolute;inset:0;z-index:8;background:#050505;display:none;align-items:center;justify-content:center;text-align:center;padding:1.4rem;color:#8d8577;font-size:.95rem}
 .screen.is-off .off{display:flex;animation:shut .35s ease-out}
 @keyframes shut{from{clip-path:inset(0 0 0 0);background:#fff}60%{clip-path:inset(49% 0 49% 0);background:#fff}to{clip-path:inset(0 0 0 0);background:#050505}}
@@ -354,7 +355,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
           <div class="clock px" id="clock"></div>
           <div class="osd px" id="osd"></div>
           <div class="vol px hide" id="vol"><span>ЗВУК</span><span id="volbars"></span></div>
-          <div class="crawl"><div class="crawl-in">
+          <div class="crawl"><div class="crawl-in" id="crawl">
             <span class="display">konaev.tv · КОНАЕВ · КАБЕЛЬНОЕ</span>
             <span>Не просит пароль. Не предлагает подписку.</span>
             <span>У фильма есть сюжет. И конец.</span>
@@ -362,6 +363,11 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
             <span>Листать нечего. Придётся смотреть.</span>
             <span>Обновление не требуется. Никогда.</span>
             <span class="display">konaev.tv · КОНАЕВ · КАБЕЛЬНОЕ</span>
+            <span>Не просит пароль. Не предлагает подписку.</span>
+            <span>У фильма есть сюжет. И конец.</span>
+            <span>Алгоритм не знает, чего вы хотите. Зато есть пульт.</span>
+            <span>Листать нечего. Придётся смотреть.</span>
+            <span>Обновление не требуется. Никогда.</span>
           </div></div>
           <div class="off">Тоже вариант. Тогда хотя бы прогуляйтесь.<br>Чтобы включить, нажмите кнопку питания ещё раз.</div>
         </div>
@@ -729,6 +735,23 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
       place();
     }
   }
+  (function crawlFallback(){
+    var el=document.getElementById('crawl');
+    if(!el||reduce)return;
+    setTimeout(function(){
+      var a=el.getBoundingClientRect().left;
+      setTimeout(function(){
+        if(Math.abs(el.getBoundingClientRect().left-a)>0.5)return; /* CSS-анимация работает */
+        el.style.animation='none';
+        var x=0,w=el.scrollWidth/2||1,last=0;
+        (function step(t){
+          if(last){x-=(t-last)*w/52000;if(-x>=w)x+=w;el.style.transform='translate3d('+x+'px,0,0)';}
+          last=t;requestAnimationFrame(step);
+        })(0);
+      },900);
+    },600);
+  })();
+
   window.addEventListener('resize',fit);
   window.addEventListener('orientationchange',function(){setTimeout(fit,120);});
   fit();setTimeout(fit,60);setTimeout(fit,400);
