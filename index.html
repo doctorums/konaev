@@ -428,17 +428,18 @@ window.onerror=function(m,s,l){var e=document.getElementById('err');e.style.disp
       el.style.top='calc(50% + '+Math.sin(a)*rm+'px)';
       el.style.transform='rotate('+ang(i)+'deg)';
     });
+    var rOut=R-15;
     [].forEach.call(dialEl.querySelectorAll('.tick'),function(el,i){
       var A=ang(i),a=(A-90)*Math.PI/180,left=A<0;
-      el.style.left='calc(50% + '+Math.cos(a)*rl+'px)';
-      el.style.top='calc(50% + '+Math.sin(a)*rl+'px)';
-      el.style.transform='translate('+(left?'-100%':'0')+',-50%) rotate('+(left?A+90:A-90)+'deg)';
-      el.style.transformOrigin=left?'100% 50%':'0% 50%';
+      el.style.left='calc(50% + '+Math.cos(a)*rOut+'px)';
+      el.style.top='calc(50% + '+Math.sin(a)*rOut+'px)';
+      el.style.transform='translate('+(left?'0':'-100%')+',-50%) rotate('+(left?A+90:A-90)+'deg)';
+      el.style.transformOrigin=left?'0% 50%':'100% 50%';
     });
-    fitLabels(R,rl);
+    fitLabels(rOut,rl);
   }
-  function fitLabels(R,rl){
-    var room=R-rl-4,base=Math.max(8.6,Math.min(15,R*0.125)),
+  function fitLabels(rOut,rl){
+    var room=rOut-rl-4,base=Math.max(8.6,Math.min(16,rOut*0.15)),
         ticks=dialEl.querySelectorAll('.tick'),widest=0;
     [].forEach.call(ticks,function(el){el.style.fontSize=base+'px';});
     [].forEach.call(ticks,function(el){widest=Math.max(widest,el.scrollWidth);});
