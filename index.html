@@ -48,7 +48,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
 }
 .tube{flex:0 0 auto;width:100%;min-width:0;display:flex;flex-direction:column;gap:.3rem}
 .bezel{width:100%;aspect-ratio:4/3;max-height:calc(100dvh - 13.5rem);padding:.5rem;border-radius:14px;background:var(--bezel);box-shadow:inset 0 2px 6px rgba(255,255,255,.08)}
-.screen{position:relative;container-type:size;width:100%;height:100%;border-radius:36px/24px;overflow:hidden;background:#0E1A38;color:#F3EBDD;touch-action:none;box-shadow:inset 0 0 55px rgba(0,0,0,.65)}
+.screen{position:relative;width:100%;height:100%;border-radius:36px/24px;overflow:hidden;background:#0E1A38;color:#F3EBDD;touch-action:none;box-shadow:inset 0 0 55px rgba(0,0,0,.65)}
 
 /* ─── панель управления в корпусе ─── */
 .ctrl-panel{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:.7rem;padding:.25rem .7rem}
@@ -105,6 +105,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
 .led.off{background:#4A2018;box-shadow:none}
 
 /* ─── содержимое экрана ─── */
+.stage{position:absolute;inset:0;container-type:size;overflow:hidden}
 .ch{position:relative;overflow-y:auto;overscroll-behavior:contain;gap:max(.3rem,2cqh);padding:2rem 1rem 3.2rem;padding:max(1.5rem,6cqh) max(.8rem,3.4cqw) max(2.7rem,9.5cqh);display:flex;flex-direction:column;justify-content:center;gap:.8rem}
 .js .ch{position:absolute;inset:0;display:none}
 .js .ch.on{display:flex}
@@ -128,14 +129,14 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 .card .box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(88%,30rem);padding:1rem 1.2rem;background:#0E1A38;border:3px solid #F3EBDD;text-align:center;display:flex;flex-direction:column;gap:.5rem}
 #noise{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;display:none;z-index:5}
 .scan{position:absolute;inset:0;pointer-events:none;z-index:6;background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.16) 3px)}
-.osd{position:absolute;top:.5rem;right:.8rem;z-index:7;font-size:clamp(.7rem,4.6cqh,1.9rem);font-weight:700;color:#6CCB5F;text-shadow:0 0 6px rgba(108,203,95,.6);transition:opacity .4s}
+.osd{position:absolute;top:.5rem;right:.8rem;z-index:7;font-size:clamp(.7rem,2.7vmin,1.9rem);font-weight:700;color:#6CCB5F;text-shadow:0 0 6px rgba(108,203,95,.6);transition:opacity .4s}
 .osd.hide{opacity:0}
 .clock{position:absolute;top:.5rem;left:.8rem;z-index:7;font-size:clamp(.66rem,4cqh,1.7rem);color:#F3EBDD;opacity:.85}
 .vol{position:absolute;left:50%;bottom:3rem;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:.5rem;color:#6CCB5F;font-size:.95rem;transition:opacity .4s}
 .vol.hide{opacity:0}
 .vol i{display:inline-block;width:7px;height:15px;background:#1d3a1a;margin-right:3px}
 .vol i.on{background:#6CCB5F}
-.crawl{position:absolute;left:0;right:0;bottom:0;z-index:4;overflow:hidden;height:clamp(1.5rem,7cqh,3.4rem);background:#F2C230;color:#1E1A16;overflow:hidden;display:flex;align-items:center;font-weight:600;font-size:clamp(.62rem,4cqh,1.5rem);white-space:nowrap}
+.crawl{position:absolute;left:0;right:0;bottom:0;z-index:4;overflow:hidden;height:clamp(1.5rem,4.4vmin,3.4rem);background:#F2C230;color:#1E1A16;overflow:hidden;display:flex;align-items:center;font-weight:600;font-size:clamp(.62rem,2.3vmin,1.5rem);white-space:nowrap}
 .crawl-in{display:flex;flex:none;align-items:center;white-space:nowrap;will-change:transform;
   animation:crawl 52s linear infinite;animation-play-state:running}
 .crawl-in span{padding-right:3rem;flex:none}
@@ -292,6 +293,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
       <div class="bezel">
         <div class="screen" id="screen" aria-live="polite">
 
+          <div class="stage">
       <section class="ch card" data-n="00" data-name="НОЧЬ">
         <div class="bar" style="background:#E8E2D0"></div><div class="bar" style="background:#E0A526"></div><div class="bar" style="background:#3FA7A0"></div><div class="bar" style="background:#5B9A4A"></div><div class="bar" style="background:#B5477A"></div><div class="bar" style="background:#C8341E"></div><div class="bar" style="background:#2E4A8C"></div>
         <div class="box">
@@ -349,6 +351,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
         <p class="cy px" style="font-size:clamp(.72rem,4cqh,1.2rem)" id="swipes">Попыток листать: 0. Уважаем.</p>
         <p class="small">Да, вы, скорее всего, пришли сюда из Инстаграма. Мы оценили иронию.</p>
       </section>
+          </div>
 
           <canvas id="noise" width="160" height="100"></canvas>
           <div class="scan"></div>
