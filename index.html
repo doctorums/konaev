@@ -745,17 +745,17 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
 .page{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;padding:.5rem .5rem 1rem}
 
 /* ─── корпус ─── */
-.ant{display:block;width:clamp(120px,30vw,210px);margin-bottom:-6px}
+.ant{display:block;width:clamp(120px,30vw,210px);margin-bottom:-6px;overflow:hidden}
 .tv{
   width:100%;max-width:100%;
   display:flex;flex-direction:column;gap:.6rem;
-  padding:.7rem;border-radius:14px 14px 6px 6px;
+  padding:.7rem;border-radius:20px 20px 10px 10px;
   background:linear-gradient(160deg,var(--wood-hi),var(--wood) 42%,var(--wood-edge));
   border:3px solid var(--wood-edge);
   box-shadow:0 14px 30px rgba(0,0,0,.35)
 }
 .tube{flex:0 0 auto;width:100%;min-width:0;display:flex;flex-direction:column;gap:.3rem}
-.bezel{width:100%;aspect-ratio:4/3;max-height:calc(100dvh - 13.5rem);padding:.5rem;border-radius:14px;background:var(--bezel);box-shadow:inset 0 2px 6px rgba(255,255,255,.08)}
+.bezel{width:100%;aspect-ratio:4/3;max-height:calc(100dvh - 13.5rem);padding:.5rem;border-radius:18px;background:var(--bezel);box-shadow:inset 0 2px 6px rgba(255,255,255,.08)}
 .screen{position:relative;width:100%;height:100%;border-radius:36px/24px;overflow:hidden;background:#0E1A38;color:#F3EBDD;touch-action:none;box-shadow:inset 0 0 55px rgba(0,0,0,.65)}
 
 /* ─── панель управления в корпусе ─── */
@@ -774,7 +774,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
 .tick.cur{color:#F2C230;opacity:1;text-shadow:0 0 8px rgba(242,194,48,.55),0 1px 0 rgba(0,0,0,.7)}
 .tick.act{color:#8FD98A;opacity:1;text-shadow:0 0 8px rgba(143,217,138,.5),0 1px 0 rgba(0,0,0,.7)}
 .tick.hl{color:#EDE6D6;opacity:1;text-shadow:0 0 6px rgba(237,230,214,.35),0 1px 0 rgba(0,0,0,.7)}
-.legend{margin-top:-.2rem;min-height:1.1rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#F2C230;text-align:center;text-shadow:0 1px 0 rgba(0,0,0,.6)}
+.legend{margin-top:.15rem;min-height:1.3rem;padding:.15rem .5rem;border-radius:4px;background:var(--wood-edge);box-shadow:inset 0 1px 3px rgba(0,0,0,.65);font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#F2C230;text-align:center;text-shadow:0 0 6px rgba(242,194,48,.4)}
 .legend.act{color:#8FD98A}
 .mark{position:absolute;width:2px;height:7px;margin:-3.5px 0 0 -1px;border-radius:1px;background:var(--plate);opacity:.45}
 .mark.cur{opacity:1;width:3px;height:10px;margin-top:-5px;margin-left:-1.5px;background:#F2C230;box-shadow:0 0 7px rgba(242,194,48,.8)}
@@ -953,7 +953,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 @media (min-width:900px) and (min-aspect-ratio:21/20){
   :root{--tvmax:min(100%,72rem)}
   .page{padding:1.2rem}
-  .tv{flex-direction:row;gap:.8rem;padding:.9rem;border-radius:20px 20px 8px 8px}
+  .tv{flex-direction:row;gap:.8rem;padding:.9rem;border-radius:28px 28px 12px 12px}
 
   .page{height:100dvh;justify-content:center}
   .set{flex:1 1 auto;min-height:0;width:auto;max-width:100%;justify-content:center}
@@ -975,7 +975,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
   .sp{display:block;flex:0.38 1 auto;min-height:.2rem}
   .sp2{flex:0.62 1 auto}
 
-  .bezel{padding:.8rem;border-radius:18px;max-height:calc(100dvh - 5rem)}
+  .bezel{padding:.8rem;border-radius:24px;max-height:calc(100dvh - 5rem)}
   .screen{border-radius:60px/36px}
   .ch{padding:3rem 2.6rem 3.8rem}
   .legs{padding:0 18%}
@@ -1001,11 +1001,10 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 &lt;body&gt;
 &lt;div class=&quot;page&quot;&gt;
 
-  &lt;svg class=&quot;ant&quot; viewBox=&quot;0 0 150 52&quot; aria-hidden=&quot;true&quot;&gt;
-    &lt;path d=&quot;M75 50 L28 5&quot; stroke=&quot;#8A8175&quot; stroke-width=&quot;4&quot; stroke-linecap=&quot;round&quot; fill=&quot;none&quot;/&gt;
-    &lt;path d=&quot;M75 50 L126 11&quot; stroke=&quot;#8A8175&quot; stroke-width=&quot;4&quot; stroke-linecap=&quot;round&quot; fill=&quot;none&quot;/&gt;
-    &lt;circle cx=&quot;28&quot; cy=&quot;5&quot; r=&quot;4&quot; fill=&quot;#8A8175&quot;/&gt;&lt;circle cx=&quot;126&quot; cy=&quot;11&quot; r=&quot;4&quot; fill=&quot;#8A8175&quot;/&gt;
-    &lt;rect x=&quot;64&quot; y=&quot;40&quot; width=&quot;22&quot; height=&quot;12&quot; rx=&quot;3&quot; fill=&quot;#5C5348&quot;/&gt;
+  &lt;svg class=&quot;ant&quot; viewBox=&quot;0 0 150 52&quot; aria-hidden=&quot;true&quot; style=&quot;overflow:hidden&quot;&gt;
+    &lt;path d=&quot;M75 48 L18 -22&quot; stroke=&quot;#8A8175&quot; stroke-width=&quot;5&quot; stroke-linecap=&quot;round&quot; fill=&quot;none&quot;/&gt;
+    &lt;path d=&quot;M75 48 L134 -16&quot; stroke=&quot;#8A8175&quot; stroke-width=&quot;5&quot; stroke-linecap=&quot;round&quot; fill=&quot;none&quot;/&gt;
+    &lt;rect x=&quot;61&quot; y=&quot;39&quot; width=&quot;28&quot; height=&quot;14&quot; rx=&quot;6&quot; fill=&quot;#5C5348&quot;/&gt;
   &lt;/svg&gt;
 
   &lt;div class=&quot;set&quot;&gt;
