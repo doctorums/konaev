@@ -1195,7 +1195,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
       var n0=knob.querySelector(&#x27;b&#x27;);if(n0)n0.style.fontSize=&#x27;&#x27;;
       return;
     }
-    var d=dialW*0.36,kr=d/2,room=rOut-kr-GAP,probe=12,widest=0;
+    var d=dialW*0.34,kr=d/2,room=rOut-kr-GAP,probe=12,widest=0,BOOST=1.18;
     knob.style.width=knob.style.height=d+&#x27;px&#x27;;
     knob.style.left=knob.style.top=((dialW-d)/2)+&#x27;px&#x27;;
     var num=knob.querySelector(&#x27;b&#x27;);if(num)num.style.fontSize=Math.max(11,d*0.22)+&#x27;px&#x27;;
@@ -1205,7 +1205,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
       widest=0;
       [].forEach.call(ticks,function(el){widest=Math.max(widest,el.offsetWidth);});
       if(widest&lt;1)return;
-      var next=Math.max(8.6,Math.min(22,fs*room/widest));
+      var next=Math.max(8.6,Math.min(22,fs*room/(widest*BOOST)));
       if(Math.abs(next-fs)&lt;0.15){fs=next;break;}
       fs=next;
     }
