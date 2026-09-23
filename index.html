@@ -1162,6 +1162,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     {t:&#x27;T&#x27;,s:&#x27;позвонить&#x27;,msg:&#x27;ТЕЛЕФОН: НОМЕР НЕ ЗАДАН&#x27;}
   ];
   var STEP=44, A0=-(STEP*(POS.length-1))/2, pos=0;
+  var baseFS=12;
   var dialEl=document.getElementById(&#x27;dial&#x27;),knob=document.getElementById(&#x27;knob&#x27;),
       needle=document.getElementById(&#x27;needle&#x27;),knobnum=document.getElementById(&#x27;knobnum&#x27;),
       led=document.getElementById(&#x27;led&#x27;);
@@ -1209,6 +1210,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
       fs=next;
     }
     [].forEach.call(ticks,function(el){el.style.fontSize=fs+&#x27;px&#x27;;});
+    baseFS=fs;paintTicks();
   }
 
   (function buildTicks(){
@@ -1226,6 +1228,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   function paintTicks(){
     [].forEach.call(dialEl.querySelectorAll(&#x27;.tick&#x27;),function(el,i){
       el.className=&#x27;tick&#x27;+(ang(i)&lt;0?&#x27; flip&#x27;:&#x27;&#x27;)+(i===pos?(POS[i].msg?&#x27; act&#x27;:&#x27; cur&#x27;):(i===chase?&#x27; hl&#x27;:&#x27;&#x27;));
+      if(baseFS)el.style.fontSize=(i===pos?baseFS*1.18:baseFS)+&#x27;px&#x27;;
     });
     [].forEach.call(dialEl.querySelectorAll(&#x27;.mark&#x27;),function(el,i){
       el.className=&#x27;mark&#x27;+(i===pos?&#x27; cur&#x27;:(i===chase?&#x27; hl&#x27;:&#x27;&#x27;));
