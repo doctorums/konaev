@@ -811,6 +811,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #F2C230;outline-offset:2p
 .pwrow{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%}
 .pw{flex:1;max-width:8rem;min-width:4.4rem;min-height:2.6rem;padding:0 .7rem;border-radius:7px;background:linear-gradient(180deg,#F1E8D2,var(--plastic) 55%,#A79B85);color:var(--plastic-txt);border-bottom:4px solid var(--plastic-edge);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
 .pw:active{transform:translateY(3px);border-bottom-width:1px}
+.pw.is-off{background:linear-gradient(180deg,#cfc6b4,#9e937e 55%,#7a705e);box-shadow:inset 0 1px 3px rgba(0,0,0,.35)}
 .led{width:10px;height:10px;border-radius:50%;background:#E0543C;box-shadow:0 0 7px rgba(224,84,60,.8)}
 .led.off{background:#4A2018;box-shadow:none}
 
@@ -1094,7 +1095,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
             &lt;span&gt;Листать нечего. Придётся смотреть.&lt;/span&gt;
             &lt;span&gt;Обновление не требуется. Никогда.&lt;/span&gt;
           &lt;/div&gt;&lt;/div&gt;
-          &lt;div class=&quot;off&quot;&gt;Тоже вариант. Тогда хотя бы прогуляйтесь.&lt;br&gt;Чтобы включить, нажмите кнопку питания ещё раз.&lt;/div&gt;
+          &lt;div class=&quot;off&quot;&gt;Тоже вариант. Тогда хотя бы прогуляйтесь.&lt;br&gt;WhatsApp [НОМЕР НЕ ЗАДАН] и телефон [НОМЕР НЕ ЗАДАН] работают и с выключенным телевизором.&lt;br&gt;Чтобы включить, нажмите кнопку питания ещё раз.&lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
@@ -1245,6 +1246,28 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
       }catch(e){}
     }
     if(!clackEl){try{clackEl=new Audio(CLACK);clackEl.preload=&#x27;auto&#x27;;}catch(e){}}
+    ensureNoiseLoop();
+  }
+  var noiseSrc=null,noiseGain=null;
+  function ensureNoiseLoop(){
+    if(!ac||noiseSrc)return;
+    try{
+      var n=ac.sampleRate*2,buf=ac.createBuffer(1,n,ac.sampleRate),d=buf.getChannelData(0);
+      for(var i=0;i&lt;n;i++)d[i]=Math.random()*2-1;
+      noiseSrc=ac.createBufferSource();noiseSrc.buffer=buf;noiseSrc.loop=true;
+      noiseGain=ac.createGain();noiseGain.gain.value=0;
+      noiseSrc.connect(noiseGain);noiseGain.connect(ac.destination);noiseSrc.start();
+    }catch(e){}
+  }
+  function isOff(){return screen.className.indexOf(&#x27;is-off&#x27;)&gt;=0;}
+  function updNoise(instant){
+    if(!noiseGain)return;
+    var target=isOff()?0:(vol/10*0.09);
+    try{
+      noiseGain.gain.cancelScheduledValues(ac.currentTime);
+      if(instant)noiseGain.gain.value=target;
+      else noiseGain.gain.setTargetAtTime(target,ac.currentTime,0.09);
+    }catch(e){noiseGain.gain.value=target;}
   }
   function clackVolume(){return vol&gt;0?Math.min(1,vol/10):0.45;}
   function clack(){
@@ -1261,7 +1284,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   }
   function stopChase(){clearInterval(chaseT);chaseT=null;chase=-1;dialEl.className=&#x27;dial&#x27;;paintTicks();clearTimeout(idleT);idleT=setTimeout(startChase,7000);}
   function startChase(){
-    if(chaseT||reduce)return;
+    if(chaseT||reduce||isOff())return;
     chase=-1;dialEl.className=&#x27;dial chasing&#x27;;
     chaseT=setInterval(function(){
       chase=(chase+1)%POS.length;
@@ -1315,7 +1338,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     vfill.style.width=(pc*100)+&#x27;%&#x27;;
     vgrip.style.left=&#x27;calc(.5rem + (100% - 2rem) * &#x27;+pc+&#x27;)&#x27;;
     vs.setAttribute(&#x27;aria-valuenow&#x27;,vol);
-    showVol();
+    showVol();updNoise();
   }
   function volFrom(e){
     initAudio();
@@ -1371,12 +1394,20 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     })();
   }
 
-  document.getElementById(&#x27;power&#x27;).onclick=function(){
-    var off=screen.className.indexOf(&#x27;is-off&#x27;)&gt;=0;
-    clack();
-    screen.className=off?&#x27;screen&#x27;:&#x27;screen is-off&#x27;;
-    led.className=off?&#x27;led&#x27;:&#x27;led off&#x27;;
-    if(off){render();turnTo(curPos());}
+  var pwBtn=document.getElementById(&#x27;power&#x27;);
+  pwBtn.onclick=function(){
+    var wasOff=isOff();
+    clack();initAudio();
+    screen.className=wasOff?&#x27;screen&#x27;:&#x27;screen is-off&#x27;;
+    led.className=wasOff?&#x27;led&#x27;:&#x27;led off&#x27;;
+    pwBtn.textContent=wasOff?&#x27;ВЫКЛ&#x27;:&#x27;ВКЛ&#x27;;
+    pwBtn.className=&#x27;pw&#x27;+(wasOff?&#x27;&#x27;:&#x27; is-off&#x27;);
+    if(wasOff){
+      render();turnTo(curPos());hiss();updNoise();
+      clearTimeout(idleT);idleT=setTimeout(startChase,7000);
+    }else{
+      stopChase();clearTimeout(idleT);updNoise(true);
+    }
   };
 
   var ty=0,tx=0;
