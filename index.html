@@ -1542,6 +1542,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     worker:&#x27;https://konaev-echo.sv2txxznjm.workers.dev&#x27;,  /* воркер konaev-echo, код в workers/ */
     maxAgeH:48,           /* старше — считаем, что воркер умер, показываем запас */
     dose:10,              /* эхо за визит */
+    localShare:0.34,      /* доля местных эхо (loc:1 от воркера — Конаев и область), если они есть */
     live:{platform:&#x27;twitch&#x27;,channel:&#x27;&#x27;}  /* канал владельца; пусто = трансляции нет */
   };
   var KONAEV=[43.8667,77.0667];
@@ -1580,15 +1581,15 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   var T={
     ru:{tit:&#x27;Эхо эфира&#x27;,lead:&#x27;Пока вы листали ленту, в мире:&#x27;,next:&#x27;Ещё эхо&#x27;,left:function(n){return &#x27;осталось на сегодня: &#x27;+n;},
         doneH:&#x27;На сегодня эха хватит.&#x27;,doneP:&#x27;Мир подождёт. Телевизор тоже.&#x27;,back:&#x27;На главный&#x27;,km:&#x27; км от Конаева&#x27;,
-        light:&#x27;свет долетел бы за &#x27;,near:&#x27;совсем рядом&#x27;,far:&#x27;далеко, но долетело&#x27;,live:&#x27;ВЛАДЕЛЕЦ В ЭФИРЕ&#x27;,
+        light:&#x27;свет долетел бы за &#x27;,near:&#x27;совсем рядом&#x27;,here:&#x27;прямо здесь&#x27;,far:&#x27;далеко, но долетело&#x27;,live:&#x27;ВЛАДЕЛЕЦ В ЭФИРЕ&#x27;,
         liveNote:&#x27;Заявки принимаем как обычно. Перезвонит после боя.&#x27;,lang:&#x27;ҚАЗ&#x27;,ph:&#x27;Здесь будет трансляция.&lt;br&gt;Пока владелец не нажал кнопку, это макет.&#x27;,s:&#x27; с&#x27;,min:&#x27; мин &#x27;},
     kk:{tit:&#x27;Эфир жаңғырығы&#x27;,lead:&#x27;Сіз лента ақтарып отырғанда, әлемде:&#x27;,next:&#x27;Тағы жаңғырық&#x27;,left:function(n){return &#x27;бүгінге қалды: &#x27;+n;},
         doneH:&#x27;Бүгінге жаңғырық жетеді.&#x27;,doneP:&#x27;Әлем күте тұрады. Теледидар да.&#x27;,back:&#x27;Басты арнаға&#x27;,km:&#x27; км Қонаевтан&#x27;,
-        light:&#x27;жарық жетер еді: &#x27;,near:&#x27;жап-жақын&#x27;,far:&#x27;алыс, бірақ жетті&#x27;,live:&#x27;ИЕСІ ЭФИРДЕ&#x27;,
+        light:&#x27;жарық жетер еді: &#x27;,near:&#x27;жап-жақын&#x27;,here:&#x27;дәл осында&#x27;,far:&#x27;алыс, бірақ жетті&#x27;,live:&#x27;ИЕСІ ЭФИРДЕ&#x27;,
         liveNote:&#x27;Өтінімдерді әдеттегідей қабылдаймыз. Ойыннан кейін хабарласады.&#x27;,lang:&#x27;РУС&#x27;,ph:&#x27;Мұнда трансляция болады.&lt;br&gt;Иесі батырманы басқанша, бұл макет.&#x27;,s:&#x27; с&#x27;,min:&#x27; мин &#x27;}
   };
   var eL=(navigator.language||&#x27;ru&#x27;).toLowerCase(),eLang=(eL.indexOf(&#x27;kk&#x27;)===0||eL.indexOf(&#x27;kz&#x27;)===0)?&#x27;kk&#x27;:&#x27;ru&#x27;;
-  var eItems=ECHO_POOL.slice(),eSrc=&#x27;встроенный запас&#x27;,eFetch=&#x27;не запрашивался&#x27;,eIdx=-1,eOrder=[],eSeen=0,eLive=false;
+  var eItems=ECHO_POOL.slice(),eSrc=&#x27;встроенный запас&#x27;,eFetch=&#x27;не запрашивался&#x27;,eCur=0,eQ={g:{list:[],i:-1},l:{list:[],i:-1}},eSeen=0,eLive=false;
   function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k);sessionStorage.setItem(k,v);}catch(e){return null;}}
   eSeen=parseInt(ss(&#x27;echoSeen&#x27;)||&#x27;0&#x27;,10)||0;
   try{eLive=/[?&amp;]live=1/.test(window.parent.location.search)||/[?&amp;]live=1/.test(location.search);}catch(e){}
@@ -1648,14 +1649,15 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
       $e(&#x27;echo-cnt&#x27;).textContent=&#x27;&#x27;;return;
     }
     nx.removeAttribute(&#x27;data-home&#x27;);nx.textContent=t.next;
-    var it=eItems[eOrder[eIdx]]||eItems[0],txt=it[eLang]||it.ru,words=txt.split(/\s+/),last=words[words.length-1],
+    var it=eItems[eCur]||eItems[0],txt=it[eLang]||it.ru,words=txt.split(/\s+/),last=words[words.length-1],
         w1=last.replace(/[.,!?:;…«»&quot;]+$/,&#x27;&#x27;),tl=tail(last);
     txtEl.textContent=txt;echoFit();
     tailEl.innerHTML=&#x27;&lt;span class=&quot;ew ew1&quot;&gt;&#x27;+esc(w1)+&#x27;…&lt;/span&gt;&lt;span class=&quot;ew ew2&quot;&gt;&#x27;+esc(tl)+&#x27;…&lt;/span&gt;&lt;span class=&quot;ew ew3&quot;&gt;&#x27;+esc(tl.length&gt;2?tl.slice(-2):tl)+&#x27;…&lt;/span&gt;&#x27;;
     void tailEl.offsetWidth;tailEl.className+=&#x27; run&#x27;;
     var place=eLang===&#x27;kk&#x27;?(it.pk||it.pr):it.pr,m=&#x27;&lt;b&gt;&#x27;+esc(place||&#x27;&#x27;)+&#x27;&lt;/b&gt;&#x27;;
     var km=it.dist||(it.ll?hav(KONAEV,it.ll):null);
-    if(km!=null){
+    if(km!=null&amp;&amp;km&lt;15)m+=&#x27; · &#x27;+t.here; /* «0 км · свет за 0,0000 с» для самого Конаева звучит нелепо */
+    else if(km!=null){
       m+=&#x27; · &#x27;+(km&lt;150?t.near+&#x27;, &#x27;+fmtKm(km)+t.km:fmtKm(km)+t.km);
       m+=&#x27; · &#x27;+t.light+fmtLight(km);
     }else m+=&#x27; · &#x27;+t.far;
@@ -1666,7 +1668,13 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   }
   function echoNext(){
     eSeen++;ss(&#x27;echoSeen&#x27;,String(eSeen));
-    if(!eOrder.length||eIdx&gt;=eOrder.length-1){eOrder=shuffle(eItems.length);eIdx=0;}else eIdx++;
+    /* Две очереди без повторов до конца круга: местные (loc) и остальные.
+       Местное берём с вероятностью localShare, если такие есть. */
+    var loc=[],glob=[];eItems.forEach(function(x,i){(x.loc?loc:glob).push(i);});
+    if(!glob.length){glob=loc;loc=[];}
+    var useLoc=loc.length&amp;&amp;Math.random()&lt;ECHO_CFG.localShare,q=useLoc?eQ.l:eQ.g,src=useLoc?loc:glob;
+    if(!q.list.length||q.i&gt;=q.list.length-1){q.list=shuffle(src.length).map(function(k){return src[k];});q.i=0;}else q.i++;
+    eCur=q.list[q.i];
     echoDraw();
   }
   function echoLive(){
@@ -1692,7 +1700,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   var dTaps=[];
   function diag(){
     var d=$e(&#x27;echo-diag&#x27;);
-    d.innerHTML=esc(&#x27;ДИАГНОСТИКА ЭХА\nисточник: &#x27;+eSrc+&#x27;\nзаписей: &#x27;+eItems.length+&#x27;\nворкер: &#x27;+(ECHO_CFG.worker||&#x27;не задан&#x27;)+&#x27;\nзапрос: &#x27;+eFetch+
+    d.innerHTML=esc(&#x27;ДИАГНОСТИКА ЭХА\nисточник: &#x27;+eSrc+&#x27;\nзаписей: &#x27;+eItems.length+&#x27; (местных: &#x27;+eItems.filter(function(x){return x.loc;}).length+&#x27;)&#x27;+&#x27;\nворкер: &#x27;+(ECHO_CFG.worker||&#x27;не задан&#x27;)+&#x27;\nзапрос: &#x27;+eFetch+
       &#x27;\nпоказано за визит: &#x27;+eSeen+&#x27; из &#x27;+ECHO_CFG.dose+&#x27;\nязык: &#x27;+eLang+&#x27;\nэфир владельца: &#x27;+(eLive?&#x27;ВКЛ&#x27;:&#x27;выкл&#x27;)+&#x27; · канал: &#x27;+(ECHO_CFG.live.channel||&#x27;не задан&#x27;))+
       &#x27;&lt;br&gt;&lt;button type=&quot;button&quot; data-a=&quot;reset&quot;&gt;сбросить дозу&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;live&quot;&gt;эфир вкл/выкл&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;close&quot;&gt;закрыть&lt;/button&gt;&#x27;;
     d.className=&#x27;ediag px show&#x27;;
@@ -1718,7 +1726,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
       var ok=(j.items||[]).filter(function(x){return x&amp;&amp;x.ru&amp;&amp;x.kk;});
       if(!(age&lt;ECHO_CFG.maxAgeH)){eFetch=&#x27;данные устарели (&#x27;+Math.round(age)+&#x27; ч), остаёмся на запасе&#x27;;return;}
       if(ok.length&lt;3){eFetch=&#x27;мало записей (&#x27;+ok.length+&#x27;), остаёмся на запасе&#x27;;return;}
-      eItems=ok;eSrc=&#x27;воркер&#x27;;eOrder=[];eFetch=&#x27;ок, &#x27;+ok.length+&#x27; шт., возраст &#x27;+age.toFixed(1)+&#x27; ч&#x27;;
+      eItems=ok;eSrc=&#x27;воркер&#x27;;eQ={g:{list:[],i:-1},l:{list:[],i:-1}};eFetch=&#x27;ок, &#x27;+ok.length+&#x27; шт., возраст &#x27;+age.toFixed(1)+&#x27; ч&#x27;;
       if(chans[cur]&amp;&amp;chans[cur].id===&#x27;echo&#x27;)crawlSet(&#x27;echo&#x27;); /* строка уже на эхо — подменяем на свежие */
       if(j.live!=null){eLive=!!j.live;echoLive();}
     }).catch(function(err){if(!done){done=true;clearTimeout(to);eFetch=&#x27;ошибка: &#x27;+String(err).slice(0,80);}});
