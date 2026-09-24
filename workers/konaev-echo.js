@@ -247,7 +247,11 @@ async function judgeEchoOnce(env, item, budget) {
       body: JSON.stringify({
         model: env.LLM_MODEL || LLM_MODEL_DEFAULT,
         temperature: 0.3,
-        max_tokens: 400, // два языка и три места — втрое больше, чем в образце
+        // Потолок, а не расход. mimo-v2.5 на шлюзе DotPoin тратит часть лимита
+        // на рассуждение: при 400 (24.09, первый полный прогон) 8 из 12 ответов
+        // пришли пустыми или оборванными на середине JSON. Модель без
+        // рассуждения (LLM_MODEL=deepseek-v4-flash-no-reasoner) в него не упирается.
+        max_tokens: 1200,
         messages: [
           { role: 'system', content: ECHO_PROMPT },
           { role: 'user', content: `Заголовок: ${item.title}\n\nНачало: ${(item.desc || '').slice(0, DESC_MAX) || '—'}` },
@@ -262,8 +266,12 @@ async function judgeEchoOnce(env, item, budget) {
       const m = String(msg.reasoning_content).match(/\{[\s\S]*"ok"[\s\S]*\}/);
       if (m) raw = m[0];
     }
-    if (!raw) return { fail: 'empty_response' };
-    const p = JSON.parse(raw);
+    // finish_reason=length — ответ обрезан лимитом: пишем это в причину,
+    // чтобы в /diag было видно, что дело в лимите, а не в шлюзе.
+    const cut = d?.choices?.[0]?.finish_reason === 'length' ? ' (finish=length)' : '';
+    if (!raw) return { fail: 'empty_response' + cut };
+    let p;
+    try { p = JSON.parse(raw); } catch (e) { return { fail: 'bad_json' + cut + ': ' + raw.slice(0, 60) }; }
     return verdict(p);
   } catch (e) { return { fail: 'throw: ' + String(e).slice(0, 120) }; }
 }
