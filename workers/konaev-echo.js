@@ -108,6 +108,11 @@ const LOCAL_WORDS = ['конаев', 'қонаев', 'капшагай', 'кап
   'отеген батыр', 'өтеген батыр', 'жамбылский район', 'карасайск', 'қарасай', 'байсерке', 'тургень', 'түрген'];
 const KONAEV = [43.8667, 77.0667];
 const LOCAL_RADIUS_KM = 400;      // Алматинская область целиком укладывается
+// Алматы-город в 60 км от Конаева и в радиус попадает, но он отдельная единица,
+// а не область: всё, что геокодер кладёт ближе ALMATY_KM к его центру, — не местное.
+// Городской сайт Конаева пишет и про Алматы (рейсы, концерты) — это отсюда.
+const ALMATY = [43.24, 76.95];
+const ALMATY_KM = 25;
 const LOCAL_PER_RUN = 4;          // местных вызовов LLM за прогон — сверх LLM_PER_RUN_MAX
 const LOCAL_KEEP_DAYS = 21;       // местные редки — держим дольше
 const LOCAL_MAX = 20;             // столько местных гарантированно остаются в подборке
@@ -555,6 +560,7 @@ async function runEchoCollection(env, opts = {}) {
     // С городского сайта без названного места — это сам Конаев.
     if (r.city && e.inRegion && !ll) ll = KONAEV.slice();
     if (r.local && (!ll || havKm(KONAEV, ll) > LOCAL_RADIUS_KM)) { summary.rejected.local_far = (summary.rejected.local_far || 0) + 1; continue; }
+    if (r.local && havKm(ALMATY, ll) < ALMATY_KM) { summary.rejected.local_almaty = (summary.rejected.local_almaty || 0) + 1; continue; }
     const it = { id: r.id, ru: e.ru, kk: e.kk, pr: e.pr || '', pk: e.pk || e.pr || '', ll, src: sourceHost(r.url), t: summary.ranAt };
     if (dist) it.dist = dist;
     if (r.local) { it.loc = 1; summary.acceptedLocal = (summary.acceptedLocal || 0) + 1; }
