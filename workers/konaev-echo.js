@@ -38,6 +38,17 @@
 //                               всего — поле в дашборде однострочное) или через
 //                               пробел. Пусто — берутся DEFAULT_SOURCES ниже.
 //   ECHO_KEEP_DAYS (var, опц.)  сколько дней держать запись, по умолчанию 7.
+//   ECHO_LOCAL_SOURCES (var, опц.) ленты для МЕСТНЫХ эхо (Конаев и Алматинская
+//                               область), формат как у ECHO_SOURCES. Пусто — берутся
+//                               DEFAULT_LOCAL_SOURCES. Пустой JSON-массив [] —
+//                               местные эхо выключены.
+//
+// Местные эхо. Казахстанские ленты общие, про Конаев в них редко, поэтому
+// до LLM берём только записи, где упомянуто место области (LOCAL_WORDS), —
+// за остальные не платим. Дальше три проверки: модель подтверждает
+// in_region (Конаев или Алматинская область, НЕ Алматы-город), геокод ложится
+// не дальше LOCAL_RADIUS_KM от Конаева, стоп-лист с акиматами. Прошедшие
+// помечаются loc:1; сайт подмешивает их примерно каждым третьим эхо.
 //
 // Cron Trigger (Settings → Trigger events): например `0 */3 * * *` — раз в
 // три часа. Интервал в коде не зашит.
@@ -48,7 +59,14 @@
 //   /run?full=1&wait=1  полный прогон с ожиданием сводки;
 //   /live?on=1|0    «владелец в эфире» — плашка на канале, без передеплоя;
 //   /diag           сводка последнего прогона, чтобы видеть причину нуля
-//                   без логов Cloudflare (с iPad их не посмотреть).
+//                   без логов Cloudflare (с iPad их не посмотреть);
+//   /probe?url=…    проверить источник: есть ли лента, что воркер из него
+//                   достаёт (первые заголовки), какие ленты объявлены на странице.
+//
+// Источник без RSS: если по адресу пришла обычная страница, а не лента,
+// воркер берёт заголовки прямо из ссылок на ней (extractHtmlItems) — так
+// читается, например, qonaev-gorod.kz/news. Хуже ленты (нет описаний и дат),
+// поэтому для сайтов с RSS указывать надо саму ленту.
 
 const LLM_URL_DEFAULT = 'https://llms.dotpoin.com/v1/chat/completions';
 const LLM_MODEL_DEFAULT = 'mimo-v2.5';
@@ -67,6 +85,37 @@ const DEFAULT_SOURCES = [
   'https://www.upi.com/rss/Odd_News/',
   'https://apod.nasa.gov/apod.rss',
 ];
+
+// Казахстанские ленты для местных эхо. Как и DEFAULT_SOURCES, отсюда вживую не
+// проверены — смотрим /diag после деплоя (fetched=0 у мёртвой ленты).
+const DEFAULT_LOCAL_SOURCES = [
+  'https://tengrinews.kz/news.rss',
+  'https://kaz.tengrinews.kz/news.rss',
+  'https://www.inform.kz/rss/rus.xml',   // Kazinform
+  'https://www.qonaev-gorod.kz/news',    // городской сайт Конаева, RSS нет — читается со страницы
+];
+// Сайты, у которых ВСЁ — про Конаев и область: их записи не проверяются на
+// упоминание места (в заголовке городского сайта «Конаев» обычно не пишут),
+// а модели сообщается, что источник местный. Остальные проверки те же.
+const LOCAL_HOSTS = ['qonaev-gorod.kz'];
+// Места Конаева и области (ru и kk, корни — падежи ловятся сами). Алматы-город
+// сюда намеренно не входит: он отдельная единица и заслонил бы область.
+const LOCAL_WORDS = ['конаев', 'қонаев', 'капшагай', 'капчагай', 'қапшағай', 'алматинск', 'алматы облыс',
+  'талгар', 'талғар', 'есик', 'есік', 'иссык', 'каскелен', 'қаскелең', 'илийск', 'іле аудан',
+  'энбекшиказах', 'еңбекшіқазақ', 'шелек', 'чилик', 'шилік', 'кеген', 'нарынкол', 'нарынқол', 'райымбек',
+  'уйгурск', 'ұйғыр аудан', 'чарын', 'шарын', 'кольсай', 'көлсай', 'каинды', 'қайыңды', 'алтын-эмел', 'алтынэмел',
+  'алтынемел', 'балхаш', 'балқаш', 'баканас', 'бақанас', 'узынагаш', 'ұзынағаш', 'бурундай', 'боралдай',
+  'отеген батыр', 'өтеген батыр', 'жамбылский район', 'карасайск', 'қарасай', 'байсерке', 'тургень', 'түрген'];
+const KONAEV = [43.8667, 77.0667];
+const LOCAL_RADIUS_KM = 400;      // Алматинская область целиком укладывается
+// Алматы-город в 60 км от Конаева и в радиус попадает, но он отдельная единица,
+// а не область: всё, что геокодер кладёт ближе ALMATY_KM к его центру, — не местное.
+// Городской сайт Конаева пишет и про Алматы (рейсы, концерты) — это отсюда.
+const ALMATY = [43.24, 76.95];
+const ALMATY_KM = 25;
+const LOCAL_PER_RUN = 4;          // местных вызовов LLM за прогон — сверх LLM_PER_RUN_MAX
+const LOCAL_KEEP_DAYS = 21;       // местные редки — держим дольше
+const LOCAL_MAX = 20;             // столько местных гарантированно остаются в подборке
 
 const KV_PAYLOAD = 'echo';        // то, что отдаётся сайту
 const KV_SEEN = 'echo:seen';      // хэши уже разобранных записей (и принятых, и отсеянных)
@@ -106,10 +155,17 @@ const ECHO_PROMPT = `Ты — редактор канала «Эхо эфира�
 — place_en: где это случилось — город или регион и страна по-английски для геокодера («Monterey, USA»), иначе null.
 — place_ru и place_kk: то же место коротко по-русски и по-казахски («Монтерей, США» / «Монтерей, АҚШ»), иначе null.
 — body: если событие на Луне, Солнце или МКС — "moon", "sun" или "iss", иначе null.
+— in_region: true, только если событие произошло в городе Конаев или в Алматинской области Казахстана (НЕ в городе Алматы — это отдельный город), иначе false.
 
 Ответь СТРОГО одним JSON без markdown и пояснений:
-{"ok":true или false,"political":true или false,"tragic":true или false,"ru":"...","kk":"...","place_en":"..." или null,"place_ru":"..." или null,"place_kk":"..." или null,"body":null}
+{"ok":true или false,"political":true или false,"tragic":true или false,"ru":"...","kk":"...","place_en":"..." или null,"place_ru":"..." или null,"place_kk":"..." или null,"body":null,"in_region":false}
 Если не годится: {"ok":false,"political":...,"tragic":...}`;
+
+// Добавка к запросу для МЕСТНЫХ новостей: область редко даёт «лёгкие» темы
+// (замер 24.09: 4 из 4 местных отклонены — зерновой комплекс, рейды, новый
+// аким), поэтому для них допускается городская жизнь. Власть и происшествия —
+// нет, как и везде; стоп-листы с акиматами работают поверх.
+const LOCAL_RULE = `Это местная новость Конаева или Алматинской области. Для неё, кроме лёгких тем, ГОДИТСЯ и городская жизнь: благоустройство и новые объекты (парки, скверы, школы, детсады, дороги, больницы), праздники, концерты и фестивали, спорт и успехи земляков, погода, природа, туризм и отдых. По-прежнему НЕ годятся: акимы и любые чиновники, назначения, заявления, совещания и отчёты, законы и госпрограммы, выборы, происшествия, рейды, аварии, суды, трагедии. Фразу пиши о самом событии, без упоминания властей.`;
 
 // Стоп-лист — второй замок поверх ответа модели, не замена ему: промпт —
 // просьба, а не гарантия (урок образца от 04.09). Проверяется и заголовок
@@ -122,11 +178,11 @@ const STOP_RU = ['президент', 'премьер', 'министр', 'пр
   'протест', 'митинг', 'кремл', 'путин', 'трамп', 'байден', 'зеленск', 'токаев', 'си цзиньпин', 'нетаньяху',
   'погиб', 'гибел', 'смерт', 'умер', 'скончал', 'убий', 'убит', 'жертв', 'ранен', 'катастроф', 'авари', 'крушени',
   'пожар', 'землетрясен', 'наводнен', 'урага', 'эпидеми', 'пандеми', 'рак ', 'суд ', 'суда', 'арест', 'задержан',
-  'полици', 'преступ', 'насили', 'религи', 'мечет', 'церк'];
+  'полици', 'преступ', 'насили', 'религи', 'мечет', 'церк', 'аким', 'маслихат', 'сессии маслихат', 'нур отан', 'аманат'];
 const STOP_KK = ['президент', 'премьер', 'министр', 'үкімет', 'парламент', 'мәжіліс', 'сенат', 'депутат', 'сайлау',
   'партия', 'санкция', 'соғыс', 'әскер', 'зымыран', 'шабуыл', 'лаңкес', 'наразылық', 'митинг',
   'қаза', 'өлім', 'өлді', 'қайтыс', 'кісі өлтір', 'апат', 'өрт', 'жер сілкін', 'су тасқын', 'індет',
-  'сот', 'қамау', 'полиция', 'қылмыс', 'зорлық', 'дін', 'мешіт', 'шіркеу'];
+  'сот', 'қамау', 'полиция', 'қылмыс', 'зорлық', 'дін', 'мешіт', 'шіркеу', 'әкім', 'мәслихат', 'аманат'];
 const STOP_EN = ['president', 'prime minister', 'minister', 'government', 'parliament', 'senate', 'congress', 'election',
   'vote', 'voting', 'referendum', 'party leader', 'sanction', 'tariff', 'diplomat', 'embassy', 'war ', 'wars', 'military',
   'army', 'troops', 'missile', 'airstrike', 'attack', 'terror', 'protest', 'kremlin', 'putin', 'trump', 'biden',
@@ -153,6 +209,27 @@ function parseSources(env) {
   // По любому пробельному символу: поле в дашборде однострочное и склеивает
   // построчный список через пробелы (фикс 30.08 в образце).
   return raw.split(/\s+/).map(s => s.trim()).filter(Boolean);
+}
+
+function parseLocalSources(env) {
+  const raw = (env.ECHO_LOCAL_SOURCES || '').trim();
+  if (!raw) return DEFAULT_LOCAL_SOURCES.slice();
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed.filter(Boolean).map(String); // [] — выключено
+  } catch (_) { /* список через пробелы */ }
+  return raw.split(/\s+/).map(s => s.trim()).filter(Boolean);
+}
+
+function localHit(text) {
+  const s = ' ' + String(text || '').toLowerCase().replace(/ё/g, 'е') + ' ';
+  return LOCAL_WORDS.some(w => s.includes(w.replace(/ё/g, 'е')));
+}
+
+function havKm(a, b) {
+  const R = 6371, r = Math.PI / 180, dl = (b[0] - a[0]) * r, dg = (b[1] - a[1]) * r;
+  const x = Math.sin(dl / 2) ** 2 + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin(dg / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
 }
 
 function keepDays(env) {
@@ -201,12 +278,49 @@ function parseFeedItems(xml) {
   return items;
 }
 
+// Страница новостей без RSS: заголовки берём из ссылок на ней. Берём только
+// ссылки того же сайта, ведущие ГЛУБЖЕ адреса страницы (…/news/что-то), с
+// текстом длиной с заголовок — так отсекаются меню, теги и «читать далее».
+function extractHtmlItems(html, pageUrl) {
+  let base;
+  try { base = new URL(pageUrl); } catch (e) { return []; }
+  const prefix = base.pathname.replace(/\/+$/, '') + '/';
+  const seenLinks = new Set(), items = [];
+  const re = /<a\b[^>]*href=["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let m;
+  while ((m = re.exec(html)) && items.length < 60) {
+    let u;
+    try { u = new URL(decodeEntities(m[1]), base); } catch (e) { continue; }
+    if (u.hostname.replace(/^www\./, '') !== base.hostname.replace(/^www\./, '')) continue;
+    if (!u.pathname.startsWith(prefix) || u.pathname.length <= prefix.length + 3) continue;
+    const title = stripCdata(m[2]);
+    if (title.length < 20 || title.length > 220 || !/\p{L}{3}/u.test(title)) continue;
+    const link = u.origin + u.pathname;
+    if (seenLinks.has(link)) continue;
+    seenLinks.add(link);
+    items.push({ title, link, desc: '', pub: '' });
+  }
+  return items;
+}
+
+function looksHtml(text, type) {
+  return /html/i.test(type || '') || /^\s*<!doctype html|<html[\s>]/i.test(text.slice(0, 500));
+}
+
 async function fetchFeed(url) {
   try {
     const r = await fetch(url, { headers: { 'User-Agent': 'KonaevEcho/1.0 (+https://konaev.tv)' } });
     if (!r.ok) return { items: [], err: 'http_' + r.status };
-    return { items: parseFeedItems(await r.text()) };
+    const text = await r.text();
+    const items = parseFeedItems(text);
+    if (items.length || !looksHtml(text, r.headers.get('content-type'))) return { items };
+    return { items: extractHtmlItems(text, url), html: true };
   } catch (e) { return { items: [], err: 'throw: ' + String(e).slice(0, 80) }; }
+}
+
+function isLocalHost(url) {
+  const h = sourceHost(url);
+  return !!h && LOCAL_HOSTS.some(x => h === x || h.endsWith('.' + x));
 }
 
 async function hashId(seed) {
@@ -254,7 +368,7 @@ async function judgeEchoOnce(env, item, budget) {
         max_tokens: 1200,
         messages: [
           { role: 'system', content: ECHO_PROMPT },
-          { role: 'user', content: `Заголовок: ${item.title}\n\nНачало: ${(item.desc || '').slice(0, DESC_MAX) || '—'}` },
+          { role: 'user', content: (item.local ? LOCAL_RULE + '\n\n' : '') + (item.hint ? item.hint + '\n\n' : '') + `Заголовок: ${item.title}\n\nНачало: ${(item.desc || '').slice(0, DESC_MAX) || '—'}` },
         ],
       }),
     });
@@ -289,7 +403,7 @@ function verdict(p) {
   if (!kk || !hasCyrillic(kk) || kk === ru) return { reject: 'bad_kk' };
   if (/https?:|www\./i.test(ru + kk)) return { reject: 'url_in_text' };
   const body = typeof p.body === 'string' && BODIES[p.body.toLowerCase()] ? p.body.toLowerCase() : null;
-  return { echo: { ru, kk, place_en: body ? null : cleanPlace(p.place_en), pr: cleanPlace(p.place_ru), pk: cleanPlace(p.place_kk), body } };
+  return { echo: { ru, kk, place_en: body ? null : cleanPlace(p.place_en), pr: cleanPlace(p.place_ru), pk: cleanPlace(p.place_kk), body, inRegion: p.in_region === true } };
 }
 
 // ── Геокодинг: Nominatim (OSM), без ключа, не чаще 1 запроса/с — как в образце.
@@ -342,6 +456,8 @@ async function runEchoCollection(env, opts = {}) {
   let sources = parseSources(env);
   if (!sources.length) { summary.skipped = 'no_sources'; return await saveLast(env, summary); }
   if (opts.maxSources) sources = sources.slice(0, opts.maxSources);
+  // Быстрый /run местные ленты не трогает: он проверяет цепочку, а не улов.
+  const localSources = opts.maxSources ? [] : parseLocalSources(env);
   const llmCap = opts.llmCap || LLM_PER_RUN_MAX;
 
   let used = 0;
@@ -355,26 +471,34 @@ async function runEchoCollection(env, opts = {}) {
 
   // ФАЗА 1 — ленты параллельно (правка образца 22.08: последовательный обход
   // упирался во время вызова, а не в бюджет).
-  const fetched = await Promise.all(sources.map(async url => {
-    const { items, err } = await fetchFeed(url);
+  const feeds = sources.map(url => ({ url, local: false })).concat(localSources.map(url => ({ url, local: true })));
+  const fetched = await Promise.all(feeds.map(async ({ url, local }) => {
+    const { items, err, html } = await fetchFeed(url);
+    const city = local && isLocalHost(url);
     const withIds = [];
-    for (const item of items.slice(0, FEED_SCAN_MAX)) {
+    // Общие казахстанские ленты длинные, а местного в них мало — смотрим глубже.
+    for (const item of items.slice(0, local ? FEED_SCAN_MAX * 3 : FEED_SCAN_MAX)) {
+      if (city) item.hint = 'Источник — городской новостной сайт Конаева: если в тексте не сказано иное, событие в Конаеве или Алматинской области.';
       const id = await hashId(item.link || `${url}|${item.pub || item.title}`);
-      withIds.push({ item, id, url });
+      withIds.push({ item, id, url, local, city });
     }
-    return { url, withIds, err };
+    return { url, local, city, html, withIds, err };
   }));
-  used += sources.length;
+  used += feeds.length;
   const feedsOk = fetched.filter(f => !f.err).length;
 
   // ФАЗА 2 — отсев без LLM: уже разобранные и то, что режет стоп-лист прямо
   // по заголовку (за такие записи не платим вовсе). Квота на редакцию.
-  const byHost = {};
+  const byHost = {}, localPool = [];
   let stoppedByTitle = 0;
   for (const f of fetched) {
     for (const x of f.withIds) {
       if (seen.has(x.id)) continue;
-      if (stopHit(x.item.title, STOP_EN) || stopHit(x.item.title, STOP_RU)) { seen.add(x.id); stoppedByTitle++; continue; }
+      // Местная лента: без упоминания места области запись даже не кандидат
+      // (и не в seen — проверка бесплатная, а лента могла дописать описание).
+      if (f.local && !f.city && !localHit(x.item.title + ' ' + x.item.desc)) continue;
+      if (stopHit(x.item.title, STOP_EN) || stopHit(x.item.title, STOP_RU) || stopHit(x.item.title, STOP_KK)) { seen.add(x.id); stoppedByTitle++; continue; }
+      if (f.local) { x.item.local = true; localPool.push(x); continue; }
       const host = sourceHost(f.url) || f.url;
       (byHost[host] = byHost[host] || []).push(x);
     }
@@ -385,16 +509,30 @@ async function runEchoCollection(env, opts = {}) {
     candidates.push(...bucket.slice(0, opts.perHost || PER_HOST_PER_RUN));
   }
   shuffleInPlace(candidates);
+  // Местные — вперёд очереди: их мало, и без них подмешивать на сайте нечего.
+  // Одна и та же новость часто есть в нескольких казахстанских лентах, поэтому
+  // дубли по заголовку отсекаем до LLM.
+  shuffleInPlace(localPool);
+  const localTitles = new Set(), localCands = [];
+  for (const x of localPool) {
+    const key = x.item.title.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+    if (localTitles.has(key)) continue;
+    localTitles.add(key); localCands.push(x);
+    if (localCands.length >= LOCAL_PER_RUN) break;
+  }
+  candidates.unshift(...localCands);
   summary.rejected.stop_title = stoppedByTitle;
+  summary.localCandidates = localCands.length;
 
   // ФАЗА 3 — суд модели, пачками по 4; бюджет проверяется перед пачкой по
   // факту трат (правка образца 22.08). Резерв: 2 попытки + геокод на запись
   // и 3 записи в KV в конце.
   const CONC = 4;
   const judged = [];
-  for (let i = 0; i < candidates.length && judged.length < llmCap; i += CONC) {
+  const cap = llmCap + localCands.length; // местные — сверх общего потолка
+  for (let i = 0; i < candidates.length && judged.length < cap; i += CONC) {
     if (budgetLeft() < CONC * 3 + 3) break;
-    const chunk = candidates.slice(i, Math.min(i + CONC, i + llmCap - judged.length));
+    const chunk = candidates.slice(i, Math.min(i + CONC, i + cap - judged.length));
     const res = await Promise.all(chunk.map(async c => {
       const budget = { n: 0 };
       const j = await judgeEcho(env, c.item, budget);
@@ -419,11 +557,19 @@ async function runEchoCollection(env, opts = {}) {
     const e = r.j.echo;
     const hit = stopHit(e.ru, STOP_RU) || stopHit(e.kk, STOP_KK) || stopHit(r.item.desc, STOP_EN);
     if (hit) { summary.rejected.stop_text = (summary.rejected.stop_text || 0) + 1; continue; }
+    if (r.local && !e.inRegion) { summary.rejected.not_in_region = (summary.rejected.not_in_region || 0) + 1; continue; }
     let ll = null, dist;
     if (e.body) dist = BODIES[e.body];
     else if (e.place_en && budgetLeft() >= 4) { ll = await geocodePlace(e.place_en); used++; }
+    // Местное эхо без координат или дальше радиуса — отказ: «рядом» должно
+    // быть проверено, а не сказано моделью.
+    // С городского сайта без названного места — это сам Конаев.
+    if (r.city && e.inRegion && !ll) ll = KONAEV.slice();
+    if (r.local && (!ll || havKm(KONAEV, ll) > LOCAL_RADIUS_KM)) { summary.rejected.local_far = (summary.rejected.local_far || 0) + 1; continue; }
+    if (r.local && havKm(ALMATY, ll) < ALMATY_KM) { summary.rejected.local_almaty = (summary.rejected.local_almaty || 0) + 1; continue; }
     const it = { id: r.id, ru: e.ru, kk: e.kk, pr: e.pr || '', pk: e.pk || e.pr || '', ll, src: sourceHost(r.url), t: summary.ranAt };
     if (dist) it.dist = dist;
+    if (r.local) { it.loc = 1; summary.acceptedLocal = (summary.acceptedLocal || 0) + 1; }
     fresh.push(it);
   }
   summary.accepted = fresh.length;
@@ -432,10 +578,13 @@ async function runEchoCollection(env, opts = {}) {
   // двигаем только если прогон реально состоялся: хоть одна лента ответила и
   // шлюз не лёг целиком (все вызовы — сбой). Иначе оставляем старый updated —
   // сайт через 48 ч сам уйдёт на запас (fail-closed по свежести).
-  const cutoff = Date.now() - keepDays(env) * 86400000;
-  const old = (Array.isArray(payload.items) ? payload.items : []).filter(x => x && Date.parse(x.t) > cutoff);
+  const cutoff = Date.now() - keepDays(env) * 86400000, localCutoff = Date.now() - LOCAL_KEEP_DAYS * 86400000;
+  const old = (Array.isArray(payload.items) ? payload.items : []).filter(x => x && Date.parse(x.t) > (x.loc ? localCutoff : cutoff));
   const ids = new Set(fresh.map(x => x.id));
-  const items = fresh.concat(old.filter(x => !ids.has(x.id))).slice(0, ITEMS_MAX);
+  const all = fresh.concat(old.filter(x => !ids.has(x.id)));
+  // Местные не вытесняются потоком мировых: их до LOCAL_MAX, остальное — мировые.
+  const locals = all.filter(x => x.loc).slice(0, LOCAL_MAX);
+  const items = locals.concat(all.filter(x => !x.loc).slice(0, ITEMS_MAX - locals.length));
   const llmDown = judged.length > 0 && summary.failed === judged.length;
   const healthy = feedsOk > 0 && !llmDown;
   const next = { updated: healthy ? summary.ranAt : payload.updated, items };
@@ -448,8 +597,9 @@ async function runEchoCollection(env, opts = {}) {
     env.ECHO_KV.put(KV_SEEN, JSON.stringify(seenOut)),
   ]);
 
-  summary.sources = fetched.map(f => ({ url: f.url, fetched: f.withIds.length, err: f.err || null,
+  summary.sources = fetched.map(f => ({ url: f.url, local: f.local || undefined, html: f.html || undefined, fetched: f.withIds.length, err: f.err || null,
     candidates: candidates.filter(c => c.url === f.url).length }));
+  summary.localTotal = locals.length;
   summary.subrequestsUsed = used;
   return await saveLast(env, summary);
 }
@@ -488,6 +638,7 @@ export default {
       const items = (payload.items || []).map(x => {
         const o = { ru: x.ru, kk: x.kk, pr: x.pr, pk: x.pk, ll: x.ll || null, src: x.src };
         if (x.dist) o.dist = x.dist;
+        if (x.loc) o.loc = 1;
         return o;
       });
       return json({ updated: payload.updated, live: live === '1', items }, 200, PUBLIC);
@@ -502,6 +653,29 @@ export default {
       const on = url.searchParams.get('on') === '1';
       await env.ECHO_KV.put(KV_LIVE, on ? '1' : '0');
       return json({ live: on, note: 'сайт увидит через 2–3 минуты (кэш /echo и KV)' });
+    }
+    if (path === '/probe') {
+      // Проверка источника с iPad: что по адресу и что воркер из него достанет.
+      const target = url.searchParams.get('url') || '';
+      try { new URL(target); } catch (e) { return json({ error: 'нужен параметр url=https://…' }, 400); }
+      const out = { url: target };
+      try {
+        const r = await fetch(target, { headers: { 'User-Agent': 'KonaevEcho/1.0 (+https://konaev.tv)' } });
+        const text = await r.text();
+        out.status = r.status; out.type = r.headers.get('content-type');
+        const rss = parseFeedItems(text);
+        out.rssItems = rss.length;
+        // Ленты, объявленные на странице (<link rel="alternate" type="…rss/atom…">).
+        out.feedsOnPage = Array.from(text.matchAll(/<link[^>]+type=["']application\/(?:rss|atom)\+xml["'][^>]*>/gi))
+          .map(m => (m[0].match(/href=["']([^"']+)["']/i) || [])[1]).filter(Boolean)
+          .map(h => { try { return new URL(decodeEntities(h), target).href; } catch (e) { return h; } });
+        const items = rss.length ? rss : (looksHtml(text, out.type) ? extractHtmlItems(text, target) : []);
+        out.mode = rss.length ? 'rss' : (items.length ? 'html' : 'ничего не найдено');
+        out.items = items.length;
+        out.sample = items.slice(0, 8).map(x => x.title + '  →  ' + x.link);
+        out.localMentions = items.filter(x => localHit(x.title + ' ' + x.desc)).length;
+      } catch (e) { out.error = String(e).slice(0, 150); }
+      return json(out);
     }
     if (path === '/diag') {
       const [last, payload, live] = await Promise.all([kvJson(env, KV_LAST, null), kvJson(env, KV_PAYLOAD, null), env.ECHO_KV.get(KV_LIVE)]);

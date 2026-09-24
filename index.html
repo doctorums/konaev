@@ -1000,21 +1000,32 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
   .grille{height:2.6rem;max-width:9.5rem}
 }
 /* ── канал 6 · Эхо эфира ── */
-.echo{justify-content:center!important;text-align:left}
+/* Каркас канала неподвижен: у каждого блока своё постоянное место, при смене
+   эха меняется только кегль фразы (подбирает echoFit), а не высота блоков. */
+.echo{justify-content:flex-start!important;text-align:left}
+/* верх канала — ниже часов, иначе заголовок под ними. .clock лежит вне .stage
+   (контейнера), и его 4cqh считаются от окна — поэтому здесь 4svh, не 4cqh. */
+.ch.echo{padding-top:calc(.8rem + 1.25*clamp(.66rem,4svh,1.7rem))}
+.echo .ebody{flex:1;min-height:0;display:flex;flex-direction:column;gap:max(.25rem,1.4cqh)}
 .echo .etop{display:flex;align-items:center;justify-content:space-between;gap:.6rem;font-size:clamp(.6rem,3.4cqh,1.3rem);color:#6CCB5F;letter-spacing:.08em;text-transform:uppercase}
 .echo .etit{cursor:default;-webkit-user-select:none;user-select:none}
 .echo .elang{font:inherit;color:#B9C3DD;border:1px solid rgba(185,195,221,.45);border-radius:6px;padding:.1rem .45rem;letter-spacing:.06em}
 .echo .elead{color:#5FD4D0;font-size:clamp(.66rem,3.8cqh,1.7rem)!important}
-.echo .ephr{margin:0;font-family:&#x27;Unbounded&#x27;,&#x27;Trebuchet MS&#x27;,sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.12;color:#F2C230;font-size:clamp(.95rem,7.4cqh,4.2rem)}
-.echo .ephr.kk{font-family:&#x27;Golos Text&#x27;,&#x27;Segoe UI&#x27;,sans-serif}
-.echo .ew{display:inline;opacity:0;font-weight:700}
-.echo .ew1{opacity:.5;font-size:.82em}
-.echo .ew2{opacity:.24;font-size:.66em}
-.echo .ew3{opacity:.1;font-size:.52em}
-.echo .ephr.run .ew{animation:echoIn .7s ease both}
-.echo .ephr.run .ew1{animation-delay:.55s}.echo .ephr.run .ew2{animation-delay:1.1s}.echo .ephr.run .ew3{animation-delay:1.65s}
+.echo .ephr{flex:1 1 0;min-height:0;margin:0;display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden;font-size:clamp(.95rem,10cqh,4.8rem)} /* потолок; echoFit ужмёт */
+.echo .etxt{display:block;font-family:&#x27;Unbounded&#x27;,&#x27;Trebuchet MS&#x27;,sans-serif;font-weight:700;letter-spacing:-.01em;line-height:1.16;color:#F2C230;overflow-wrap:normal;word-break:normal;hyphens:manual;text-wrap:balance}
+.echo .ephr.kk .etxt{font-family:&#x27;Golos Text&#x27;,&#x27;Segoe UI&#x27;,sans-serif;font-weight:700;letter-spacing:0}
+.echo .etail{display:block;flex:none;height:1.25em;margin:.3em 0 0;overflow:hidden;white-space:nowrap;font-family:&#x27;Unbounded&#x27;,&#x27;Trebuchet MS&#x27;,sans-serif;font-weight:700;color:#F2C230;font-size:clamp(.7rem,4.4cqh,2rem)!important;line-height:1.25}
+.echo .etail.kk{font-family:&#x27;Golos Text&#x27;,&#x27;Segoe UI&#x27;,sans-serif}
+.echo .ew{display:inline-block;opacity:0;margin-right:.45em}
+.echo .ew1{opacity:.5}
+.echo .ew2{opacity:.26;font-size:.8em}
+.echo .ew3{opacity:.12;font-size:.64em}
+.echo .etail.run .ew{animation:echoIn .7s ease both}
+.echo .etail.run .ew1{animation-delay:.55s}.echo .etail.run .ew2{animation-delay:1.1s}.echo .etail.run .ew3{animation-delay:1.65s}
 @keyframes echoIn{from{opacity:0;filter:blur(3px)}}
 .echo .emeta{font-size:clamp(.6rem,3.3cqh,1.4rem)!important;color:#B9C3DD}
+.echo .ebody .emeta{flex:none;min-height:2.7em;line-height:1.35}
+.echo .ebody .elead,.echo .ebody .erow{flex:none}
 .echo .emeta b{color:#F3EBDD;font-weight:600}
 .echo .erow{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
 .echo .edose{font-size:clamp(.6rem,3.2cqh,1.3rem)!important;color:#8E98B5}
@@ -1028,7 +1039,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 @keyframes liveBlink{50%{opacity:.55}}
 .echo .eplayer{position:relative;width:100%;aspect-ratio:16/9;max-height:38cqh;background:#050505;border:2px solid #F3EBDD;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#8d8577;font-size:clamp(.6rem,3.2cqh,1.2rem);text-align:center;padding:.5rem;overflow:hidden}
 .echo .eplayer iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-@media (prefers-reduced-motion: reduce){.echo .ephr.run .ew,.echo .ebadge{animation:none}}
+@media (prefers-reduced-motion: reduce){.echo .etail.run .ew,.echo .ebadge{animation:none}}
 &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -1108,7 +1119,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
         &lt;div class=&quot;etop px&quot;&gt;&lt;span class=&quot;etit&quot; id=&quot;echo-tit&quot;&gt;Эхо эфира&lt;/span&gt;&lt;span id=&quot;echo-cnt&quot;&gt;&lt;/span&gt;&lt;button type=&quot;button&quot; class=&quot;elang&quot; id=&quot;echo-lang&quot;&gt;ҚАЗ&lt;/button&gt;&lt;/div&gt;
         &lt;div class=&quot;ebody&quot; id=&quot;echo-body&quot;&gt;
           &lt;p class=&quot;elead&quot; id=&quot;echo-lead&quot;&gt;Пока вы листали ленту, в мире:&lt;/p&gt;
-          &lt;p class=&quot;ephr&quot; id=&quot;echo-phr&quot;&gt;&lt;/p&gt;
+          &lt;p class=&quot;ephr&quot; id=&quot;echo-phr&quot;&gt;&lt;span class=&quot;etxt&quot; id=&quot;echo-txt&quot;&gt;&lt;/span&gt;&lt;span class=&quot;etail&quot; id=&quot;echo-tail&quot;&gt;&lt;/span&gt;&lt;/p&gt;
           &lt;p class=&quot;emeta&quot; id=&quot;echo-meta&quot;&gt;&lt;/p&gt;
           &lt;div class=&quot;erow&quot;&gt;
             &lt;a class=&quot;btn y&quot; href=&quot;#&quot; id=&quot;echo-next&quot;&gt;Ещё эхо&lt;/a&gt;
@@ -1419,10 +1430,36 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     var h=&#x27;&#x27;;for(var i=1;i&lt;=10;i++)h+=&#x27;&lt;i&#x27;+(i&lt;=vol?&#x27; class=&quot;on&quot;&#x27;:&#x27;&#x27;)+&#x27;&gt;&lt;/i&gt;&#x27;;
     volBars.innerHTML=h;volEl.className=&#x27;vol px&#x27;;clearTimeout(volT);volT=setTimeout(function(){volEl.className=&#x27;vol px hide&#x27;;},1800);
   }
+  /* Бегущая строка: на канале «Эхо эфира» по ней идут эхо (на текущем языке),
+     на остальных — слоганы из разметки. Скорость в пикселях постоянная: её
+     задаёт исходная строка слоганов (52 с на круг), длина эха её не меняет. */
+  var crawlEl=document.getElementById(&#x27;crawl&#x27;),crawlSlogans=crawlEl?crawlEl.innerHTML:&#x27;&#x27;,crawlMode=&#x27;slogans&#x27;,crawlSpeed=0;
+  function crawlSet(mode){
+    if(!crawlEl||(mode===crawlMode&amp;&amp;mode!==&#x27;echo&#x27;))return;
+    if(!crawlSpeed)crawlSpeed=(crawlEl.scrollWidth/2||1)/52; /* px/с, меряем на слоганах */
+    var h=crawlSlogans;
+    if(mode===&#x27;echo&#x27;){
+      var one=&#x27;&#x27;,ord=shuffle(eItems.length);
+      ord.forEach(function(i){var it=eItems[i],p=eLang===&#x27;kk&#x27;?(it.pk||it.pr):it.pr;
+        one+=&#x27;&lt;span&gt;&#x27;+(p?&#x27;&lt;b&gt;&#x27;+esc(p)+&#x27;&lt;/b&gt; · &#x27;:&#x27;&#x27;)+esc(it[eLang]||it.ru)+&#x27;&lt;/span&gt;&#x27;;});
+      /* Круг не короче экрана, иначе в петле видна пустая дыра; затем две копии
+         подряд — анимация сдвигает на −50% и замыкает круг. */
+      crawlEl.innerHTML=one;
+      var k=Math.max(1,Math.ceil((crawlEl.parentNode.clientWidth||1)/(crawlEl.scrollWidth||1))),u=&#x27;&#x27;;
+      while(k--)u+=one;
+      h=u+u;
+    }
+    crawlMode=mode;crawlEl.innerHTML=h;
+    if(crawlEl.parentNode.className.indexOf(&#x27;static&#x27;)&gt;=0){var f=crawlEl.querySelector(&#x27;span&#x27;);if(f)f.className+=&#x27; show&#x27;;return;}
+    if(crawlEl.style.animation===&#x27;none&#x27;)return; /* JS-запасной ход (crawlFallback) сам подстроится */
+    crawlEl.style.animationDuration=Math.max(8,(crawlEl.scrollWidth/2)/crawlSpeed)+&#x27;s&#x27;;
+    crawlEl.style.animationName=&#x27;none&#x27;;void crawlEl.offsetWidth;crawlEl.style.animationName=&#x27;&#x27;;
+  }
   function render(){
     chans.forEach(function(c,i){c.className=c.className.replace(/\s?on\b/,&#x27;&#x27;)+(i===cur?&#x27; on&#x27;:&#x27;&#x27;);});
     var c=chans[cur];showOsd(c.getAttribute(&#x27;data-n&#x27;)+&#x27; &#x27;+c.getAttribute(&#x27;data-name&#x27;));
     if(c.id===&#x27;echo&#x27;)echoEnter();
+    crawlSet(c.id===&#x27;echo&#x27;?&#x27;echo&#x27;:&#x27;slogans&#x27;);
   }
   function hiss(){
     if(!ac||vol===0)return;
@@ -1505,6 +1542,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     worker:&#x27;https://konaev-echo.sv2txxznjm.workers.dev&#x27;,  /* воркер konaev-echo, код в workers/ */
     maxAgeH:48,           /* старше — считаем, что воркер умер, показываем запас */
     dose:10,              /* эхо за визит */
+    localShare:0.34,      /* доля местных эхо (loc:1 от воркера — Конаев и область), если они есть */
     live:{platform:&#x27;twitch&#x27;,channel:&#x27;&#x27;}  /* канал владельца; пусто = трансляции нет */
   };
   var KONAEV=[43.8667,77.0667];
@@ -1543,15 +1581,15 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   var T={
     ru:{tit:&#x27;Эхо эфира&#x27;,lead:&#x27;Пока вы листали ленту, в мире:&#x27;,next:&#x27;Ещё эхо&#x27;,left:function(n){return &#x27;осталось на сегодня: &#x27;+n;},
         doneH:&#x27;На сегодня эха хватит.&#x27;,doneP:&#x27;Мир подождёт. Телевизор тоже.&#x27;,back:&#x27;На главный&#x27;,km:&#x27; км от Конаева&#x27;,
-        light:&#x27;свет долетел бы за &#x27;,near:&#x27;совсем рядом&#x27;,far:&#x27;далеко, но долетело&#x27;,live:&#x27;ВЛАДЕЛЕЦ В ЭФИРЕ&#x27;,
+        light:&#x27;свет долетел бы за &#x27;,near:&#x27;совсем рядом&#x27;,here:&#x27;прямо здесь&#x27;,far:&#x27;далеко, но долетело&#x27;,live:&#x27;ВЛАДЕЛЕЦ В ЭФИРЕ&#x27;,
         liveNote:&#x27;Заявки принимаем как обычно. Перезвонит после боя.&#x27;,lang:&#x27;ҚАЗ&#x27;,ph:&#x27;Здесь будет трансляция.&lt;br&gt;Пока владелец не нажал кнопку, это макет.&#x27;,s:&#x27; с&#x27;,min:&#x27; мин &#x27;},
     kk:{tit:&#x27;Эфир жаңғырығы&#x27;,lead:&#x27;Сіз лента ақтарып отырғанда, әлемде:&#x27;,next:&#x27;Тағы жаңғырық&#x27;,left:function(n){return &#x27;бүгінге қалды: &#x27;+n;},
         doneH:&#x27;Бүгінге жаңғырық жетеді.&#x27;,doneP:&#x27;Әлем күте тұрады. Теледидар да.&#x27;,back:&#x27;Басты арнаға&#x27;,km:&#x27; км Қонаевтан&#x27;,
-        light:&#x27;жарық жетер еді: &#x27;,near:&#x27;жап-жақын&#x27;,far:&#x27;алыс, бірақ жетті&#x27;,live:&#x27;ИЕСІ ЭФИРДЕ&#x27;,
+        light:&#x27;жарық жетер еді: &#x27;,near:&#x27;жап-жақын&#x27;,here:&#x27;дәл осында&#x27;,far:&#x27;алыс, бірақ жетті&#x27;,live:&#x27;ИЕСІ ЭФИРДЕ&#x27;,
         liveNote:&#x27;Өтінімдерді әдеттегідей қабылдаймыз. Ойыннан кейін хабарласады.&#x27;,lang:&#x27;РУС&#x27;,ph:&#x27;Мұнда трансляция болады.&lt;br&gt;Иесі батырманы басқанша, бұл макет.&#x27;,s:&#x27; с&#x27;,min:&#x27; мин &#x27;}
   };
   var eL=(navigator.language||&#x27;ru&#x27;).toLowerCase(),eLang=(eL.indexOf(&#x27;kk&#x27;)===0||eL.indexOf(&#x27;kz&#x27;)===0)?&#x27;kk&#x27;:&#x27;ru&#x27;;
-  var eItems=ECHO_POOL.slice(),eSrc=&#x27;встроенный запас&#x27;,eFetch=&#x27;не запрашивался&#x27;,eIdx=-1,eOrder=[],eSeen=0,eLive=false;
+  var eItems=ECHO_POOL.slice(),eSrc=&#x27;встроенный запас&#x27;,eFetch=&#x27;не запрашивался&#x27;,eCur=0,eQ={g:{list:[],i:-1},l:{list:[],i:-1}},eSeen=0,eLive=false;
   function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k);sessionStorage.setItem(k,v);}catch(e){return null;}}
   eSeen=parseInt(ss(&#x27;echoSeen&#x27;)||&#x27;0&#x27;,10)||0;
   try{eLive=/[?&amp;]live=1/.test(window.parent.location.search)||/[?&amp;]live=1/.test(location.search);}catch(e){}
@@ -1586,24 +1624,40 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     $e(&#x27;echo-badge&#x27;).textContent=t.live;var pl=$e(&#x27;echo-player&#x27;);if(!pl.querySelector(&#x27;iframe&#x27;))pl.innerHTML=t.ph;$e(&#x27;echo-live-note&#x27;).textContent=t.liveNote;
     $e(&#x27;echo&#x27;).setAttribute(&#x27;data-name&#x27;,eLang===&#x27;kk&#x27;?&#x27;ЭФИР ЖАҢҒЫРЫҒЫ&#x27;:&#x27;ЭХО ЭФИРА&#x27;);
   }
+  /* Кегль фразы: самый крупный, при котором она вместе со строкой эха
+     помещается в свою область и ни одно слово не вылезает за край. Верхняя граница — кегль из
+     CSS (.ephr), нижняя — 9px. Область фиксирована, поэтому соседние блоки не
+     двигаются, какой бы длины ни была фраза. */
+  function echoFit(){
+    var box=$e(&#x27;echo-phr&#x27;),el=$e(&#x27;echo-txt&#x27;);
+    if(!box||!el||!box.clientHeight)return; /* канал не на экране */
+    var W=box.clientWidth,H=box.clientHeight,hi=parseFloat(getComputedStyle(box).fontSize)||24,lo=9,i;
+    function fits(px){el.style.fontSize=px+&#x27;px&#x27;;return box.scrollHeight&lt;=H+1&amp;&amp;el.scrollWidth&lt;=W+1;} /* фраза + строка эха */
+    if(fits(hi))return;
+    for(i=0;i&lt;9;i++){var mid=(lo+hi)/2;if(fits(mid))lo=mid;else hi=mid;}
+    el.style.fontSize=lo+&#x27;px&#x27;;
+  }
   function echoDraw(){
-    var t=T[eLang],phr=$e(&#x27;echo-phr&#x27;),meta=$e(&#x27;echo-meta&#x27;),nx=$e(&#x27;echo-next&#x27;),dose=$e(&#x27;echo-dose&#x27;);
+    var t=T[eLang],phr=$e(&#x27;echo-phr&#x27;),txtEl=$e(&#x27;echo-txt&#x27;),tailEl=$e(&#x27;echo-tail&#x27;),meta=$e(&#x27;echo-meta&#x27;),nx=$e(&#x27;echo-next&#x27;),dose=$e(&#x27;echo-dose&#x27;),
+        kk=eLang===&#x27;kk&#x27;?&#x27; kk&#x27;:&#x27;&#x27;;
     echoText();
+    phr.className=&#x27;ephr&#x27;+kk;tailEl.className=&#x27;etail&#x27;+kk;
     if(eSeen&gt;ECHO_CFG.dose){ /* доза исчерпана */
-      $e(&#x27;echo-lead&#x27;).textContent=&#x27;&#x27;;
-      phr.className=&#x27;ephr&#x27;+(eLang===&#x27;kk&#x27;?&#x27; kk&#x27;:&#x27;&#x27;);phr.innerHTML=esc(t.doneH);
+      $e(&#x27;echo-lead&#x27;).textContent=&#x27; &#x27;; /* пустая строка держит место — блоки не прыгают */
+      txtEl.textContent=t.doneH;tailEl.innerHTML=&#x27;&#x27;;echoFit();
       meta.textContent=t.doneP;nx.textContent=t.back;nx.setAttribute(&#x27;data-home&#x27;,&#x27;1&#x27;);dose.textContent=&#x27;&#x27;;
       $e(&#x27;echo-cnt&#x27;).textContent=&#x27;&#x27;;return;
     }
     nx.removeAttribute(&#x27;data-home&#x27;);nx.textContent=t.next;
-    var it=eItems[eOrder[eIdx]]||eItems[0],txt=it[eLang]||it.ru,words=txt.split(/\s+/),last=words[words.length-1],
-        w1=last.replace(/[.,!?:;…]+$/,&#x27;&#x27;),tl=tail(last);
-    phr.className=&#x27;ephr&#x27;+(eLang===&#x27;kk&#x27;?&#x27; kk&#x27;:&#x27;&#x27;);
-    phr.innerHTML=esc(txt)+&#x27; &lt;span class=&quot;ew ew1&quot;&gt;&#x27;+esc(w1)+&#x27;…&lt;/span&gt; &lt;span class=&quot;ew ew2&quot;&gt;&#x27;+esc(tl)+&#x27;…&lt;/span&gt; &lt;span class=&quot;ew ew3&quot;&gt;&#x27;+esc(tl.length&gt;2?tl.slice(-2):tl)+&#x27;…&lt;/span&gt;&#x27;;
-    void phr.offsetWidth;phr.className+=&#x27; run&#x27;;
+    var it=eItems[eCur]||eItems[0],txt=it[eLang]||it.ru,words=txt.split(/\s+/),last=words[words.length-1],
+        w1=last.replace(/[.,!?:;…«»&quot;]+$/,&#x27;&#x27;),tl=tail(last);
+    txtEl.textContent=txt;echoFit();
+    tailEl.innerHTML=&#x27;&lt;span class=&quot;ew ew1&quot;&gt;&#x27;+esc(w1)+&#x27;…&lt;/span&gt;&lt;span class=&quot;ew ew2&quot;&gt;&#x27;+esc(tl)+&#x27;…&lt;/span&gt;&lt;span class=&quot;ew ew3&quot;&gt;&#x27;+esc(tl.length&gt;2?tl.slice(-2):tl)+&#x27;…&lt;/span&gt;&#x27;;
+    void tailEl.offsetWidth;tailEl.className+=&#x27; run&#x27;;
     var place=eLang===&#x27;kk&#x27;?(it.pk||it.pr):it.pr,m=&#x27;&lt;b&gt;&#x27;+esc(place||&#x27;&#x27;)+&#x27;&lt;/b&gt;&#x27;;
     var km=it.dist||(it.ll?hav(KONAEV,it.ll):null);
-    if(km!=null){
+    if(km!=null&amp;&amp;km&lt;15)m+=&#x27; · &#x27;+t.here; /* «0 км · свет за 0,0000 с» для самого Конаева звучит нелепо */
+    else if(km!=null){
       m+=&#x27; · &#x27;+(km&lt;150?t.near+&#x27;, &#x27;+fmtKm(km)+t.km:fmtKm(km)+t.km);
       m+=&#x27; · &#x27;+t.light+fmtLight(km);
     }else m+=&#x27; · &#x27;+t.far;
@@ -1614,7 +1668,13 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   }
   function echoNext(){
     eSeen++;ss(&#x27;echoSeen&#x27;,String(eSeen));
-    if(!eOrder.length||eIdx&gt;=eOrder.length-1){eOrder=shuffle(eItems.length);eIdx=0;}else eIdx++;
+    /* Две очереди без повторов до конца круга: местные (loc) и остальные.
+       Местное берём с вероятностью localShare, если такие есть. */
+    var loc=[],glob=[];eItems.forEach(function(x,i){(x.loc?loc:glob).push(i);});
+    if(!glob.length){glob=loc;loc=[];}
+    var useLoc=loc.length&amp;&amp;Math.random()&lt;ECHO_CFG.localShare,q=useLoc?eQ.l:eQ.g,src=useLoc?loc:glob;
+    if(!q.list.length||q.i&gt;=q.list.length-1){q.list=shuffle(src.length).map(function(k){return src[k];});q.i=0;}else q.i++;
+    eCur=q.list[q.i];
     echoDraw();
   }
   function echoLive(){
@@ -1640,7 +1700,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   var dTaps=[];
   function diag(){
     var d=$e(&#x27;echo-diag&#x27;);
-    d.innerHTML=esc(&#x27;ДИАГНОСТИКА ЭХА\nисточник: &#x27;+eSrc+&#x27;\nзаписей: &#x27;+eItems.length+&#x27;\nворкер: &#x27;+(ECHO_CFG.worker||&#x27;не задан&#x27;)+&#x27;\nзапрос: &#x27;+eFetch+
+    d.innerHTML=esc(&#x27;ДИАГНОСТИКА ЭХА\nисточник: &#x27;+eSrc+&#x27;\nзаписей: &#x27;+eItems.length+&#x27; (местных: &#x27;+eItems.filter(function(x){return x.loc;}).length+&#x27;)&#x27;+&#x27;\nворкер: &#x27;+(ECHO_CFG.worker||&#x27;не задан&#x27;)+&#x27;\nзапрос: &#x27;+eFetch+
       &#x27;\nпоказано за визит: &#x27;+eSeen+&#x27; из &#x27;+ECHO_CFG.dose+&#x27;\nязык: &#x27;+eLang+&#x27;\nэфир владельца: &#x27;+(eLive?&#x27;ВКЛ&#x27;:&#x27;выкл&#x27;)+&#x27; · канал: &#x27;+(ECHO_CFG.live.channel||&#x27;не задан&#x27;))+
       &#x27;&lt;br&gt;&lt;button type=&quot;button&quot; data-a=&quot;reset&quot;&gt;сбросить дозу&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;live&quot;&gt;эфир вкл/выкл&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;close&quot;&gt;закрыть&lt;/button&gt;&#x27;;
     d.className=&#x27;ediag px show&#x27;;
@@ -1666,7 +1726,8 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
       var ok=(j.items||[]).filter(function(x){return x&amp;&amp;x.ru&amp;&amp;x.kk;});
       if(!(age&lt;ECHO_CFG.maxAgeH)){eFetch=&#x27;данные устарели (&#x27;+Math.round(age)+&#x27; ч), остаёмся на запасе&#x27;;return;}
       if(ok.length&lt;3){eFetch=&#x27;мало записей (&#x27;+ok.length+&#x27;), остаёмся на запасе&#x27;;return;}
-      eItems=ok;eSrc=&#x27;воркер&#x27;;eOrder=[];eFetch=&#x27;ок, &#x27;+ok.length+&#x27; шт., возраст &#x27;+age.toFixed(1)+&#x27; ч&#x27;;
+      eItems=ok;eSrc=&#x27;воркер&#x27;;eQ={g:{list:[],i:-1},l:{list:[],i:-1}};eFetch=&#x27;ок, &#x27;+ok.length+&#x27; шт., возраст &#x27;+age.toFixed(1)+&#x27; ч&#x27;;
+      if(chans[cur]&amp;&amp;chans[cur].id===&#x27;echo&#x27;)crawlSet(&#x27;echo&#x27;); /* строка уже на эхо — подменяем на свежие */
       if(j.live!=null){eLive=!!j.live;echoLive();}
     }).catch(function(err){if(!done){done=true;clearTimeout(to);eFetch=&#x27;ошибка: &#x27;+String(err).slice(0,80);}});
   })();
@@ -1747,13 +1808,17 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     if(!reduce)return;
     var el=document.getElementById(&#x27;crawl&#x27;);if(!el)return;
     el.parentNode.className=&#x27;crawl static&#x27;;
-    var all=[].slice.call(el.querySelectorAll(&#x27;span&#x27;)),half=all.slice(0,all.length/2),k=0;
-    if(!half.length)return;
-    half[0].className+=&#x27; show&#x27;;
+    /* Список спанов берём заново на каждом шаге: на канале эха crawlSet меняет
+       содержимое строки. */
+    var k=0;
+    function half(){var all=[].slice.call(el.querySelectorAll(&#x27;span&#x27;));return all.slice(0,Math.max(1,all.length/2));}
+    var h0=half();if(!h0.length)return;
+    h0[0].className+=&#x27; show&#x27;;
     setInterval(function(){
-      half[k].className=half[k].className.replace(&#x27; show&#x27;,&#x27;&#x27;);
-      k=(k+1)%half.length;
-      half[k].className+=&#x27; show&#x27;;
+      var h=half();
+      h.forEach(function(s){s.className=s.className.replace(&#x27; show&#x27;,&#x27;&#x27;);});
+      k=(k+1)%h.length;
+      h[k].className+=&#x27; show&#x27;;
     },6000);
   })();
 
@@ -1765,20 +1830,24 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
       setTimeout(function(){
         if(Math.abs(el.getBoundingClientRect().left-a)&gt;0.5)return; /* CSS-анимация работает */
         el.style.animation=&#x27;none&#x27;;
-        var x=0,w=el.scrollWidth/2||1,last=0;
+        /* Ширину круга меряем каждый кадр: crawlSet на канале эха меняет
+           содержимое. Скорость — постоянная, по исходной строке слоганов. */
+        var x=0,speed=(el.scrollWidth/2||1)/52000,last=0;
         (function step(t){
-          if(last){x-=(t-last)*w/52000;if(-x&gt;=w)x+=w;el.style.transform=&#x27;translate3d(&#x27;+x+&#x27;px,0,0)&#x27;;}
+          if(last){var w=el.scrollWidth/2||1;x-=(t-last)*speed;while(-x&gt;=w)x+=w;el.style.transform=&#x27;translate3d(&#x27;+x+&#x27;px,0,0)&#x27;;}
           last=t;requestAnimationFrame(step);
         })(0);
       },900);
     },600);
   })();
 
-  window.addEventListener(&#x27;resize&#x27;,fit);
-  window.addEventListener(&#x27;orientationchange&#x27;,function(){setTimeout(fit,120);});
-  fit();setTimeout(fit,60);setTimeout(fit,400);
-  window.addEventListener(&#x27;load&#x27;,fit);
-  if(document.fonts&amp;&amp;document.fonts.ready){document.fonts.ready.then(function(){fit();});}
+  /* echoFit — после fit: размер экрана меняется, кегль фразы эха пересчитываем */
+  function fitAll(){fit();echoFit();}
+  window.addEventListener(&#x27;resize&#x27;,fitAll);
+  window.addEventListener(&#x27;orientationchange&#x27;,function(){setTimeout(fitAll,120);});
+  fit();setTimeout(fit,60);setTimeout(fitAll,400);
+  window.addEventListener(&#x27;load&#x27;,fitAll);
+  if(document.fonts&amp;&amp;document.fonts.ready){document.fonts.ready.then(function(){fitAll();});}
 })();
 &lt;/script&gt;
 
