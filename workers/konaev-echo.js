@@ -161,6 +161,12 @@ const ECHO_PROMPT = `Ты — редактор канала «Эхо эфира�
 {"ok":true или false,"political":true или false,"tragic":true или false,"ru":"...","kk":"...","place_en":"..." или null,"place_ru":"..." или null,"place_kk":"..." или null,"body":null,"in_region":false}
 Если не годится: {"ok":false,"political":...,"tragic":...}`;
 
+// Добавка к запросу для МЕСТНЫХ новостей: область редко даёт «лёгкие» темы
+// (замер 24.09: 4 из 4 местных отклонены — зерновой комплекс, рейды, новый
+// аким), поэтому для них допускается городская жизнь. Власть и происшествия —
+// нет, как и везде; стоп-листы с акиматами работают поверх.
+const LOCAL_RULE = `Это местная новость Конаева или Алматинской области. Для неё, кроме лёгких тем, ГОДИТСЯ и городская жизнь: благоустройство и новые объекты (парки, скверы, школы, детсады, дороги, больницы), праздники, концерты и фестивали, спорт и успехи земляков, погода, природа, туризм и отдых. По-прежнему НЕ годятся: акимы и любые чиновники, назначения, заявления, совещания и отчёты, законы и госпрограммы, выборы, происшествия, рейды, аварии, суды, трагедии. Фразу пиши о самом событии, без упоминания властей.`;
+
 // Стоп-лист — второй замок поверх ответа модели, не замена ему: промпт —
 // просьба, а не гарантия (урок образца от 04.09). Проверяется и заголовок
 // источника, и готовые ru/kk. Намеренно широкий: ложное срабатывание стоит
@@ -362,7 +368,7 @@ async function judgeEchoOnce(env, item, budget) {
         max_tokens: 1200,
         messages: [
           { role: 'system', content: ECHO_PROMPT },
-          { role: 'user', content: (item.hint ? item.hint + '\n\n' : '') + `Заголовок: ${item.title}\n\nНачало: ${(item.desc || '').slice(0, DESC_MAX) || '—'}` },
+          { role: 'user', content: (item.local ? LOCAL_RULE + '\n\n' : '') + (item.hint ? item.hint + '\n\n' : '') + `Заголовок: ${item.title}\n\nНачало: ${(item.desc || '').slice(0, DESC_MAX) || '—'}` },
         ],
       }),
     });
@@ -492,7 +498,7 @@ async function runEchoCollection(env, opts = {}) {
       // (и не в seen — проверка бесплатная, а лента могла дописать описание).
       if (f.local && !f.city && !localHit(x.item.title + ' ' + x.item.desc)) continue;
       if (stopHit(x.item.title, STOP_EN) || stopHit(x.item.title, STOP_RU) || stopHit(x.item.title, STOP_KK)) { seen.add(x.id); stoppedByTitle++; continue; }
-      if (f.local) { localPool.push(x); continue; }
+      if (f.local) { x.item.local = true; localPool.push(x); continue; }
       const host = sourceHost(f.url) || f.url;
       (byHost[host] = byHost[host] || []).push(x);
     }
