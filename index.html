@@ -1027,6 +1027,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 .echo .ebody .emeta{flex:none;min-height:2.7em;line-height:1.35}
 .echo .ebody .elead,.echo .ebody .erow{flex:none}
 .echo .emeta b{color:#F3EBDD;font-weight:600}
+.echo .emeta .mseg{white-space:nowrap}
 .echo .erow{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
 .echo .edose{font-size:clamp(.6rem,3.2cqh,1.3rem)!important;color:#8E98B5}
 .echo .ediag{display:none;position:absolute;left:3%;right:3%;top:14cqh;bottom:12cqh;z-index:9;overflow:auto;font-size:clamp(.55rem,2.9cqh,1.1rem);line-height:1.35;color:#6CCB5F;background:rgba(6,10,26,.97);border:1px dashed #6CCB5F;padding:.4rem .55rem;border-radius:6px;white-space:pre-wrap}
@@ -1654,14 +1655,18 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     txtEl.textContent=txt;echoFit();
     tailEl.innerHTML=&#x27;&lt;span class=&quot;ew ew1&quot;&gt;&#x27;+esc(w1)+&#x27;…&lt;/span&gt;&lt;span class=&quot;ew ew2&quot;&gt;&#x27;+esc(tl)+&#x27;…&lt;/span&gt;&lt;span class=&quot;ew ew3&quot;&gt;&#x27;+esc(tl.length&gt;2?tl.slice(-2):tl)+&#x27;…&lt;/span&gt;&#x27;;
     void tailEl.offsetWidth;tailEl.className+=&#x27; run&#x27;;
+    /* Строка переносится только между частями «место · км · свет»: каждая часть
+       неразрывна (.mseg), иначе на длинных строках «с» или «км» отрывались
+       на новую строку. */
     var place=eLang===&#x27;kk&#x27;?(it.pk||it.pr):it.pr,m=&#x27;&lt;b&gt;&#x27;+esc(place||&#x27;&#x27;)+&#x27;&lt;/b&gt;&#x27;;
+    function seg(x){m+=&#x27; &lt;span class=&quot;mseg&quot;&gt;· &#x27;+esc(x)+&#x27;&lt;/span&gt;&#x27;;}
     var km=it.dist||(it.ll?hav(KONAEV,it.ll):null);
-    if(km!=null&amp;&amp;km&lt;15)m+=&#x27; · &#x27;+t.here; /* «0 км · свет за 0,0000 с» для самого Конаева звучит нелепо */
+    if(km!=null&amp;&amp;km&lt;15)seg(t.here); /* «0 км · свет за 0,0000 с» для самого Конаева звучит нелепо */
     else if(km!=null){
-      m+=&#x27; · &#x27;+(km&lt;150?t.near+&#x27;, &#x27;+fmtKm(km)+t.km:fmtKm(km)+t.km);
-      m+=&#x27; · &#x27;+t.light+fmtLight(km);
-    }else m+=&#x27; · &#x27;+t.far;
-    if(it.ago)m+=&#x27; · &#x27;+esc(it.ago);
+      seg(km&lt;150?t.near+&#x27;, &#x27;+fmtKm(km)+t.km:fmtKm(km)+t.km);
+      seg(t.light+fmtLight(km));
+    }else seg(t.far);
+    if(it.ago)seg(it.ago);
     meta.innerHTML=m;
     $e(&#x27;echo-cnt&#x27;).textContent=Math.min(eSeen,ECHO_CFG.dose)+&#x27;/&#x27;+ECHO_CFG.dose;
     dose.textContent=eSeen&gt;=ECHO_CFG.dose?&#x27;&#x27;:t.left(ECHO_CFG.dose-eSeen);
