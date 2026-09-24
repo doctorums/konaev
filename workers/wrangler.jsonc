@@ -3,13 +3,15 @@
 // читает; он нужен, чтобы настройки лежали рядом с кодом и не разошлись, и
 // пригодится, если деплой перейдёт на wrangler или на сборку из GitHub.
 // Поменял привязку или расписание в дашборде — поправь и здесь.
-// Секреты (MIMO_API_KEY или LLM_API_KEY, ECHO_KEY) здесь НЕ хранятся. Переменные
-// (vars) сюда не добавлять: деплой через wrangler перезаписал бы ими дашборд.
+// Секреты (MIMO_API_KEY или LLM_API_KEY, ECHO_KEY) здесь НЕ хранятся — их
+// деплой не трогает. Переменные (vars) живут в дашборде; keep_vars ниже не даёт
+// деплою через wrangler их стереть.
 {
   "name": "konaev-echo",
   "main": "konaev-echo.js",
   "compatibility_date": "2026-09-01",
   "workers_dev": true,
+  "keep_vars": true,
   "kv_namespaces": [
     // konaev-echo-kv — создано 24.09.2026
     { "binding": "ECHO_KV", "id": "c0b8f82a01e245aa81204119a598c535" }
