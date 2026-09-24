@@ -511,6 +511,3 @@ export default {
     return new Response('not found', { status: 404 });
   },
 };
-
-// Для локальных тестов (Workers этот экспорт не трогает).
-export const _test = { parseFeedItems, verdict, stopHit, STOP_RU, STOP_KK, STOP_EN, runEchoCollection };
