@@ -59,7 +59,14 @@
 //   /run?full=1&wait=1  полный прогон с ожиданием сводки;
 //   /live?on=1|0    «владелец в эфире» — плашка на канале, без передеплоя;
 //   /diag           сводка последнего прогона, чтобы видеть причину нуля
-//                   без логов Cloudflare (с iPad их не посмотреть).
+//                   без логов Cloudflare (с iPad их не посмотреть);
+//   /probe?url=…    проверить источник: есть ли лента, что воркер из него
+//                   достаёт (первые заголовки), какие ленты объявлены на странице.
+//
+// Источник без RSS: если по адресу пришла обычная страница, а не лента,
+// воркер берёт заголовки прямо из ссылок на ней (extractHtmlItems) — так
+// читается, например, qonaev-gorod.kz/news. Хуже ленты (нет описаний и дат),
+// поэтому для сайтов с RSS указывать надо саму ленту.
 
 const LLM_URL_DEFAULT = 'https://llms.dotpoin.com/v1/chat/completions';
 const LLM_MODEL_DEFAULT = 'mimo-v2.5';
@@ -84,9 +91,13 @@ const DEFAULT_SOURCES = [
 const DEFAULT_LOCAL_SOURCES = [
   'https://tengrinews.kz/news.rss',
   'https://kaz.tengrinews.kz/news.rss',
-  'https://www.inform.kz/rss/rus.xml',
-  'https://www.zakon.kz/rss/all.xml',
+  'https://www.inform.kz/rss/rus.xml',   // Kazinform
+  'https://www.qonaev-gorod.kz/news',    // городской сайт Конаева, RSS нет — читается со страницы
 ];
+// Сайты, у которых ВСЁ — про Конаев и область: их записи не проверяются на
+// упоминание места (в заголовке городского сайта «Конаев» обычно не пишут),
+// а модели сообщается, что источник местный. Остальные проверки те же.
+const LOCAL_HOSTS = ['qonaev-gorod.kz'];
 // Места Конаева и области (ru и kk, корни — падежи ловятся сами). Алматы-город
 // сюда намеренно не входит: он отдельная единица и заслонил бы область.
 const LOCAL_WORDS = ['конаев', 'қонаев', 'капшагай', 'капчагай', 'қапшағай', 'алматинск', 'алматы облыс',
@@ -256,12 +267,49 @@ function parseFeedItems(xml) {
   return items;
 }
 
+// Страница новостей без RSS: заголовки берём из ссылок на ней. Берём только
+// ссылки того же сайта, ведущие ГЛУБЖЕ адреса страницы (…/news/что-то), с
+// текстом длиной с заголовок — так отсекаются меню, теги и «читать далее».
+function extractHtmlItems(html, pageUrl) {
+  let base;
+  try { base = new URL(pageUrl); } catch (e) { return []; }
+  const prefix = base.pathname.replace(/\/+$/, '') + '/';
+  const seenLinks = new Set(), items = [];
+  const re = /<a\b[^>]*href=["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let m;
+  while ((m = re.exec(html)) && items.length < 60) {
+    let u;
+    try { u = new URL(decodeEntities(m[1]), base); } catch (e) { continue; }
+    if (u.hostname.replace(/^www\./, '') !== base.hostname.replace(/^www\./, '')) continue;
+    if (!u.pathname.startsWith(prefix) || u.pathname.length <= prefix.length + 3) continue;
+    const title = stripCdata(m[2]);
+    if (title.length < 20 || title.length > 220 || !/\p{L}{3}/u.test(title)) continue;
+    const link = u.origin + u.pathname;
+    if (seenLinks.has(link)) continue;
+    seenLinks.add(link);
+    items.push({ title, link, desc: '', pub: '' });
+  }
+  return items;
+}
+
+function looksHtml(text, type) {
+  return /html/i.test(type || '') || /^\s*<!doctype html|<html[\s>]/i.test(text.slice(0, 500));
+}
+
 async function fetchFeed(url) {
   try {
     const r = await fetch(url, { headers: { 'User-Agent': 'KonaevEcho/1.0 (+https://konaev.tv)' } });
     if (!r.ok) return { items: [], err: 'http_' + r.status };
-    return { items: parseFeedItems(await r.text()) };
+    const text = await r.text();
+    const items = parseFeedItems(text);
+    if (items.length || !looksHtml(text, r.headers.get('content-type'))) return { items };
+    return { items: extractHtmlItems(text, url), html: true };
   } catch (e) { return { items: [], err: 'throw: ' + String(e).slice(0, 80) }; }
+}
+
+function isLocalHost(url) {
+  const h = sourceHost(url);
+  return !!h && LOCAL_HOSTS.some(x => h === x || h.endsWith('.' + x));
 }
 
 async function hashId(seed) {
@@ -309,7 +357,7 @@ async function judgeEchoOnce(env, item, budget) {
         max_tokens: 1200,
         messages: [
           { role: 'system', content: ECHO_PROMPT },
-          { role: 'user', content: `Заголовок: ${item.title}\n\nНачало: ${(item.desc || '').slice(0, DESC_MAX) || '—'}` },
+          { role: 'user', content: (item.hint ? item.hint + '\n\n' : '') + `Заголовок: ${item.title}\n\nНачало: ${(item.desc || '').slice(0, DESC_MAX) || '—'}` },
         ],
       }),
     });
@@ -414,14 +462,16 @@ async function runEchoCollection(env, opts = {}) {
   // упирался во время вызова, а не в бюджет).
   const feeds = sources.map(url => ({ url, local: false })).concat(localSources.map(url => ({ url, local: true })));
   const fetched = await Promise.all(feeds.map(async ({ url, local }) => {
-    const { items, err } = await fetchFeed(url);
+    const { items, err, html } = await fetchFeed(url);
+    const city = local && isLocalHost(url);
     const withIds = [];
     // Общие казахстанские ленты длинные, а местного в них мало — смотрим глубже.
     for (const item of items.slice(0, local ? FEED_SCAN_MAX * 3 : FEED_SCAN_MAX)) {
+      if (city) item.hint = 'Источник — городской новостной сайт Конаева: если в тексте не сказано иное, событие в Конаеве или Алматинской области.';
       const id = await hashId(item.link || `${url}|${item.pub || item.title}`);
-      withIds.push({ item, id, url, local });
+      withIds.push({ item, id, url, local, city });
     }
-    return { url, local, withIds, err };
+    return { url, local, city, html, withIds, err };
   }));
   used += feeds.length;
   const feedsOk = fetched.filter(f => !f.err).length;
@@ -435,7 +485,7 @@ async function runEchoCollection(env, opts = {}) {
       if (seen.has(x.id)) continue;
       // Местная лента: без упоминания места области запись даже не кандидат
       // (и не в seen — проверка бесплатная, а лента могла дописать описание).
-      if (f.local && !localHit(x.item.title + ' ' + x.item.desc)) continue;
+      if (f.local && !f.city && !localHit(x.item.title + ' ' + x.item.desc)) continue;
       if (stopHit(x.item.title, STOP_EN) || stopHit(x.item.title, STOP_RU) || stopHit(x.item.title, STOP_KK)) { seen.add(x.id); stoppedByTitle++; continue; }
       if (f.local) { localPool.push(x); continue; }
       const host = sourceHost(f.url) || f.url;
@@ -502,6 +552,8 @@ async function runEchoCollection(env, opts = {}) {
     else if (e.place_en && budgetLeft() >= 4) { ll = await geocodePlace(e.place_en); used++; }
     // Местное эхо без координат или дальше радиуса — отказ: «рядом» должно
     // быть проверено, а не сказано моделью.
+    // С городского сайта без названного места — это сам Конаев.
+    if (r.city && e.inRegion && !ll) ll = KONAEV.slice();
     if (r.local && (!ll || havKm(KONAEV, ll) > LOCAL_RADIUS_KM)) { summary.rejected.local_far = (summary.rejected.local_far || 0) + 1; continue; }
     const it = { id: r.id, ru: e.ru, kk: e.kk, pr: e.pr || '', pk: e.pk || e.pr || '', ll, src: sourceHost(r.url), t: summary.ranAt };
     if (dist) it.dist = dist;
@@ -533,7 +585,7 @@ async function runEchoCollection(env, opts = {}) {
     env.ECHO_KV.put(KV_SEEN, JSON.stringify(seenOut)),
   ]);
 
-  summary.sources = fetched.map(f => ({ url: f.url, local: f.local || undefined, fetched: f.withIds.length, err: f.err || null,
+  summary.sources = fetched.map(f => ({ url: f.url, local: f.local || undefined, html: f.html || undefined, fetched: f.withIds.length, err: f.err || null,
     candidates: candidates.filter(c => c.url === f.url).length }));
   summary.localTotal = locals.length;
   summary.subrequestsUsed = used;
@@ -589,6 +641,29 @@ export default {
       const on = url.searchParams.get('on') === '1';
       await env.ECHO_KV.put(KV_LIVE, on ? '1' : '0');
       return json({ live: on, note: 'сайт увидит через 2–3 минуты (кэш /echo и KV)' });
+    }
+    if (path === '/probe') {
+      // Проверка источника с iPad: что по адресу и что воркер из него достанет.
+      const target = url.searchParams.get('url') || '';
+      try { new URL(target); } catch (e) { return json({ error: 'нужен параметр url=https://…' }, 400); }
+      const out = { url: target };
+      try {
+        const r = await fetch(target, { headers: { 'User-Agent': 'KonaevEcho/1.0 (+https://konaev.tv)' } });
+        const text = await r.text();
+        out.status = r.status; out.type = r.headers.get('content-type');
+        const rss = parseFeedItems(text);
+        out.rssItems = rss.length;
+        // Ленты, объявленные на странице (<link rel="alternate" type="…rss/atom…">).
+        out.feedsOnPage = Array.from(text.matchAll(/<link[^>]+type=["']application\/(?:rss|atom)\+xml["'][^>]*>/gi))
+          .map(m => (m[0].match(/href=["']([^"']+)["']/i) || [])[1]).filter(Boolean)
+          .map(h => { try { return new URL(decodeEntities(h), target).href; } catch (e) { return h; } });
+        const items = rss.length ? rss : (looksHtml(text, out.type) ? extractHtmlItems(text, target) : []);
+        out.mode = rss.length ? 'rss' : (items.length ? 'html' : 'ничего не найдено');
+        out.items = items.length;
+        out.sample = items.slice(0, 8).map(x => x.title + '  →  ' + x.link);
+        out.localMentions = items.filter(x => localHit(x.title + ' ' + x.desc)).length;
+      } catch (e) { out.error = String(e).slice(0, 150); }
+      return json(out);
     }
     if (path === '/diag') {
       const [last, payload, live] = await Promise.all([kvJson(env, KV_LAST, null), kvJson(env, KV_PAYLOAD, null), env.ECHO_KV.get(KV_LIVE)]);
