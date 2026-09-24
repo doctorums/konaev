@@ -999,6 +999,36 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
   .pw{min-width:4rem;min-height:2.4rem;font-size:.78rem}
   .grille{height:2.6rem;max-width:9.5rem}
 }
+/* ── канал 6 · Эхо эфира ── */
+.echo{justify-content:center!important;text-align:left}
+.echo .etop{display:flex;align-items:center;justify-content:space-between;gap:.6rem;font-size:clamp(.6rem,3.4cqh,1.3rem);color:#6CCB5F;letter-spacing:.08em;text-transform:uppercase}
+.echo .etit{cursor:default;-webkit-user-select:none;user-select:none}
+.echo .elang{font:inherit;color:#B9C3DD;border:1px solid rgba(185,195,221,.45);border-radius:6px;padding:.1rem .45rem;letter-spacing:.06em}
+.echo .elead{color:#5FD4D0;font-size:clamp(.66rem,3.8cqh,1.7rem)!important}
+.echo .ephr{margin:0;font-family:&#x27;Unbounded&#x27;,&#x27;Trebuchet MS&#x27;,sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.12;color:#F2C230;font-size:clamp(.95rem,7.4cqh,4.2rem)}
+.echo .ephr.kk{font-family:&#x27;Golos Text&#x27;,&#x27;Segoe UI&#x27;,sans-serif}
+.echo .ew{display:inline;opacity:0;font-weight:700}
+.echo .ew1{opacity:.5;font-size:.82em}
+.echo .ew2{opacity:.24;font-size:.66em}
+.echo .ew3{opacity:.1;font-size:.52em}
+.echo .ephr.run .ew{animation:echoIn .7s ease both}
+.echo .ephr.run .ew1{animation-delay:.55s}.echo .ephr.run .ew2{animation-delay:1.1s}.echo .ephr.run .ew3{animation-delay:1.65s}
+@keyframes echoIn{from{opacity:0;filter:blur(3px)}}
+.echo .emeta{font-size:clamp(.6rem,3.3cqh,1.4rem)!important;color:#B9C3DD}
+.echo .emeta b{color:#F3EBDD;font-weight:600}
+.echo .erow{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.echo .edose{font-size:clamp(.6rem,3.2cqh,1.3rem)!important;color:#8E98B5}
+.echo .ediag{display:none;position:absolute;left:3%;right:3%;top:14cqh;bottom:12cqh;z-index:9;overflow:auto;font-size:clamp(.55rem,2.9cqh,1.1rem);line-height:1.35;color:#6CCB5F;background:rgba(6,10,26,.97);border:1px dashed #6CCB5F;padding:.4rem .55rem;border-radius:6px;white-space:pre-wrap}
+.echo .ediag.show{display:block}
+.echo .ediag button{font:inherit;color:#1E1A16;background:#6CCB5F;border-radius:4px;padding:.05rem .4rem;margin:.25rem .3rem 0 0}
+.echo .elive{display:none;flex-direction:column;gap:.4rem}
+.echo.is-live .elive{display:flex}
+.echo.is-live .ebody{display:none}
+.echo .ebadge{align-self:flex-start;background:#C8341E;color:#fff;padding:.15rem .5rem;border-radius:4px;font-size:clamp(.62rem,3.6cqh,1.4rem);letter-spacing:.1em;animation:liveBlink 1.6s steps(2,start) infinite}
+@keyframes liveBlink{50%{opacity:.55}}
+.echo .eplayer{position:relative;width:100%;aspect-ratio:16/9;max-height:38cqh;background:#050505;border:2px solid #F3EBDD;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#8d8577;font-size:clamp(.6rem,3.2cqh,1.2rem);text-align:center;padding:.5rem;overflow:hidden}
+.echo .eplayer iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+@media (prefers-reduced-motion: reduce){.echo .ephr.run .ew,.echo .ebadge{animation:none}}
 &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -1074,6 +1104,25 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
         &lt;p class=&quot;cy px&quot; style=&quot;font-size:clamp(.72rem,4cqh,1.2rem)&quot; id=&quot;swipes&quot;&gt;Попыток листать: 0. Уважаем.&lt;/p&gt;
         &lt;p class=&quot;small&quot;&gt;Да, вы, скорее всего, пришли сюда из Инстаграма. Мы оценили иронию.&lt;/p&gt;
       &lt;/section&gt;
+      &lt;section class=&quot;ch echo&quot; data-n=&quot;06&quot; data-name=&quot;ЭХО ЭФИРА&quot; id=&quot;echo&quot;&gt;
+        &lt;div class=&quot;etop px&quot;&gt;&lt;span class=&quot;etit&quot; id=&quot;echo-tit&quot;&gt;Эхо эфира&lt;/span&gt;&lt;span id=&quot;echo-cnt&quot;&gt;&lt;/span&gt;&lt;button type=&quot;button&quot; class=&quot;elang&quot; id=&quot;echo-lang&quot;&gt;ҚАЗ&lt;/button&gt;&lt;/div&gt;
+        &lt;div class=&quot;ebody&quot; id=&quot;echo-body&quot;&gt;
+          &lt;p class=&quot;elead&quot; id=&quot;echo-lead&quot;&gt;Пока вы листали ленту, в мире:&lt;/p&gt;
+          &lt;p class=&quot;ephr&quot; id=&quot;echo-phr&quot;&gt;&lt;/p&gt;
+          &lt;p class=&quot;emeta&quot; id=&quot;echo-meta&quot;&gt;&lt;/p&gt;
+          &lt;div class=&quot;erow&quot;&gt;
+            &lt;a class=&quot;btn y&quot; href=&quot;#&quot; id=&quot;echo-next&quot;&gt;Ещё эхо&lt;/a&gt;
+            &lt;span class=&quot;edose&quot; id=&quot;echo-dose&quot;&gt;&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;elive&quot; id=&quot;echo-live&quot;&gt;
+          &lt;span class=&quot;ebadge px&quot; id=&quot;echo-badge&quot;&gt;ВЛАДЕЛЕЦ В ЭФИРЕ&lt;/span&gt;
+          &lt;div class=&quot;eplayer&quot; id=&quot;echo-player&quot;&gt;Здесь будет трансляция.&lt;br&gt;Пока владелец не нажал кнопку, это макет.&lt;/div&gt;
+          &lt;p class=&quot;emeta&quot; id=&quot;echo-live-note&quot;&gt;Заявки принимаем как обычно. Перезвонит после боя.&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;ediag px&quot; id=&quot;echo-diag&quot;&gt;&lt;/div&gt;
+      &lt;/section&gt;
+
           &lt;/div&gt;
 
           &lt;canvas id=&quot;noise&quot; width=&quot;160&quot; height=&quot;100&quot;&gt;&lt;/canvas&gt;
@@ -1150,7 +1199,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   var reduce=window.matchMedia&amp;&amp;window.matchMedia(&#x27;(prefers-reduced-motion: reduce)&#x27;).matches;
   var cur=1,busy=false,swipes=0,vol=0,ac=null,osdT=null,volT=null,backT=null,start=Date.now();
 
-  /* позиции переключателя: 5 каналов + два действия */
+  /* позиции переключателя: 6 каналов + два действия */
   var chase=-1,chaseT=null,idleT=null;
   var POS=[
     {t:&#x27;1&#x27;,s:&#x27;главный&#x27;,go:1},
@@ -1158,10 +1207,11 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     {t:&#x27;3&#x27;,s:&#x27;родителям&#x27;,go:3},
     {t:&#x27;4&#x27;,s:&#x27;ремонт&#x27;,go:4},
     {t:&#x27;5&#x27;,s:&#x27;важное&#x27;,go:5},
+    {t:&#x27;6&#x27;,s:&#x27;эхо эфира&#x27;,go:6},
     {t:&#x27;W&#x27;,s:&#x27;WhatsApp&#x27;,msg:&#x27;WHATSAPP: НОМЕР НЕ ЗАДАН&#x27;},
     {t:&#x27;T&#x27;,s:&#x27;позвонить&#x27;,msg:&#x27;ТЕЛЕФОН: НОМЕР НЕ ЗАДАН&#x27;}
   ];
-  var STEP=44, A0=-(STEP*(POS.length-1))/2, pos=0;
+  var STEP=40, A0=-(STEP*(POS.length-1))/2, pos=0;
   var baseFS=12;
   var dialEl=document.getElementById(&#x27;dial&#x27;),knob=document.getElementById(&#x27;knob&#x27;),
       needle=document.getElementById(&#x27;needle&#x27;),knobnum=document.getElementById(&#x27;knobnum&#x27;),
@@ -1372,6 +1422,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   function render(){
     chans.forEach(function(c,i){c.className=c.className.replace(/\s?on\b/,&#x27;&#x27;)+(i===cur?&#x27; on&#x27;:&#x27;&#x27;);});
     var c=chans[cur];showOsd(c.getAttribute(&#x27;data-n&#x27;)+&#x27; &#x27;+c.getAttribute(&#x27;data-name&#x27;));
+    if(c.id===&#x27;echo&#x27;)echoEnter();
   }
   function hiss(){
     if(!ac||vol===0)return;
@@ -1420,15 +1471,15 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     if(Math.max(Math.abs(dx),Math.abs(dy))&lt;40)return;
     swipes++;updSwipes();
     var fwd=Math.abs(dy)&gt;Math.abs(dx)?dy&lt;0:dx&lt;0;
-    var i=Math.max(0,Math.min(4,curPos()+(fwd?1:-1)));select(i);
+    var i=Math.max(0,Math.min(5,curPos()+(fwd?1:-1)));select(i);
   },{passive:true});
   var wt=0;
   screen.addEventListener(&#x27;wheel&#x27;,function(e){
     e.preventDefault();var now=Date.now();if(now-wt&lt;700)return;wt=now;swipes++;updSwipes();
-    var i=Math.max(0,Math.min(4,curPos()+(e.deltaY&gt;0?1:-1)));select(i);
+    var i=Math.max(0,Math.min(5,curPos()+(e.deltaY&gt;0?1:-1)));select(i);
   },{passive:false});
   document.addEventListener(&#x27;keydown&#x27;,function(e){
-    if(/^[1-5]$/.test(e.key))select(+e.key-1);
+    if(/^[1-6]$/.test(e.key))select(+e.key-1);
   });
 
   function updSwipes(){
@@ -1442,6 +1493,184 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     document.getElementById(&#x27;onsite&#x27;).textContent=Math.floor(s/60)+&#x27;:&#x27;+(&#x27;0&#x27;+s%60).slice(-2);
   }
   setInterval(tick,1000);tick();
+
+
+  /* ═══ КАНАЛ 6 · ЭХО ЭФИРА ═══════════════════════════════════════════
+     Прототип на встроенном запасе. Когда появится воркер konaev-echo,
+     впишите его адрес в ECHO_CFG.worker: сайт сам начнёт брать свежие эхо,
+     а при отказе или устаревании (&gt;48 ч) тихо вернётся к запасу.
+     Трансляция владельца: ECHO_CFG.live. Предпросмотр плашки: ?live=1 в адресе.
+     Диагностика: 5 быстрых тапов по надписи «Эхо эфира». */
+  var ECHO_CFG={
+    worker:&#x27;&#x27;,            /* https://konaev-echo.&lt;аккаунт&gt;.workers.dev — пока пусто */
+    maxAgeH:48,           /* старше — считаем, что воркер умер, показываем запас */
+    dose:3,               /* эхо за визит */
+    live:{platform:&#x27;twitch&#x27;,channel:&#x27;&#x27;}  /* канал владельца; пусто = трансляции нет */
+  };
+  var KONAEV=[43.8667,77.0667];
+  /* Встроенный запас. Только проверяемые, аполитичные, нетрагичные факты.
+     kk — черновик, нужна вычитка носителем. dist — для небесных тел (км). */
+  var ECHO_POOL=[
+    {ru:&#x27;Поезд ушёл на 20 секунд раньше. Компания извинилась.&#x27;,kk:&#x27;Пойыз 20 секунд ерте кетті. Компания кешірім сұрады.&#x27;,pr:&#x27;Цукуба, Япония&#x27;,pk:&#x27;Цукуба, Жапония&#x27;,ll:[36.08,140.11]},
+    {ru:&#x27;Каланы спят, держась за лапы, чтобы не уплыть.&#x27;,kk:&#x27;Теңіз құндыздары ағып кетпеу үшін қол ұстасып ұйықтайды.&#x27;,pr:&#x27;Монтерей, США&#x27;,pk:&#x27;Монтерей, АҚШ&#x27;,ll:[36.60,-121.89]},
+    {ru:&#x27;Пингвин дослужился до генерала.&#x27;,kk:&#x27;Пингвин генерал шеніне дейін көтерілді.&#x27;,pr:&#x27;Эдинбург, Шотландия&#x27;,pk:&#x27;Эдинбург, Шотландия&#x27;,ll:[55.94,-3.27]},
+    {ru:&#x27;Национальное животное Шотландии — единорог.&#x27;,kk:&#x27;Шотландияның ұлттық жануары — жалғызмүйіз.&#x27;,pr:&#x27;Шотландия&#x27;,pk:&#x27;Шотландия&#x27;,ll:[56.49,-4.20]},
+    {ru:&#x27;В Исландии нет комаров. Совсем.&#x27;,kk:&#x27;Исландияда маса мүлде жоқ.&#x27;,pr:&#x27;Рейкьявик, Исландия&#x27;,pk:&#x27;Рейкьявик, Исландия&#x27;,ll:[64.15,-21.94]},
+    {ru:&#x27;В Нидерландах велосипедов больше, чем людей.&#x27;,kk:&#x27;Нидерландта велосипед адамнан көп.&#x27;,pr:&#x27;Амстердам, Нидерланды&#x27;,pk:&#x27;Амстердам, Нидерланд&#x27;,ll:[52.37,4.90]},
+    {ru:&#x27;Есть чемпионат по бегу с женой на руках.&#x27;,kk:&#x27;Әйелін көтеріп жүгіруден чемпионат бар.&#x27;,pr:&#x27;Сонкаярви, Финляндия&#x27;,pk:&#x27;Сонкаярви, Финляндия&#x27;,ll:[63.67,27.52]},
+    {ru:&#x27;Коала спит до 20 часов в сутки.&#x27;,kk:&#x27;Коала тәулігіне 20 сағатқа дейін ұйықтайды.&#x27;,pr:&#x27;Брисбен, Австралия&#x27;,pk:&#x27;Брисбен, Австралия&#x27;,ll:[-27.47,153.03]},
+    {ru:&#x27;Ленивец спускается с дерева примерно раз в неделю.&#x27;,kk:&#x27;Ленивец ағаштан шамамен аптасына бір рет түседі.&#x27;,pr:&#x27;Коста-Рика&#x27;,pk:&#x27;Коста-Рика&#x27;,ll:[9.93,-84.08]},
+    {ru:&#x27;Панда ест до 14 часов в день.&#x27;,kk:&#x27;Панда күніне 14 сағатқа дейін тамақ жейді.&#x27;,pr:&#x27;Чэнду, Китай&#x27;,pk:&#x27;Чэнду, Қытай&#x27;,ll:[30.66,104.06]},
+    {ru:&#x27;У коров бывают лучшие подруги. С ними спокойнее.&#x27;,kk:&#x27;Сиырлардың да ең жақын құрбысы болады. Онымен тыныш.&#x27;,pr:&#x27;Нортгемптон, Англия&#x27;,pk:&#x27;Нортгемптон, Англия&#x27;,ll:[52.24,-0.90]},
+    {ru:&#x27;Эверест понемногу растёт.&#x27;,kk:&#x27;Эверест біртіндеп өсіп келеді.&#x27;,pr:&#x27;Эверест&#x27;,pk:&#x27;Эверест&#x27;,ll:[27.99,86.93]},
+    {ru:&#x27;Медузы старше динозавров.&#x27;,kk:&#x27;Медузалар динозаврлардан да көне.&#x27;,pr:&#x27;Мировой океан&#x27;,pk:&#x27;Дүниежүзілік мұхит&#x27;,ll:null},
+    {ru:&#x27;Яблоки родом из-под Алматы. Эхо шло недолго.&#x27;,kk:&#x27;Алманың отаны — Алматы маңы. Жаңғырық алыстан келген жоқ.&#x27;,pr:&#x27;Алматы&#x27;,pk:&#x27;Алматы&#x27;,ll:[43.24,76.95]},
+    {ru:&#x27;Тюльпаны родом из Казахстана.&#x27;,kk:&#x27;Қызғалдақтың отаны — Қазақстан.&#x27;,pr:&#x27;Аксу-Жабаглы&#x27;,pk:&#x27;Ақсу-Жабағылы&#x27;,ll:[42.40,70.50]},
+    {ru:&#x27;Бархан в Алтын-Эмеле поёт. Сам.&#x27;,kk:&#x27;Алтынемелдегі бархан өзі ән салады.&#x27;,pr:&#x27;Алтын-Эмель&#x27;,pk:&#x27;Алтынемел&#x27;,ll:[43.85,78.58]},
+    {ru:&#x27;Балхаш: одна половина пресная, другая солёная.&#x27;,kk:&#x27;Балқаштың бір жартысы тұщы, екіншісі тұзды.&#x27;,pr:&#x27;Балхаш&#x27;,pk:&#x27;Балқаш&#x27;,ll:[46.50,74.90]},
+    {ru:&#x27;Каспий — самое большое озеро на планете.&#x27;,kk:&#x27;Каспий — планетадағы ең үлкен көл.&#x27;,pr:&#x27;Актау&#x27;,pk:&#x27;Ақтау&#x27;,ll:[43.65,51.17]},
+    {ru:&#x27;Отсюда стартовал первый человек в космос.&#x27;,kk:&#x27;Адамзаттың ғарышқа алғашқы сапары осы жерден басталды.&#x27;,pr:&#x27;Байконур&#x27;,pk:&#x27;Байқоңыр&#x27;,ll:[45.62,63.31]},
+    {ru:&#x27;Луна каждый год отдаляется на 3,8 см.&#x27;,kk:&#x27;Ай жыл сайын 3,8 см алыстайды.&#x27;,pr:&#x27;Луна&#x27;,pk:&#x27;Ай&#x27;,dist:384400},
+    {ru:&#x27;Следы на Луне пролежат миллионы лет.&#x27;,kk:&#x27;Айдағы іздер миллиондаған жыл сақталады.&#x27;,pr:&#x27;Луна&#x27;,pk:&#x27;Ай&#x27;,dist:384400},
+    {ru:&#x27;Солнечный свет, который вы видите, вышел 8 минут назад.&#x27;,kk:&#x27;Сіз көріп тұрған күн сәулесі 8 минут бұрын шыққан.&#x27;,pr:&#x27;Солнце&#x27;,pk:&#x27;Күн&#x27;,dist:149600000},
+    {ru:&#x27;На Венере сутки длиннее года.&#x27;,kk:&#x27;Шолпанда тәулік жылдан ұзақ.&#x27;,pr:&#x27;Венера&#x27;,pk:&#x27;Шолпан&#x27;,ll:null},
+    {ru:&#x27;Телевизор впервые показали публике. Лондон, 1926.&#x27;,kk:&#x27;Теледидарды жұртшылыққа алғаш 1926 жылы Лондонда көрсетті.&#x27;,pr:&#x27;Лондон&#x27;,pk:&#x27;Лондон&#x27;,ll:[51.51,-0.13]},
+    {ru:&#x27;Первый киносеанс, 1895. Все досмотрели до конца.&#x27;,kk:&#x27;Алғашқы кино көрсетілімі, 1895. Бәрі соңына дейін көрді.&#x27;,pr:&#x27;Париж&#x27;,pk:&#x27;Париж&#x27;,ll:[48.87,2.33]},
+    {ru:&#x27;Сахара когда-то была зелёной.&#x27;,kk:&#x27;Сахара бір кездері жап-жасыл болған.&#x27;,pr:&#x27;Сахара&#x27;,pk:&#x27;Сахара&#x27;,ll:[23.80,11.00]},
+    {ru:&#x27;В Антарктиде есть долины без снега.&#x27;,kk:&#x27;Антарктидада қарсыз аңғарлар бар.&#x27;,pr:&#x27;Сухие долины, Антарктида&#x27;,pk:&#x27;Құрғақ аңғарлар, Антарктида&#x27;,ll:[-77.50,162.00]},
+    {ru:&#x27;Кенгуру не умеет пятиться назад.&#x27;,kk:&#x27;Кенгуру артқа шегіне алмайды.&#x27;,pr:&#x27;Австралия&#x27;,pk:&#x27;Австралия&#x27;,ll:[-25.30,133.80]}
+  ];
+  var T={
+    ru:{tit:&#x27;Эхо эфира&#x27;,lead:&#x27;Пока вы листали ленту, в мире:&#x27;,next:&#x27;Ещё эхо&#x27;,left:function(n){return &#x27;осталось на сегодня: &#x27;+n;},
+        doneH:&#x27;На сегодня эха хватит.&#x27;,doneP:&#x27;Мир подождёт. Телевизор тоже.&#x27;,back:&#x27;На главный&#x27;,km:&#x27; км от Конаева&#x27;,
+        light:&#x27;свет долетел бы за &#x27;,near:&#x27;совсем рядом&#x27;,far:&#x27;далеко, но долетело&#x27;,live:&#x27;ВЛАДЕЛЕЦ В ЭФИРЕ&#x27;,
+        liveNote:&#x27;Заявки принимаем как обычно. Перезвонит после боя.&#x27;,lang:&#x27;ҚАЗ&#x27;,ph:&#x27;Здесь будет трансляция.&lt;br&gt;Пока владелец не нажал кнопку, это макет.&#x27;,s:&#x27; с&#x27;,min:&#x27; мин &#x27;},
+    kk:{tit:&#x27;Эфир жаңғырығы&#x27;,lead:&#x27;Сіз лента ақтарып отырғанда, әлемде:&#x27;,next:&#x27;Тағы жаңғырық&#x27;,left:function(n){return &#x27;бүгінге қалды: &#x27;+n;},
+        doneH:&#x27;Бүгінге жаңғырық жетеді.&#x27;,doneP:&#x27;Әлем күте тұрады. Теледидар да.&#x27;,back:&#x27;Басты арнаға&#x27;,km:&#x27; км Қонаевтан&#x27;,
+        light:&#x27;жарық жетер еді: &#x27;,near:&#x27;жап-жақын&#x27;,far:&#x27;алыс, бірақ жетті&#x27;,live:&#x27;ИЕСІ ЭФИРДЕ&#x27;,
+        liveNote:&#x27;Өтінімдерді әдеттегідей қабылдаймыз. Ойыннан кейін хабарласады.&#x27;,lang:&#x27;РУС&#x27;,ph:&#x27;Мұнда трансляция болады.&lt;br&gt;Иесі батырманы басқанша, бұл макет.&#x27;,s:&#x27; с&#x27;,min:&#x27; мин &#x27;}
+  };
+  var eL=(navigator.language||&#x27;ru&#x27;).toLowerCase(),eLang=(eL.indexOf(&#x27;kk&#x27;)===0||eL.indexOf(&#x27;kz&#x27;)===0)?&#x27;kk&#x27;:&#x27;ru&#x27;;
+  var eItems=ECHO_POOL.slice(),eSrc=&#x27;встроенный запас&#x27;,eFetch=&#x27;не запрашивался&#x27;,eIdx=-1,eOrder=[],eSeen=0,eLive=false;
+  function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k);sessionStorage.setItem(k,v);}catch(e){return null;}}
+  eSeen=parseInt(ss(&#x27;echoSeen&#x27;)||&#x27;0&#x27;,10)||0;
+  try{eLive=/[?&amp;]live=1/.test(window.parent.location.search)||/[?&amp;]live=1/.test(location.search);}catch(e){}
+  function $e(id){return document.getElementById(id);}
+  function shuffle(n){var a=[],i,j,t;for(i=0;i&lt;n;i++)a.push(i);for(i=n-1;i&gt;0;i--){j=Math.random()*(i+1)|0;t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function hav(a,b){var R=6371,r=Math.PI/180,dl=(b[0]-a[0])*r,dg=(b[1]-a[1])*r,
+    x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dg/2)*Math.sin(dg/2);
+    return 2*R*Math.asin(Math.sqrt(x));}
+  function fmtKm(k){return String(Math.round(k)).replace(/\B(?=(\d{3})+(?!\d))/g,&#x27; &#x27;);}
+  function fmtLight(km){var s=km/299792,t=T[eLang];
+    if(s&lt;60)return (s&lt;0.01?s.toFixed(4):s&lt;1?s.toFixed(3):s.toFixed(1)).replace(&#x27;.&#x27;,&#x27;,&#x27;)+t.s;
+    return Math.floor(s/60)+t.min+Math.round(s%60)+t.s;}
+  function tail(w){ /* последний слог для эха: «двойню» → «ню» */
+    w=w.replace(/[.,!?:;«»&quot;…]+$/,&#x27;&#x27;);
+    var v=/[аеёиоуыэюяәөүұіAEIOUaeiou]/i,i=w.length-1;
+    while(i&gt;=0&amp;&amp;!v.test(w[i]))i--;
+    if(i&gt;0&amp;&amp;!v.test(w[i-1]))i--;
+    return i&gt;0?w.slice(i):w;}
+  function esc(s){return String(s).replace(/[&amp;&lt;&gt;&quot;]/g,function(c){return {&#x27;&amp;&#x27;:&#x27;&amp;amp;&#x27;,&#x27;&lt;&#x27;:&#x27;&amp;lt;&#x27;,&#x27;&gt;&#x27;:&#x27;&amp;gt;&#x27;,&#x27;&quot;&#x27;:&#x27;&amp;quot;&#x27;}[c];});}
+  function paintStatic(done){
+    if(reduce){done();return;}
+    noise.style.display=&#x27;block&#x27;;var t0=Date.now(),sw=false;hiss();
+    (function f(){var img=ctx.createImageData(160,100),d=img.data;
+      for(var i=0;i&lt;d.length;i+=4){var v=Math.random()*255|0;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;}
+      ctx.putImageData(img,0,0);var dt=Date.now()-t0;
+      if(!sw&amp;&amp;dt&gt;90){sw=true;done();}
+      if(dt&lt;240)requestAnimationFrame(f);else noise.style.display=&#x27;none&#x27;;})();
+  }
+  function echoText(){
+    var t=T[eLang];
+    $e(&#x27;echo-tit&#x27;).textContent=t.tit;$e(&#x27;echo-lead&#x27;).textContent=t.lead;$e(&#x27;echo-lang&#x27;).textContent=t.lang;
+    $e(&#x27;echo-badge&#x27;).textContent=t.live;var pl=$e(&#x27;echo-player&#x27;);if(!pl.querySelector(&#x27;iframe&#x27;))pl.innerHTML=t.ph;$e(&#x27;echo-live-note&#x27;).textContent=t.liveNote;
+    $e(&#x27;echo&#x27;).setAttribute(&#x27;data-name&#x27;,eLang===&#x27;kk&#x27;?&#x27;ЭФИР ЖАҢҒЫРЫҒЫ&#x27;:&#x27;ЭХО ЭФИРА&#x27;);
+  }
+  function echoDraw(){
+    var t=T[eLang],phr=$e(&#x27;echo-phr&#x27;),meta=$e(&#x27;echo-meta&#x27;),nx=$e(&#x27;echo-next&#x27;),dose=$e(&#x27;echo-dose&#x27;);
+    echoText();
+    if(eSeen&gt;ECHO_CFG.dose){ /* доза исчерпана */
+      $e(&#x27;echo-lead&#x27;).textContent=&#x27;&#x27;;
+      phr.className=&#x27;ephr&#x27;+(eLang===&#x27;kk&#x27;?&#x27; kk&#x27;:&#x27;&#x27;);phr.innerHTML=esc(t.doneH);
+      meta.textContent=t.doneP;nx.textContent=t.back;nx.setAttribute(&#x27;data-home&#x27;,&#x27;1&#x27;);dose.textContent=&#x27;&#x27;;
+      $e(&#x27;echo-cnt&#x27;).textContent=&#x27;&#x27;;return;
+    }
+    nx.removeAttribute(&#x27;data-home&#x27;);nx.textContent=t.next;
+    var it=eItems[eOrder[eIdx]]||eItems[0],txt=it[eLang]||it.ru,words=txt.split(/\s+/),last=words[words.length-1],
+        w1=last.replace(/[.,!?:;…]+$/,&#x27;&#x27;),tl=tail(last);
+    phr.className=&#x27;ephr&#x27;+(eLang===&#x27;kk&#x27;?&#x27; kk&#x27;:&#x27;&#x27;);
+    phr.innerHTML=esc(txt)+&#x27; &lt;span class=&quot;ew ew1&quot;&gt;&#x27;+esc(w1)+&#x27;…&lt;/span&gt; &lt;span class=&quot;ew ew2&quot;&gt;&#x27;+esc(tl)+&#x27;…&lt;/span&gt; &lt;span class=&quot;ew ew3&quot;&gt;&#x27;+esc(tl.length&gt;2?tl.slice(-2):tl)+&#x27;…&lt;/span&gt;&#x27;;
+    void phr.offsetWidth;phr.className+=&#x27; run&#x27;;
+    var place=eLang===&#x27;kk&#x27;?(it.pk||it.pr):it.pr,m=&#x27;&lt;b&gt;&#x27;+esc(place||&#x27;&#x27;)+&#x27;&lt;/b&gt;&#x27;;
+    var km=it.dist||(it.ll?hav(KONAEV,it.ll):null);
+    if(km!=null){
+      m+=&#x27; · &#x27;+(km&lt;150?t.near+&#x27;, &#x27;+fmtKm(km)+t.km:fmtKm(km)+t.km);
+      m+=&#x27; · &#x27;+t.light+fmtLight(km);
+    }else m+=&#x27; · &#x27;+t.far;
+    if(it.ago)m+=&#x27; · &#x27;+esc(it.ago);
+    meta.innerHTML=m;
+    $e(&#x27;echo-cnt&#x27;).textContent=Math.min(eSeen,ECHO_CFG.dose)+&#x27;/&#x27;+ECHO_CFG.dose;
+    dose.textContent=eSeen&gt;=ECHO_CFG.dose?&#x27;&#x27;:t.left(ECHO_CFG.dose-eSeen);
+  }
+  function echoNext(){
+    eSeen++;ss(&#x27;echoSeen&#x27;,String(eSeen));
+    if(!eOrder.length||eIdx&gt;=eOrder.length-1){eOrder=shuffle(eItems.length);eIdx=0;}else eIdx++;
+    echoDraw();
+  }
+  function echoLive(){
+    var sec=$e(&#x27;echo&#x27;);sec.className=sec.className.replace(/\s?is-live\b/,&#x27;&#x27;)+(eLive?&#x27; is-live&#x27;:&#x27;&#x27;);
+    var ch=ECHO_CFG.live.channel,pl=$e(&#x27;echo-player&#x27;);
+    if(eLive&amp;&amp;ch&amp;&amp;ECHO_CFG.live.platform===&#x27;twitch&#x27;&amp;&amp;!pl.querySelector(&#x27;iframe&#x27;)){
+      var host=location.hostname||&#x27;konaev.tv&#x27;;
+      pl.innerHTML=&#x27;&lt;iframe allowfullscreen src=&quot;https://player.twitch.tv/?channel=&#x27;+encodeURIComponent(ch)+&#x27;&amp;parent=&#x27;+encodeURIComponent(host)+&#x27;&amp;muted=true&quot;&gt;&lt;/iframe&gt;&#x27;;
+    }
+  }
+  var eFirst=true;
+  function echoEnter(){
+    echoLive();
+    if(eFirst){eFirst=false;echoNext();}else echoDraw();
+  }
+  $e(&#x27;echo-next&#x27;).addEventListener(&#x27;click&#x27;,function(e){
+    e.preventDefault();clack();
+    if(this.getAttribute(&#x27;data-home&#x27;)){select(0);return;}
+    paintStatic(echoNext);
+  });
+  $e(&#x27;echo-lang&#x27;).addEventListener(&#x27;click&#x27;,function(){eLang=eLang===&#x27;ru&#x27;?&#x27;kk&#x27;:&#x27;ru&#x27;;clack();echoDraw();render();});
+  /* скрытая диагностика: 5 тапов по заголовку */
+  var dTaps=[];
+  function diag(){
+    var d=$e(&#x27;echo-diag&#x27;);
+    d.innerHTML=esc(&#x27;ДИАГНОСТИКА ЭХА\nисточник: &#x27;+eSrc+&#x27;\nзаписей: &#x27;+eItems.length+&#x27;\nворкер: &#x27;+(ECHO_CFG.worker||&#x27;не задан&#x27;)+&#x27;\nзапрос: &#x27;+eFetch+
+      &#x27;\nпоказано за визит: &#x27;+eSeen+&#x27; из &#x27;+ECHO_CFG.dose+&#x27;\nязык: &#x27;+eLang+&#x27;\nэфир владельца: &#x27;+(eLive?&#x27;ВКЛ&#x27;:&#x27;выкл&#x27;)+&#x27; · канал: &#x27;+(ECHO_CFG.live.channel||&#x27;не задан&#x27;))+
+      &#x27;&lt;br&gt;&lt;button type=&quot;button&quot; data-a=&quot;reset&quot;&gt;сбросить дозу&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;live&quot;&gt;эфир вкл/выкл&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;close&quot;&gt;закрыть&lt;/button&gt;&#x27;;
+    d.className=&#x27;ediag px show&#x27;;
+  }
+  $e(&#x27;echo-tit&#x27;).addEventListener(&#x27;click&#x27;,function(){
+    var n=Date.now();dTaps=dTaps.filter(function(t){return n-t&lt;2500;});dTaps.push(n);
+    if(dTaps.length&gt;=5){dTaps=[];diag();}
+  });
+  $e(&#x27;echo-diag&#x27;).addEventListener(&#x27;click&#x27;,function(e){
+    var a=e.target.getAttribute&amp;&amp;e.target.getAttribute(&#x27;data-a&#x27;);if(!a)return;
+    if(a===&#x27;reset&#x27;){eSeen=0;ss(&#x27;echoSeen&#x27;,&#x27;0&#x27;);echoNext();diag();}
+    else if(a===&#x27;live&#x27;){eLive=!eLive;echoLive();diag();}
+    else this.className=&#x27;ediag px&#x27;;
+  });
+  /* свежие эхо от воркера (когда появится) */
+  (function echoFetch(){
+    if(!ECHO_CFG.worker||!window.fetch)return;
+    eFetch=&#x27;идёт…&#x27;;
+    var done=false,to=setTimeout(function(){if(!done){done=true;eFetch=&#x27;таймаут 6 с, остаёмся на запасе&#x27;;}},6000);
+    fetch(ECHO_CFG.worker.replace(/\/$/,&#x27;&#x27;)+&#x27;/echo&#x27;,{cache:&#x27;no-store&#x27;}).then(function(r){return r.json();}).then(function(j){
+      if(done)return;done=true;clearTimeout(to);
+      var age=(Date.now()-new Date(j.updated).getTime())/3600000;
+      var ok=(j.items||[]).filter(function(x){return x&amp;&amp;x.ru&amp;&amp;x.kk;});
+      if(!(age&lt;ECHO_CFG.maxAgeH)){eFetch=&#x27;данные устарели (&#x27;+Math.round(age)+&#x27; ч), остаёмся на запасе&#x27;;return;}
+      if(ok.length&lt;3){eFetch=&#x27;мало записей (&#x27;+ok.length+&#x27;), остаёмся на запасе&#x27;;return;}
+      eItems=ok;eSrc=&#x27;воркер&#x27;;eOrder=[];eFetch=&#x27;ок, &#x27;+ok.length+&#x27; шт., возраст &#x27;+age.toFixed(1)+&#x27; ч&#x27;;
+      if(j.live!=null){eLive=!!j.live;echoLive();}
+    }).catch(function(err){if(!done){done=true;clearTimeout(to);eFetch=&#x27;ошибка: &#x27;+String(err).slice(0,80);}});
+  })();
+  echoText();
 
   var lang=(navigator.language||navigator.userLanguage||&#x27;ru&#x27;).toLowerCase();
   if(lang.indexOf(&#x27;kk&#x27;)===0||lang.indexOf(&#x27;kz&#x27;)===0){showOsd(&#x27;ҚАЗ: ТЕКСТ ЕЩЁ НЕ НАПИСАН&#x27;);}
