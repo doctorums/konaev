@@ -5,8 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>konaev.tv — кабельное телевидение Конаева</title>
-<!-- казахский словарь: и для заставки, и для сайта внутри iframe; нет файла — всё по-русски -->
-<script src="i18n/kk.js"></script>
+<script>
+/* Казахский словарь — таблица i18n/kk.csv (столбцы ru, kk, где): её правят в
+   GitHub или в любой таблице. Грузится сразу, пока идёт заставка; обещание
+   window.KONAEV_KK_P ждут и заставка, и сайт внутри iframe. Нет файла или он
+   битый — всё остаётся по-русски. */
+window.KONAEV_KK_P=(function(){
+  function csv(t){ /* RFC 4180: кавычки, разделители и переносы внутри кавычек */
+    var rows=[],row=[],f='',q=false,i,c;t=t.replace(/^\ufeff/,'');
+    /* разделитель — по строке заголовка: Excel с русской локалью пишет «;» */
+    var sep=(t.split(/\r?\n/)[0].indexOf(';')>=0)?';':',';
+    for(i=0;i<t.length;i++){c=t[i];
+      if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+      else if(c==='"')q=true;
+      else if(c===sep){row.push(f);f='';}
+      else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(f);f='';if(row.join('')!=='')rows.push(row);row=[];}
+      else f+=c;}
+    row.push(f);if(row.join('')!=='')rows.push(row);
+    return rows;}
+  if(!window.fetch)return Promise.resolve(null);
+  return fetch('i18n/kk.csv',{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.text();}).then(function(t){
+    var rows=csv(t),h=rows.shift()||[],ri=-1,ki=-1,d={},n=0,j;
+    for(j=0;j<h.length;j++){var x=h[j].trim().toLowerCase();if(x==='ru')ri=j;else if(x==='kk')ki=j;}
+    if(ri<0||ki<0)return null;
+    rows.forEach(function(r){var a=(r[ri]||'').replace(/\s+/g,' ').trim(),b=(r[ki]||'').trim();if(a&&b){d[a]=b;n++;}});
+    return n?d:null;
+  }).catch(function(){return null;});
+})();
+</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&display=swap">
 <style>
 *{box-sizing:border-box}
@@ -1769,18 +1795,23 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
      (T и ECHO_POOL выше) и следует общему языку через eLang.
      Язык: ?lang=kk|ru в адресе → выбор, сохранённый кнопкой → язык устройства.
      kk — черновик, нужна вычитка носителем. */
-  /* Словарь — в файле i18n/kk.js (window.KONAEV_KK), его грузит страница
-     вокруг этого iframe: так переводчик правит один понятный файл. Нет
-     файла — KK пустой, всё остаётся по-русски, кнопка языка скрыта. */
-  var KK=(function(){var d=null,o={},k;try{d=window.parent.KONAEV_KK;}catch(e){}d=d||window.KONAEV_KK;
-    if(!d)return null;for(k in d)o[nrm(k)]=d[k];return o;})(),KK_OK=!!KK;
-  KK=KK||{};
-  /* Тексты канала эха (T.kk) — тоже из словаря, по русской фразе; встроенные
-     T.kk остаются запасом на случай, если файла нет. */
-  (function(){if(!KK_OK)return;var f,rv,kv,m;
+  /* Словарь — таблица i18n/kk.csv (ru, kk, где). Её загружает страница вокруг
+     этого iframe (window.KONAEV_KK_P — обещание словаря) — пока идёт заставка.
+     До прихода словаря KK пустой; не пришёл — весь сайт по-русски, кнопка
+     языка скрыта. */
+  var KK={},KK_OK=false,LANG0=&#x27;ru&#x27;;
+  function applyDict(d){
+    var k,f,rv,kv,m;if(!d)return;
+    for(k in d)KK[nrm(k)]=d[k];KK_OK=true;
+    /* тексты канала эха (T.kk) — тоже из словаря, по русской фразе;
+       встроенные T.kk остаются запасом */
     for(f in T.ru){rv=T.ru[f];if(typeof rv!==&#x27;string&#x27;)continue;kv=KK[nrm(rv)];
       if(kv!=null){m=rv.match(/^(\s*)[\s\S]*?(\s*)$/);T.kk[f]=m[1]+kv+m[2];}}
-    var lf=KK[nrm(&#x27;осталось на сегодня:&#x27;)];if(lf!=null)T.kk.left=function(n){return lf+&#x27; &#x27;+n;};})();
+    var lf=KK[nrm(&#x27;осталось на сегодня:&#x27;)];if(lf!=null)T.kk.left=function(n){return lf+&#x27; &#x27;+n;};
+    collect();
+    if(langBtn)langBtn.className=&#x27;lang-tg px&#x27;;
+    setLang(LANG0,false);
+  }
   /* Язык устройства: первый казахский или русский в списке предпочтений.
      Только navigator.language мало: на iPad казахский бывает вторым. */
   function pickLang(){var ls=(navigator.languages&amp;&amp;navigator.languages.length)?navigator.languages:[navigator.language||navigator.userLanguage||&#x27;ru&#x27;];
@@ -1792,7 +1823,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   /* Всё переводимое запоминаем один раз, с русским оригиналом. Эхо (#echo)
      не трогаем — у него свои тексты; бегущую строку переводит crawlSet. */
   var i18nText=[],i18nAttr=[];
-  (function collect(){
+  function collect(){
     var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n,ech=document.getElementById(&#x27;echo&#x27;),cr=document.getElementById(&#x27;crawl&#x27;);
     while((n=w.nextNode())){
       if(ech.contains(n)||cr.contains(n))continue;
@@ -1802,7 +1833,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
       if(el.id===&#x27;echo&#x27;)return;
       [&#x27;data-name&#x27;,&#x27;data-msg&#x27;,&#x27;aria-label&#x27;].forEach(function(a){var v=el.getAttribute(a);if(v&amp;&amp;KK[nrm(v)]!=null)i18nAttr.push({el:el,a:a,ru:v});});
     });
-  })();
+  }
   function crawlTr(){ /* слоганы на текущем языке — crawlSet берёт их отсюда */
     if(!crawlEl)return;
     [].forEach.call(crawlEl.querySelectorAll(&#x27;span&#x27;),function(s){var k=KK[nrm(s.textContent)];if(LANG===&#x27;kk&#x27;&amp;&amp;k!=null)s.textContent=k;});
@@ -1840,7 +1871,12 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     if(m)l=m[1]===&#x27;ru&#x27;?&#x27;ru&#x27;:&#x27;kk&#x27;;
     if(!l){try{l=localStorage.getItem(&#x27;lang&#x27;);}catch(e){}}
     if(!l)l=pickLang();
-    setLang(l,false);
+    LANG0=l;
+    var dp=null;try{dp=window.parent.KONAEV_KK_P;}catch(e){}
+    if(dp&amp;&amp;dp.then){
+      setLang(l,false); /* пока без словаря: переведётся только канал эха */
+      dp.then(function(d){if(d)applyDict(d);else setLang(&#x27;ru&#x27;,false);},function(){setLang(&#x27;ru&#x27;,false);});
+    }else setLang(&#x27;ru&#x27;,false); /* страницы-обёртки нет — только русский */
   })();
   render();turnTo(cur===0?0:curPos());
   [&#x27;touchstart&#x27;,&#x27;mousedown&#x27;,&#x27;keydown&#x27;,&#x27;wheel&#x27;].forEach(function(ev){
@@ -1962,18 +1998,20 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   /* Язык заставки — по тем же правилам, что у сайта внутри (setLang там же
      потом ведёт заголовок вкладки): ?lang= → сохранённый выбор → устройство. */
   (function introLang(){
-    var d=window.KONAEV_KK;if(!d)return;
     var l=null,m=location.search.match(/[?&]lang=(kk|kz|ru)\b/);
     if(m)l=m[1]==='ru'?'ru':'kk';
     if(!l){try{l=localStorage.getItem('lang');}catch(e){}}
     if(!l){var ls=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||'ru'];
       for(var i=0;i<ls.length&&!l;i++){var x=String(ls[i]).toLowerCase();if(x.indexOf('kk')===0||x.indexOf('kz')===0)l='kk';else if(x.indexOf('ru')===0)l='ru';}}
     if(l!=='kk')return;
+    window.KONAEV_KK_P.then(function(d){if(d)introKK(d);});
+  })();
+  function introKK(d){
     document.documentElement.lang='kk';
     if(d[document.title])document.title=d[document.title];
     var w=document.createTreeWalker(st,NodeFilter.SHOW_TEXT),n,t;
     while((n=w.nextNode())){t=n.nodeValue.replace(/\s+/g,' ').trim();if(d[t]!=null)n.nodeValue=d[t];}
-  })();
+  }
 
   var STATES={
     night:{sky:'linear-gradient(180deg,#0E1430 0%,#151B3A 40%,#1E2044 70%,#241F3E 100%)',
