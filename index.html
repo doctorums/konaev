@@ -1014,7 +1014,6 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 .echo .ebody{flex:1;min-height:0;display:flex;flex-direction:column;gap:max(.25rem,1.4cqh)}
 .echo .etop{display:flex;align-items:center;justify-content:space-between;gap:.6rem;font-size:clamp(.6rem,3.4cqh,1.3rem);color:#6CCB5F;letter-spacing:.08em;text-transform:uppercase}
 .echo .etit{cursor:default;-webkit-user-select:none;user-select:none}
-.echo .elang{font:inherit;color:#B9C3DD;border:1px solid rgba(185,195,221,.45);border-radius:6px;padding:.1rem .45rem;letter-spacing:.06em}
 .echo .elead{color:#5FD4D0;font-size:clamp(.66rem,3.8cqh,1.7rem)!important}
 .echo .ephr{flex:1 1 0;min-height:0;margin:0;display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden;font-size:clamp(.95rem,10cqh,4.8rem)} /* потолок; echoFit ужмёт */
 .echo .etxt{display:block;font-family:&#x27;Unbounded&#x27;,&#x27;Trebuchet MS&#x27;,sans-serif;font-weight:700;letter-spacing:-.01em;line-height:1.16;color:#F2C230;overflow-wrap:normal;word-break:normal;hyphens:manual;text-wrap:balance}
@@ -1122,7 +1121,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
         &lt;p class=&quot;small&quot;&gt;Да, вы, скорее всего, пришли сюда из Инстаграма. Мы оценили иронию.&lt;/p&gt;
       &lt;/section&gt;
       &lt;section class=&quot;ch echo&quot; data-n=&quot;06&quot; data-name=&quot;ЭХО ЭФИРА&quot; id=&quot;echo&quot;&gt;
-        &lt;div class=&quot;etop px&quot;&gt;&lt;span class=&quot;etit&quot; id=&quot;echo-tit&quot;&gt;Эхо эфира&lt;/span&gt;&lt;span id=&quot;echo-cnt&quot;&gt;&lt;/span&gt;&lt;button type=&quot;button&quot; class=&quot;elang&quot; id=&quot;echo-lang&quot;&gt;ҚАЗ&lt;/button&gt;&lt;/div&gt;
+        &lt;div class=&quot;etop px&quot;&gt;&lt;span class=&quot;etit&quot; id=&quot;echo-tit&quot;&gt;Эхо эфира&lt;/span&gt;&lt;span id=&quot;echo-cnt&quot;&gt;&lt;/span&gt;&lt;/div&gt;
         &lt;div class=&quot;ebody&quot; id=&quot;echo-body&quot;&gt;
           &lt;p class=&quot;elead&quot; id=&quot;echo-lead&quot;&gt;Пока вы листали ленту, в мире:&lt;/p&gt;
           &lt;p class=&quot;ephr&quot; id=&quot;echo-phr&quot;&gt;&lt;span class=&quot;etxt&quot; id=&quot;echo-txt&quot;&gt;&lt;/span&gt;&lt;span class=&quot;etail&quot; id=&quot;echo-tail&quot;&gt;&lt;/span&gt;&lt;/p&gt;
@@ -1477,7 +1476,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     var c=chans[cur];showOsd(c.getAttribute(&#x27;data-n&#x27;)+&#x27; &#x27;+c.getAttribute(&#x27;data-name&#x27;));
     if(c.id===&#x27;echo&#x27;)echoEnter();
     crawlSet(c.id===&#x27;echo&#x27;?&#x27;echo&#x27;:&#x27;slogans&#x27;);
-    if(langBtn)langBtn.className=&#x27;lang-tg px&#x27;+(c.id===&#x27;echo&#x27;||!KK_OK?&#x27; hide&#x27;:&#x27;&#x27;); /* на эхо своя кнопка ҚАЗ; без словаря — только она */
+    if(langBtn)langBtn.className=&#x27;lang-tg px&#x27;+(!KK_OK?&#x27; hide&#x27;:&#x27;&#x27;); /* одна кнопка языка на всех каналах; без словаря — скрыта */
   }
   function hiss(){
     if(!ac||vol===0)return;
@@ -1638,7 +1637,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   }
   function echoText(){
     var t=T[eLang];
-    $e(&#x27;echo-tit&#x27;).textContent=t.tit;$e(&#x27;echo-next&#x27;).textContent=t.next; /* echoDraw при исчерпанной дозе заменит на «На главный» */$e(&#x27;echo-lead&#x27;).textContent=t.lead;$e(&#x27;echo-lang&#x27;).textContent=t.lang;
+    $e(&#x27;echo-tit&#x27;).textContent=t.tit;$e(&#x27;echo-next&#x27;).textContent=t.next; /* echoDraw при исчерпанной дозе заменит на «На главный» */$e(&#x27;echo-lead&#x27;).textContent=t.lead;
     $e(&#x27;echo-badge&#x27;).textContent=t.live;var pl=$e(&#x27;echo-player&#x27;);if(!pl.querySelector(&#x27;iframe&#x27;))pl.innerHTML=t.ph;$e(&#x27;echo-live-note&#x27;).textContent=t.liveNote;
     $e(&#x27;echo&#x27;).setAttribute(&#x27;data-name&#x27;,eLang===&#x27;kk&#x27;?((KK&amp;&amp;KK[&#x27;ЭХО ЭФИРА&#x27;])||&#x27;ЭФИР ЖАҢҒЫРЫҒЫ&#x27;):&#x27;ЭХО ЭФИРА&#x27;);
   }
@@ -1722,7 +1721,6 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     if(this.getAttribute(&#x27;data-home&#x27;)){select(0);return;}
     paintStatic(echoNext);
   });
-  $e(&#x27;echo-lang&#x27;).addEventListener(&#x27;click&#x27;,function(){clack();setLang(eLang===&#x27;ru&#x27;?&#x27;kk&#x27;:&#x27;ru&#x27;,true);});
   /* скрытая диагностика: 5 тапов по заголовку */
   var dTaps=[];
   function diag(){
