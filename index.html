@@ -849,7 +849,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 .vol i.on{background:#6CCB5F}
 .crawl{position:absolute;left:0;right:0;bottom:0;z-index:4;overflow:hidden;justify-content:center;height:clamp(1.5rem,4.4vmin,3.4rem);background:#F2C230;color:#1E1A16;overflow:hidden;display:flex;align-items:center;font-weight:600;font-size:clamp(.62rem,2.3vmin,1.5rem);white-space:nowrap}
 .crawl-in{display:flex;flex:none;align-items:center;white-space:nowrap;will-change:transform;
-  animation:crawl 52s linear infinite;animation-play-state:running}
+  animation:crawl 78s linear infinite;animation-play-state:running}
 .crawl-in span{padding-right:3rem;flex:none}
 .crawl.static .crawl-in{width:100%;justify-content:center}
 .crawl.static .crawl-in span{display:none;padding:0 1rem;white-space:normal;text-align:center}
@@ -1090,7 +1090,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
       &lt;section class=&quot;ch&quot; data-n=&quot;03&quot; data-name=&quot;РОДИТЕЛЯМ&quot;&gt;
         &lt;h2&gt;Подключаете родителям?&lt;/h2&gt;
         &lt;p&gt;Им не нужно ничего устанавливать, обновлять и вспоминать. Одна кнопка на пульте, как было всегда.&lt;/p&gt;
-        &lt;p&gt;Оплачивать можете вы, из любого города, через Kaspi. Мама больше не позвонит с вопросом, куда пропал ютуб.&lt;/p&gt;
+        &lt;p&gt;Пенсионерам абонентская плата со скидкой. Мама больше не позвонит с вопросом, куда пропал ютуб.&lt;/p&gt;
         &lt;div class=&quot;row&quot;&gt;
           &lt;a class=&quot;btn g ph&quot; href=&quot;#&quot; data-msg=&quot;WHATSAPP: НОМЕР НЕ ЗАДАН&quot;&gt;Подключить родителям&lt;/a&gt;
         &lt;/div&gt;
@@ -1149,12 +1149,18 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
             &lt;span&gt;Алгоритм не знает, чего вы хотите. Зато есть пульт.&lt;/span&gt;
             &lt;span&gt;Листать нечего. Придётся смотреть.&lt;/span&gt;
             &lt;span&gt;Обновление не требуется. Никогда.&lt;/span&gt;
+            &lt;span&gt;Нет алгоритмов, которые выясняют, чем вы интересуетесь.&lt;/span&gt;
+            &lt;span&gt;Не подглядывает за вами.&lt;/span&gt;
+            &lt;span&gt;Не слушает ваши разговоры.&lt;/span&gt;
             &lt;span class=&quot;display&quot;&gt;konaev.tv · КОНАЕВ · КАБЕЛЬНОЕ&lt;/span&gt;
             &lt;span&gt;Не просит пароль. Не предлагает подписку.&lt;/span&gt;
             &lt;span&gt;У фильма есть сюжет. И конец.&lt;/span&gt;
             &lt;span&gt;Алгоритм не знает, чего вы хотите. Зато есть пульт.&lt;/span&gt;
             &lt;span&gt;Листать нечего. Придётся смотреть.&lt;/span&gt;
             &lt;span&gt;Обновление не требуется. Никогда.&lt;/span&gt;
+            &lt;span&gt;Нет алгоритмов, которые выясняют, чем вы интересуетесь.&lt;/span&gt;
+            &lt;span&gt;Не подглядывает за вами.&lt;/span&gt;
+            &lt;span&gt;Не слушает ваши разговоры.&lt;/span&gt;
           &lt;/div&gt;&lt;/div&gt;
           &lt;div class=&quot;off&quot;&gt;Тоже вариант. Тогда хотя бы прогуляйтесь.&lt;br&gt;WhatsApp [НОМЕР НЕ ЗАДАН] и телефон [НОМЕР НЕ ЗАДАН] работают и с выключенным телевизором.&lt;br&gt;Чтобы включить, нажмите кнопку питания ещё раз.&lt;/div&gt;
         &lt;/div&gt;
@@ -1433,11 +1439,11 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   }
   /* Бегущая строка: на канале «Эхо эфира» по ней идут эхо (на текущем языке),
      на остальных — слоганы из разметки. Скорость в пикселях постоянная: её
-     задаёт исходная строка слоганов (52 с на круг), длина эха её не меняет. */
+     задаёт исходная строка слоганов (78 с на круг — та же скорость, что была при 52 с и шести слоганах), длина эха её не меняет. */
   var crawlEl=document.getElementById(&#x27;crawl&#x27;),crawlSlogans=crawlEl?crawlEl.innerHTML:&#x27;&#x27;,crawlMode=&#x27;slogans&#x27;,crawlSpeed=0;
   function crawlSet(mode){
     if(!crawlEl||(mode===crawlMode&amp;&amp;mode!==&#x27;echo&#x27;))return;
-    if(!crawlSpeed)crawlSpeed=(crawlEl.scrollWidth/2||1)/52; /* px/с, меряем на слоганах */
+    if(!crawlSpeed)crawlSpeed=(crawlEl.scrollWidth/2||1)/78; /* px/с, меряем на слоганах */
     var h=crawlSlogans;
     if(mode===&#x27;echo&#x27;){
       var one=&#x27;&#x27;,ord=shuffle(eItems.length);
@@ -1846,7 +1852,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
         el.style.animation=&#x27;none&#x27;;
         /* Ширину круга меряем каждый кадр: crawlSet на канале эха меняет
            содержимое. Скорость — постоянная, по исходной строке слоганов. */
-        var x=0,speed=(el.scrollWidth/2||1)/52000,last=0;
+        var x=0,speed=(el.scrollWidth/2||1)/78000,last=0;
         (function step(t){
           if(last){var w=el.scrollWidth/2||1;x-=(t-last)*speed;while(-x&gt;=w)x+=w;el.style.transform=&#x27;translate3d(&#x27;+x+&#x27;px,0,0)&#x27;;}
           last=t;requestAnimationFrame(step);
