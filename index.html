@@ -1590,7 +1590,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
         liveNote:&#x27;Өтінімдерді әдеттегідей қабылдаймыз. Ойыннан кейін хабарласады.&#x27;,lang:&#x27;РУС&#x27;,ph:&#x27;Мұнда трансляция болады.&lt;br&gt;Иесі батырманы басқанша, бұл макет.&#x27;,s:&#x27; с&#x27;,min:&#x27; мин &#x27;}
   };
   var eL=(navigator.language||&#x27;ru&#x27;).toLowerCase(),eLang=(eL.indexOf(&#x27;kk&#x27;)===0||eL.indexOf(&#x27;kz&#x27;)===0)?&#x27;kk&#x27;:&#x27;ru&#x27;;
-  var eItems=ECHO_POOL.slice(),eSrc=&#x27;встроенный запас&#x27;,eFetch=&#x27;не запрашивался&#x27;,eCur=0,eQ={g:{list:[],i:-1},l:{list:[],i:-1}},eSeen=0,eLive=false;
+  var eItems=ECHO_POOL.slice(),eSrc=&#x27;встроенный запас&#x27;,eFetch=&#x27;не запрашивался&#x27;,eCur=-1,eShown={},eSeen=0,eLive=false;
   function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k);sessionStorage.setItem(k,v);}catch(e){return null;}}
   eSeen=parseInt(ss(&#x27;echoSeen&#x27;)||&#x27;0&#x27;,10)||0;
   try{eLive=/[?&amp;]live=1/.test(window.parent.location.search)||/[?&amp;]live=1/.test(location.search);}catch(e){}
@@ -1673,13 +1673,18 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   }
   function echoNext(){
     eSeen++;ss(&#x27;echoSeen&#x27;,String(eSeen));
-    /* Две очереди без повторов до конца круга: местные (loc) и остальные.
-       Местное берём с вероятностью localShare, если такие есть. */
+    /* Без повторов, пока не показано всё: eShown — уже показанные за визит.
+       Местное (loc) берём с вероятностью localShare, пока непоказанные местные
+       есть; кончились — только мировые. Раньше у местных была своя очередь по
+       кругу, и единственное местное эхо выпадало 3–4 раза из 10. */
     var loc=[],glob=[];eItems.forEach(function(x,i){(x.loc?loc:glob).push(i);});
-    if(!glob.length){glob=loc;loc=[];}
-    var useLoc=loc.length&amp;&amp;Math.random()&lt;ECHO_CFG.localShare,q=useLoc?eQ.l:eQ.g,src=useLoc?loc:glob;
-    if(!q.list.length||q.i&gt;=q.list.length-1){q.list=shuffle(src.length).map(function(k){return src[k];});q.i=0;}else q.i++;
-    eCur=q.list[q.i];
+    function pick(list){var f=list.filter(function(i){return !eShown[i];});return f.length?f[Math.random()*f.length|0]:-1;}
+    var i=-1;
+    if(loc.length&amp;&amp;Math.random()&lt;ECHO_CFG.localShare)i=pick(loc);
+    if(i&lt;0)i=pick(glob);
+    if(i&lt;0)i=pick(loc);
+    if(i&lt;0){eShown={};if(eCur&gt;=0)eShown[eCur]=1;i=pick(glob.concat(loc));if(i&lt;0)i=0;} /* всё показано — новый круг, но не то же самое подряд */
+    eShown[i]=1;eCur=i;
     echoDraw();
   }
   function echoLive(){
@@ -1728,10 +1733,14 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     fetch(ECHO_CFG.worker.replace(/\/$/,&#x27;&#x27;)+&#x27;/echo&#x27;,{cache:&#x27;no-store&#x27;}).then(function(r){return r.json();}).then(function(j){
       if(done)return;done=true;clearTimeout(to);
       var age=(Date.now()-new Date(j.updated).getTime())/3600000;
-      var ok=(j.items||[]).filter(function(x){return x&amp;&amp;x.ru&amp;&amp;x.kk;});
+      /* Одна новость из разных лент — одно эхо: склеиваем по тексту. */
+      var txts={},ok=(j.items||[]).filter(function(x){
+        if(!(x&amp;&amp;x.ru&amp;&amp;x.kk))return false;
+        var k=x.ru.toLowerCase().replace(/[^0-9a-zа-яёәғқңөұүһі]+/g,&#x27;&#x27;);
+        if(txts[k])return false;txts[k]=1;return true;});
       if(!(age&lt;ECHO_CFG.maxAgeH)){eFetch=&#x27;данные устарели (&#x27;+Math.round(age)+&#x27; ч), остаёмся на запасе&#x27;;return;}
       if(ok.length&lt;3){eFetch=&#x27;мало записей (&#x27;+ok.length+&#x27;), остаёмся на запасе&#x27;;return;}
-      eItems=ok;eSrc=&#x27;воркер&#x27;;eQ={g:{list:[],i:-1},l:{list:[],i:-1}};eFetch=&#x27;ок, &#x27;+ok.length+&#x27; шт., возраст &#x27;+age.toFixed(1)+&#x27; ч&#x27;;
+      eItems=ok;eSrc=&#x27;воркер&#x27;;eShown={};eCur=-1;eFetch=&#x27;ок, &#x27;+ok.length+&#x27; шт., возраст &#x27;+age.toFixed(1)+&#x27; ч&#x27;;
       if(chans[cur]&amp;&amp;chans[cur].id===&#x27;echo&#x27;)crawlSet(&#x27;echo&#x27;); /* строка уже на эхо — подменяем на свежие */
       if(j.live!=null){eLive=!!j.live;echoLive();}
     }).catch(function(err){if(!done){done=true;clearTimeout(to);eFetch=&#x27;ошибка: &#x27;+String(err).slice(0,80);}});
