@@ -843,6 +843,9 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 .osd{position:absolute;top:.5rem;right:.8rem;z-index:7;font-size:clamp(.7rem,2.7vmin,1.9rem);font-weight:700;color:#6CCB5F;text-shadow:0 0 6px rgba(108,203,95,.6);transition:opacity .4s}
 .osd.hide{opacity:0}
 .clock{position:absolute;top:.5rem;left:.8rem;z-index:7;font-size:clamp(.66rem,4cqh,1.7rem);color:#F3EBDD;opacity:.85}
+/* ҚАЗ / РУС — справа от часов; ширина часов ~3 кегля, отсюда 3.4× */
+.lang-tg{position:absolute;top:.5rem;left:calc(.8rem + 3.4*clamp(.66rem,4cqh,1.7rem));z-index:7;font-size:clamp(.55rem,3cqh,1.2rem);line-height:1;padding:.2em .45em;margin-top:.12em;border:1px solid rgba(243,235,221,.45);border-radius:5px;color:#F3EBDD;background:rgba(0,0,0,.25);opacity:.85;cursor:pointer;letter-spacing:.06em}
+.lang-tg.hide{display:none}
 .vol{position:absolute;left:50%;bottom:3rem;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:.5rem;color:#6CCB5F;font-size:.95rem;transition:opacity .4s}
 .vol.hide{opacity:0}
 .vol i{display:inline-block;width:7px;height:15px;background:#1d3a1a;margin-right:3px}
@@ -1140,6 +1143,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
           &lt;canvas id=&quot;noise&quot; width=&quot;160&quot; height=&quot;100&quot;&gt;&lt;/canvas&gt;
           &lt;div class=&quot;scan&quot;&gt;&lt;/div&gt;
           &lt;div class=&quot;clock px&quot; id=&quot;clock&quot;&gt;&lt;/div&gt;
+          &lt;button type=&quot;button&quot; class=&quot;lang-tg px&quot; id=&quot;lang-tg&quot; aria-label=&quot;Тіл / Язык&quot;&gt;ҚАЗ&lt;/button&gt;
           &lt;div class=&quot;osd px&quot; id=&quot;osd&quot;&gt;&lt;/div&gt;
           &lt;div class=&quot;vol px hide&quot; id=&quot;vol&quot;&gt;&lt;span&gt;ЗВУК&lt;/span&gt;&lt;span id=&quot;volbars&quot;&gt;&lt;/span&gt;&lt;/div&gt;
           &lt;div class=&quot;crawl&quot;&gt;&lt;div class=&quot;crawl-in&quot; id=&quot;crawl&quot;&gt;
@@ -1302,7 +1306,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
       el.className=&#x27;mark&#x27;+(i===pos?&#x27; cur&#x27;:(i===chase?&#x27; hl&#x27;:&#x27;&#x27;));
     });
     var lg=document.getElementById(&#x27;legend&#x27;),j=(chase&gt;=0?chase:pos);
-    if(lg){lg.textContent=POS[j].s;lg.className=&#x27;legend&#x27;+(POS[j].msg?&#x27; act&#x27;:&#x27;&#x27;);}
+    if(lg){lg.textContent=TR(POS[j].s);lg.className=&#x27;legend&#x27;+(POS[j].msg?&#x27; act&#x27;:&#x27;&#x27;);}
   }
   var CLACK=&#x27;data:audio/mpeg;base64,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&#x27;;
   var clackBuf=null,clackEl=null;
@@ -1371,7 +1375,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     clack();turnTo(i);
     var p=POS[i];
     if(p.go!==undefined){go(p.go);}
-    else{showOsd(p.msg);clearTimeout(backT);backT=setTimeout(function(){turnTo(curPos());},1600);}
+    else{showOsd(TR(p.msg));clearTimeout(backT);backT=setTimeout(function(){turnTo(curPos());},1600);}
   }
   function curPos(){for(var i=0;i&lt;POS.length;i++){if(POS[i].go===cur)return i;}return 0;}
 
@@ -1456,7 +1460,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
       while(k--)u+=one;
       h=u+u;
     }
-    crawlMode=mode;crawlEl.innerHTML=h;
+    crawlMode=mode;crawlEl.innerHTML=h;if(mode!==&#x27;echo&#x27;)crawlTr();
     if(crawlEl.parentNode.className.indexOf(&#x27;static&#x27;)&gt;=0){var f=crawlEl.querySelector(&#x27;span&#x27;);if(f)f.className+=&#x27; show&#x27;;return;}
     if(crawlEl.style.animation===&#x27;none&#x27;)return; /* JS-запасной ход (crawlFallback) сам подстроится */
     crawlEl.style.animationDuration=Math.max(8,(crawlEl.scrollWidth/2)/crawlSpeed)+&#x27;s&#x27;;
@@ -1467,6 +1471,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     var c=chans[cur];showOsd(c.getAttribute(&#x27;data-n&#x27;)+&#x27; &#x27;+c.getAttribute(&#x27;data-name&#x27;));
     if(c.id===&#x27;echo&#x27;)echoEnter();
     crawlSet(c.id===&#x27;echo&#x27;?&#x27;echo&#x27;:&#x27;slogans&#x27;);
+    if(langBtn)langBtn.className=&#x27;lang-tg px&#x27;+(c.id===&#x27;echo&#x27;?&#x27; hide&#x27;:&#x27;&#x27;); /* на эхо своя кнопка ҚАЗ */
   }
   function hiss(){
     if(!ac||vol===0)return;
@@ -1492,13 +1497,13 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     })();
   }
 
-  var pwBtn=document.getElementById(&#x27;power&#x27;);
+  var pwBtn=document.getElementById(&#x27;power&#x27;),pwRu=&#x27;ВКЛ&#x27;;
   pwBtn.onclick=function(){
     var wasOff=isOff();
     clack();initAudio();
     screen.className=wasOff?&#x27;screen&#x27;:&#x27;screen is-off&#x27;;
     led.className=wasOff?&#x27;led&#x27;:&#x27;led off&#x27;;
-    pwBtn.textContent=wasOff?&#x27;ВЫКЛ&#x27;:&#x27;ВКЛ&#x27;;
+    pwRu=wasOff?&#x27;ВЫКЛ&#x27;:&#x27;ВКЛ&#x27;;pwBtn.textContent=TR(pwRu);
     pwBtn.className=&#x27;pw&#x27;+(wasOff?&#x27;&#x27;:&#x27; is-off&#x27;);
     if(wasOff){
       render();turnTo(curPos());hiss();updNoise();
@@ -1527,8 +1532,8 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   });
 
   function updSwipes(){
-    var t=&#x27;Попыток листать: &#x27;+swipes+&#x27;. &#x27;;
-    t+=swipes===0?&#x27;Уважаем.&#x27;:swipes&lt;5?&#x27;Рефлекс, мы понимаем.&#x27;:swipes&lt;15?&#x27;Это уже привычка.&#x27;:&#x27;Вам точно нужен телевизор.&#x27;;
+    var t=TR(&#x27;Попыток листать:&#x27;)+&#x27; &#x27;+swipes+&#x27;. &#x27;;
+    t+=TR(swipes===0?&#x27;Уважаем.&#x27;:swipes&lt;5?&#x27;Рефлекс, мы понимаем.&#x27;:swipes&lt;15?&#x27;Это уже привычка.&#x27;:&#x27;Вам точно нужен телевизор.&#x27;);
     document.getElementById(&#x27;swipes&#x27;).textContent=t;
   }
   function tick(){
@@ -1627,7 +1632,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   }
   function echoText(){
     var t=T[eLang];
-    $e(&#x27;echo-tit&#x27;).textContent=t.tit;$e(&#x27;echo-lead&#x27;).textContent=t.lead;$e(&#x27;echo-lang&#x27;).textContent=t.lang;
+    $e(&#x27;echo-tit&#x27;).textContent=t.tit;$e(&#x27;echo-next&#x27;).textContent=t.next; /* echoDraw при исчерпанной дозе заменит на «На главный» */$e(&#x27;echo-lead&#x27;).textContent=t.lead;$e(&#x27;echo-lang&#x27;).textContent=t.lang;
     $e(&#x27;echo-badge&#x27;).textContent=t.live;var pl=$e(&#x27;echo-player&#x27;);if(!pl.querySelector(&#x27;iframe&#x27;))pl.innerHTML=t.ph;$e(&#x27;echo-live-note&#x27;).textContent=t.liveNote;
     $e(&#x27;echo&#x27;).setAttribute(&#x27;data-name&#x27;,eLang===&#x27;kk&#x27;?&#x27;ЭФИР ЖАҢҒЫРЫҒЫ&#x27;:&#x27;ЭХО ЭФИРА&#x27;);
   }
@@ -1711,7 +1716,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     if(this.getAttribute(&#x27;data-home&#x27;)){select(0);return;}
     paintStatic(echoNext);
   });
-  $e(&#x27;echo-lang&#x27;).addEventListener(&#x27;click&#x27;,function(){eLang=eLang===&#x27;ru&#x27;?&#x27;kk&#x27;:&#x27;ru&#x27;;clack();echoDraw();render();});
+  $e(&#x27;echo-lang&#x27;).addEventListener(&#x27;click&#x27;,function(){clack();setLang(eLang===&#x27;ru&#x27;?&#x27;kk&#x27;:&#x27;ru&#x27;,true);});
   /* скрытая диагностика: 5 тапов по заголовку */
   var dTaps=[];
   function diag(){
@@ -1753,15 +1758,122 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   })();
   echoText();
 
-  var lang=(navigator.language||navigator.userLanguage||&#x27;ru&#x27;).toLowerCase();
-  if(lang.indexOf(&#x27;kk&#x27;)===0||lang.indexOf(&#x27;kz&#x27;)===0){showOsd(&#x27;ҚАЗ: ТЕКСТ ЕЩЁ НЕ НАПИСАН&#x27;);}
-
-  var hr=parseInt(almaty().slice(0,2),10);
-  if(hr&gt;=0&amp;&amp;hr&lt;6){
-    cur=0;
-    document.getElementById(&#x27;night-h&#x27;).textContent=&#x27;Эфир окончен&#x27;;
-    document.getElementById(&#x27;night-p&#x27;).textContent=&#x27;В Конаеве ночь. Идите спать. Если очень нужно, переключите канал: заявку примем и ночью, перезвоним утром.&#x27;;
+  /* ═══ ЯЗЫК · РУС / ҚАЗ ════════════════════════════════════════════════
+     Русский текст остаётся в разметке; KK — перевод по точной фразе (пробелы
+     схлопнуты). Переводятся текстовые узлы и атрибуты data-name / data-msg /
+     aria-label; строки из скрипта — через TR(). Канал эха двуязычный сам
+     (T и ECHO_POOL выше) и следует общему языку через eLang.
+     Язык: ?lang=kk|ru в адресе → выбор, сохранённый кнопкой → язык устройства.
+     kk — черновик, нужна вычитка носителем. */
+  var KK={
+    &#x27;Настроечная таблица&#x27;:&#x27;Баптау кестесі&#x27;,
+    &#x27;С полуночи до шести утра сайт показывает её сам и советует спать. Заявки принимаем и ночью, перезвоним утром.&#x27;:&#x27;Түн ортасынан таңғы алтыға дейін сайт оны өзі көрсетіп, ұйықтауға кеңес береді. Өтінімдерді түнде де қабылдаймыз, таңертең хабарласамыз.&#x27;,
+    &#x27;Эфир окончен&#x27;:&#x27;Эфир аяқталды&#x27;,
+    &#x27;В Конаеве ночь. Идите спать. Если очень нужно, переключите канал: заявку примем и ночью, перезвоним утром.&#x27;:&#x27;Қонаевта түн. Ұйықтаңыз. Қатты қажет болса, арнаны ауыстырыңыз: өтінімді түнде де қабылдаймыз, таңертең хабарласамыз.&#x27;,
+    &#x27;Досмотри&#x27;:&#x27;Бір нәрсені&#x27;,
+    &#x27;хоть что-нибудь&#x27;:&#x27;соңына дейін&#x27;,
+    &#x27;до конца.&#x27;:&#x27;көріп шық.&#x27;,
+    &#x27;Кабельное телевидение в Конаеве. 90 каналов. Не зависает, не просит пароль, не предлагает подписку.&#x27;:&#x27;Қонаевтағы кабельдік теледидар. 90 арна. Қатып қалмайды, құпиясөз сұрамайды, жазылым ұсынбайды.&#x27;,
+    &#x27;Листать здесь нечего. Переключайте каналы пультом.&#x27;:&#x27;Мұнда ақтаратын ештеңе жоқ. Арналарды пультпен ауыстырыңыз.&#x27;,
+    &#x27;Подключение без приложений&#x27;:&#x27;Қосымшасыз қосылу&#x27;,
+    &#x27;Напишите в WhatsApp или позвоните. Адрес и удобное время, больше ничего не нужно.&#x27;:&#x27;WhatsApp-қа жазыңыз немесе қоңырау шалыңыз. Мекенжай мен ыңғайлы уақыт — басқа ештеңе керек емес.&#x27;,
+    &#x27;Мастер приходит: [СРОК]. Работаем по всему Конаеву.&#x27;:&#x27;Шебер келеді: [МЕРЗІМ]. Бүкіл Қонаев бойынша жұмыс істейміз.&#x27;,
+    &#x27;Включаете телевизор. Он показывает. Всё.&#x27;:&#x27;Теледидарды қосасыз. Ол көрсетеді. Болды.&#x27;,
+    &#x27;Написать в WhatsApp&#x27;:&#x27;WhatsApp-қа жазу&#x27;,
+    &#x27;Позвонить [ТЕЛЕФОН]&#x27;:&#x27;Қоңырау шалу [ТЕЛЕФОН]&#x27;,
+    &#x27;Условия расскажем по телефону или в WhatsApp, это минута.&#x27;:&#x27;Шарттарын телефонмен немесе WhatsApp арқылы айтамыз, бір минуттық іс.&#x27;,
+    &#x27;Подключаете родителям?&#x27;:&#x27;Ата-анаңызға қосасыз ба?&#x27;,
+    &#x27;Им не нужно ничего устанавливать, обновлять и вспоминать. Одна кнопка на пульте, как было всегда.&#x27;:&#x27;Оларға ештеңе орнатудың, жаңартудың, есте сақтаудың қажеті жоқ. Пульттегі бір батырма — бұрынғыдай.&#x27;,
+    &#x27;Пенсионерам абонентская плата со скидкой. Мама больше не позвонит с вопросом, куда пропал ютуб.&#x27;:&#x27;Зейнеткерлерге абоненттік төлем жеңілдікпен. Анаңыз енді «ютуб қайда жоғалды?» деп қоңырау шалмайды.&#x27;,
+    &#x27;Подключить родителям&#x27;:&#x27;Ата-анаға қосу&#x27;,
+    &#x27;Не работает телевизор?&#x27;:&#x27;Теледидар істемей ме?&#x27;,
+    &#x27;Он включён в розетку? Мы не шутим. Хотя шутим. Но проверьте.&#x27;:&#x27;Розеткаға қосулы ма? Әзілдеп тұрған жоқпыз. Әзілдеп тұрмыз, әрине. Бірақ тексеріңіз.&#x27;,
+    &#x27;Кабель плотно сидит в гнезде антенны?&#x27;:&#x27;Кабель антенна ұясына мықтап кірген бе?&#x27;,
+    &#x27;Не показывает один канал или все сразу?&#x27;:&#x27;Бір арна көрсетпей ме, әлде бәрі бірден бе?&#x27;,
+    &#x27;Вызвать мастера&#x27;:&#x27;Шебер шақыру&#x27;,
+    &#x27;Предупреждение&#x27;:&#x27;Ескерту&#x27;,
+    &#x27;Три часа шортсов подряд сушат мозг. Это не медицинский факт. Это жизненный опыт.&#x27;:&#x27;Қатарынан үш сағат шортс миды кептіреді. Бұл медициналық факт емес. Бұл өмірлік тәжірибе.&#x27;,
+    &#x27;Вы на этом сайте уже&#x27;:&#x27;Сіз бұл сайттасыз:&#x27;,
+    &#x27;Попыток листать:&#x27;:&#x27;Ақтаруға әрекет:&#x27;,
+    &#x27;Уважаем.&#x27;:&#x27;Құрметтейміз.&#x27;,
+    &#x27;Рефлекс, мы понимаем.&#x27;:&#x27;Рефлекс, түсінеміз.&#x27;,
+    &#x27;Это уже привычка.&#x27;:&#x27;Бұл енді әдет.&#x27;,
+    &#x27;Вам точно нужен телевизор.&#x27;:&#x27;Сізге теледидар анық керек.&#x27;,
+    &#x27;Да, вы, скорее всего, пришли сюда из Инстаграма. Мы оценили иронию.&#x27;:&#x27;Иә, сіз мұнда, сірә, Инстаграмнан келдіңіз. Ирониясын бағаладық.&#x27;,
+    &#x27;Тоже вариант. Тогда хотя бы прогуляйтесь.&#x27;:&#x27;Бұл да жол. Онда кем дегенде серуендеп келіңіз.&#x27;,
+    &#x27;WhatsApp [НОМЕР НЕ ЗАДАН] и телефон [НОМЕР НЕ ЗАДАН] работают и с выключенным телевизором.&#x27;:&#x27;WhatsApp [НӨМІР БЕРІЛМЕГЕН] мен телефон [НӨМІР БЕРІЛМЕГЕН] теледидар өшік тұрса да жұмыс істейді.&#x27;,
+    &#x27;Чтобы включить, нажмите кнопку питания ещё раз.&#x27;:&#x27;Қосу үшін қуат батырмасын тағы басыңыз.&#x27;,
+    &#x27;ЗВУК&#x27;:&#x27;ДЫБЫС&#x27;,&#x27;ВКЛ&#x27;:&#x27;ҚОСУ&#x27;,&#x27;ВЫКЛ&#x27;:&#x27;ӨШІРУ&#x27;,
+    &#x27;Крутите ручку или свайпайте по экрану. Клац переключает канал.&#x27;:&#x27;Тұтқаны бұраңыз немесе экранды сипаңыз. Шырт — арна ауысады.&#x27;,
+    &#x27;главный&#x27;:&#x27;басты&#x27;,&#x27;подключить&#x27;:&#x27;қосылу&#x27;,&#x27;родителям&#x27;:&#x27;ата-анаға&#x27;,&#x27;ремонт&#x27;:&#x27;жөндеу&#x27;,&#x27;важное&#x27;:&#x27;маңызды&#x27;,&#x27;эхо эфира&#x27;:&#x27;эфир жаңғырығы&#x27;,&#x27;позвонить&#x27;:&#x27;қоңырау&#x27;,
+    &#x27;НОЧЬ&#x27;:&#x27;ТҮН&#x27;,&#x27;ГЛАВНЫЙ&#x27;:&#x27;БАСТЫ&#x27;,&#x27;ПОДКЛЮЧИТЬ&#x27;:&#x27;ҚОСЫЛУ&#x27;,&#x27;РОДИТЕЛЯМ&#x27;:&#x27;АТА-АНАҒА&#x27;,&#x27;РЕМОНТ&#x27;:&#x27;ЖӨНДЕУ&#x27;,&#x27;ВАЖНОЕ&#x27;:&#x27;МАҢЫЗДЫ&#x27;,
+    &#x27;WHATSAPP: НОМЕР НЕ ЗАДАН&#x27;:&#x27;WHATSAPP: НӨМІР БЕРІЛМЕГЕН&#x27;,&#x27;ТЕЛЕФОН: НОМЕР НЕ ЗАДАН&#x27;:&#x27;ТЕЛЕФОН: НӨМІР БЕРІЛМЕГЕН&#x27;,
+    &#x27;ЗАЯВКА: ФОРМА ЕЩЁ НЕ ПОДКЛЮЧЕНА&#x27;:&#x27;ӨТІНІМ: ФОРМА ӘЛІ ҚОСЫЛМАҒАН&#x27;,
+    &#x27;Переключатель каналов&#x27;:&#x27;Арна ауыстырғыш&#x27;,&#x27;Громкость&#x27;:&#x27;Дыбыс деңгейі&#x27;,&#x27;Питание&#x27;:&#x27;Қуат&#x27;,
+    &#x27;konaev.tv · КОНАЕВ · КАБЕЛЬНОЕ&#x27;:&#x27;konaev.tv · ҚОНАЕВ · КАБЕЛЬДІК&#x27;,
+    &#x27;Не просит пароль. Не предлагает подписку.&#x27;:&#x27;Құпиясөз сұрамайды. Жазылым ұсынбайды.&#x27;,
+    &#x27;У фильма есть сюжет. И конец.&#x27;:&#x27;Фильмнің сюжеті бар. Соңы да бар.&#x27;,
+    &#x27;Алгоритм не знает, чего вы хотите. Зато есть пульт.&#x27;:&#x27;Алгоритм не қалайтыныңызды білмейді. Есесіне пульт бар.&#x27;,
+    &#x27;Листать нечего. Придётся смотреть.&#x27;:&#x27;Ақтаратын ештеңе жоқ. Көруге тура келеді.&#x27;,
+    &#x27;Обновление не требуется. Никогда.&#x27;:&#x27;Жаңарту қажет емес. Ешқашан.&#x27;,
+    &#x27;Нет алгоритмов, которые выясняют, чем вы интересуетесь.&#x27;:&#x27;Немен қызығатыныңызды анықтайтын алгоритм жоқ.&#x27;,
+    &#x27;Не подглядывает за вами.&#x27;:&#x27;Сізді аңдымайды.&#x27;,
+    &#x27;Не слушает ваши разговоры.&#x27;:&#x27;Әңгімелеріңізді тыңдамайды.&#x27;
+  };
+  var LANG=&#x27;ru&#x27;;
+  function nrm(s){return String(s).replace(/\s+/g,&#x27; &#x27;).trim();}
+  function TR(s){if(LANG!==&#x27;kk&#x27;)return s;var k=KK[nrm(s)];return k==null?s:k;}
+  /* Всё переводимое запоминаем один раз, с русским оригиналом. Эхо (#echo)
+     не трогаем — у него свои тексты; бегущую строку переводит crawlSet. */
+  var i18nText=[],i18nAttr=[];
+  (function collect(){
+    var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n,ech=document.getElementById(&#x27;echo&#x27;),cr=document.getElementById(&#x27;crawl&#x27;);
+    while((n=w.nextNode())){
+      if(ech.contains(n)||cr.contains(n))continue;
+      var t=nrm(n.nodeValue);if(t&amp;&amp;KK[t]!=null)i18nText.push({n:n,ru:n.nodeValue});
+    }
+    [].forEach.call(document.querySelectorAll(&#x27;[data-name],[data-msg],[aria-label]&#x27;),function(el){
+      if(el.id===&#x27;echo&#x27;)return;
+      [&#x27;data-name&#x27;,&#x27;data-msg&#x27;,&#x27;aria-label&#x27;].forEach(function(a){var v=el.getAttribute(a);if(v&amp;&amp;KK[nrm(v)]!=null)i18nAttr.push({el:el,a:a,ru:v});});
+    });
+  })();
+  function crawlTr(){ /* слоганы на текущем языке — crawlSet берёт их отсюда */
+    if(!crawlEl)return;
+    [].forEach.call(crawlEl.querySelectorAll(&#x27;span&#x27;),function(s){var k=KK[nrm(s.textContent)];if(LANG===&#x27;kk&#x27;&amp;&amp;k!=null)s.textContent=k;});
   }
+  var langBtn=document.getElementById(&#x27;lang-tg&#x27;);
+  function setLang(l,save){
+    LANG=l===&#x27;kk&#x27;?&#x27;kk&#x27;:&#x27;ru&#x27;;eLang=LANG;
+    document.documentElement.lang=LANG;
+    i18nText.forEach(function(x){var m=x.ru.match(/^(\s*)[\s\S]*?(\s*)$/);x.n.nodeValue=LANG===&#x27;kk&#x27;?m[1]+KK[nrm(x.ru)]+m[2]:x.ru;});
+    i18nAttr.forEach(function(x){x.el.setAttribute(x.a,LANG===&#x27;kk&#x27;?KK[nrm(x.ru)]:x.ru);});
+    [].forEach.call(dialEl.querySelectorAll(&#x27;.tick&#x27;),function(el,i){el.textContent=TR(POS[i].s);});
+    pwBtn.textContent=TR(pwRu);
+    updSwipes();
+    if(hrNight)nightText();
+    if(langBtn)langBtn.textContent=LANG===&#x27;kk&#x27;?&#x27;РУС&#x27;:&#x27;ҚАЗ&#x27;;
+    if(save){try{localStorage.setItem(&#x27;lang&#x27;,LANG);}catch(e){}}
+    crawlMode=&#x27;&#x27;;crawlSet(chans[cur]&amp;&amp;chans[cur].id===&#x27;echo&#x27;?&#x27;echo&#x27;:&#x27;slogans&#x27;);
+    if(chans[cur]&amp;&amp;chans[cur].id===&#x27;echo&#x27;)echoDraw(); else echoText();
+    paintTicks();if(pageEl)fit(); /* при первом вызове каркас ещё не готов — fit позовётся сам */
+  }
+  if(langBtn)langBtn.addEventListener(&#x27;click&#x27;,function(){clack();setLang(LANG===&#x27;kk&#x27;?&#x27;ru&#x27;:&#x27;kk&#x27;,true);});
+
+  var hr=parseInt(almaty().slice(0,2),10),hrNight=hr&gt;=0&amp;&amp;hr&lt;6;
+  function nightText(){
+    document.getElementById(&#x27;night-h&#x27;).textContent=TR(&#x27;Эфир окончен&#x27;);
+    document.getElementById(&#x27;night-p&#x27;).textContent=TR(&#x27;В Конаеве ночь. Идите спать. Если очень нужно, переключите канал: заявку примем и ночью, перезвоним утром.&#x27;);
+  }
+  if(hrNight){cur=0;nightText();}
+  (function initLang(){
+    var q=&#x27;&#x27;,l=null;
+    try{q=window.parent.location.search+location.search;}catch(e){q=location.search;}
+    var m=q.match(/[?&amp;]lang=(kk|kz|ru)\b/);
+    if(m)l=m[1]===&#x27;ru&#x27;?&#x27;ru&#x27;:&#x27;kk&#x27;;
+    if(!l){try{l=localStorage.getItem(&#x27;lang&#x27;);}catch(e){}}
+    if(!l){var nl=(navigator.language||navigator.userLanguage||&#x27;ru&#x27;).toLowerCase();l=(nl.indexOf(&#x27;kk&#x27;)===0||nl.indexOf(&#x27;kz&#x27;)===0)?&#x27;kk&#x27;:&#x27;ru&#x27;;}
+    setLang(l,false);
+  })();
   render();turnTo(cur===0?0:curPos());
   [&#x27;touchstart&#x27;,&#x27;mousedown&#x27;,&#x27;keydown&#x27;,&#x27;wheel&#x27;].forEach(function(ev){
     document.addEventListener(ev,stopChase,{passive:true});
