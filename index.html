@@ -1687,6 +1687,13 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     $e(&#x27;echo-cnt&#x27;).textContent=Math.min(eSeen,ECHO_CFG.dose)+&#x27;/&#x27;+ECHO_CFG.dose;
     dose.textContent=eSeen&gt;=ECHO_CFG.dose?&#x27;&#x27;:t.left(ECHO_CFG.dose-eSeen);
   }
+  /* Память об увиденных эхо между визитами — ключ id от воркера (или текст,
+     у встроенного запаса id нет). Не больше 400 последних. */
+  function eKey(x){return x&amp;&amp;(x.id||x.ru);}
+  var eEver=(function(){try{return JSON.parse(localStorage.getItem(&#x27;echoEver&#x27;)||&#x27;[]&#x27;)||[];}catch(e){return [];}})(),eEverSet={};
+  eEver.forEach(function(k){eEverSet[k]=1;});
+  function eRemember(x){var k=eKey(x);if(!k||eEverSet[k])return;eEverSet[k]=1;eEver.push(k);
+    if(eEver.length&gt;400)eEver=eEver.slice(-400);try{localStorage.setItem(&#x27;echoEver&#x27;,JSON.stringify(eEver));}catch(e){}}
   function echoNext(){
     eSeen++;ss(&#x27;echoSeen&#x27;,String(eSeen));
     /* Без повторов, пока не показано всё: eShown — уже показанные за визит.
@@ -1694,13 +1701,19 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
        есть; кончились — только мировые. Раньше у местных была своя очередь по
        кругу, и единственное местное эхо выпадало 3–4 раза из 10. */
     var loc=[],glob=[];eItems.forEach(function(x,i){(x.loc?loc:glob).push(i);});
-    function pick(list){var f=list.filter(function(i){return !eShown[i];});return f.length?f[Math.random()*f.length|0]:-1;}
+    /* Сначала свежее и ещё не виденное: воркер отдаёт эхо от новых к старым,
+       а увиденные раньше (на этом устройстве, между визитами) помним в
+       eEver. Берём случайное из трёх самых свежих невиданных; всё видено —
+       случайное из оставшихся за визит. */
+    function pick(list){var f=list.filter(function(i){return !eShown[i];});if(!f.length)return -1;
+      var n=f.filter(function(i){return !eEverSet[eKey(eItems[i])];});
+      return n.length?n[Math.random()*Math.min(3,n.length)|0]:f[Math.random()*f.length|0];}
     var i=-1;
     if(loc.length&amp;&amp;Math.random()&lt;ECHO_CFG.localShare)i=pick(loc);
     if(i&lt;0)i=pick(glob);
     if(i&lt;0)i=pick(loc);
     if(i&lt;0){eShown={};if(eCur&gt;=0)eShown[eCur]=1;i=pick(glob.concat(loc));if(i&lt;0)i=0;} /* всё показано — новый круг, но не то же самое подряд */
-    eShown[i]=1;eCur=i;
+    eShown[i]=1;eCur=i;eRemember(eItems[i]);
     echoDraw();
   }
   function echoLive(){
@@ -1725,9 +1738,9 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   var dTaps=[];
   function diag(){
     var d=$e(&#x27;echo-diag&#x27;);
-    d.innerHTML=esc(&#x27;ДИАГНОСТИКА ЭХА\nисточник: &#x27;+eSrc+&#x27;\nзаписей: &#x27;+eItems.length+&#x27; (местных: &#x27;+eItems.filter(function(x){return x.loc;}).length+&#x27;)&#x27;+&#x27;\nворкер: &#x27;+(ECHO_CFG.worker||&#x27;не задан&#x27;)+&#x27;\nзапрос: &#x27;+eFetch+
+    d.innerHTML=esc(&#x27;ДИАГНОСТИКА ЭХА\nисточник: &#x27;+eSrc+&#x27;\nзаписей: &#x27;+eItems.length+&#x27; (местных: &#x27;+eItems.filter(function(x){return x.loc;}).length+&#x27;, ещё не видели: &#x27;+eItems.filter(function(x){return !eEverSet[eKey(x)];}).length+&#x27;)&#x27;+&#x27;\nворкер: &#x27;+(ECHO_CFG.worker||&#x27;не задан&#x27;)+&#x27;\nзапрос: &#x27;+eFetch+
       &#x27;\nпоказано за визит: &#x27;+eSeen+&#x27; из &#x27;+ECHO_CFG.dose+&#x27;\nязык: &#x27;+eLang+&#x27;\nэфир владельца: &#x27;+(eLive?&#x27;ВКЛ&#x27;:&#x27;выкл&#x27;)+&#x27; · канал: &#x27;+(ECHO_CFG.live.channel||&#x27;не задан&#x27;))+
-      &#x27;&lt;br&gt;&lt;button type=&quot;button&quot; data-a=&quot;reset&quot;&gt;сбросить дозу&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;live&quot;&gt;эфир вкл/выкл&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;close&quot;&gt;закрыть&lt;/button&gt;&#x27;;
+      &#x27;&lt;br&gt;&lt;button type=&quot;button&quot; data-a=&quot;reset&quot;&gt;сбросить дозу&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;forget&quot;&gt;забыть увиденное&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;live&quot;&gt;эфир вкл/выкл&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;close&quot;&gt;закрыть&lt;/button&gt;&#x27;;
     d.className=&#x27;ediag px show&#x27;;
   }
   $e(&#x27;echo-tit&#x27;).addEventListener(&#x27;click&#x27;,function(){
@@ -1737,6 +1750,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   $e(&#x27;echo-diag&#x27;).addEventListener(&#x27;click&#x27;,function(e){
     var a=e.target.getAttribute&amp;&amp;e.target.getAttribute(&#x27;data-a&#x27;);if(!a)return;
     if(a===&#x27;reset&#x27;){eSeen=0;ss(&#x27;echoSeen&#x27;,&#x27;0&#x27;);echoNext();diag();}
+    else if(a===&#x27;forget&#x27;){eEver=[];eEverSet={};try{localStorage.removeItem(&#x27;echoEver&#x27;);}catch(e){}diag();}
     else if(a===&#x27;live&#x27;){eLive=!eLive;echoLive();diag();}
     else this.className=&#x27;ediag px&#x27;;
   });

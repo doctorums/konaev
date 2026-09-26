@@ -84,7 +84,23 @@ const DEFAULT_SOURCES = [
   'https://www.atlasobscura.com/feeds/latest',
   'https://www.upi.com/rss/Odd_News/',
   'https://apod.nasa.gov/apod.rss',
+  // 26.09: прежние ленты публикуют по нескольку материалов в день и за прогон
+  // почти ничего нового не давали (в /diag 3 кандидата на 12 лент). Добавлены
+  // частые научные и русскоязычные ленты; вживую отсюда не проверены — /diag
+  // и /probe покажут, какие отвечают.
+  'https://phys.org/rss-feed/',
+  'https://www.sciencealert.com/feed',
+  'https://www.livescience.com/feeds/all',
+  'https://newatlas.com/index.rss',
+  'https://www.earth.com/feed/',
+  'https://nplus1.ru/rss',
+  'https://naked-science.ru/feed',
+  'https://www.popmech.ru/out/public-all.xml',
 ];
+// Мировых лент за прогон — не все сразу, по кругу: Free-план даёт 50
+// подзапросов на вызов, и каждая лента — это подзапрос, отнятый у LLM.
+// 16 лент по 8 — каждая раз в 6 часов при кроне раз в 3 часа.
+const GLOBAL_FEEDS_PER_RUN = 8;
 
 // Казахстанские ленты для местных эхо. Как и DEFAULT_SOURCES, отсюда вживую не
 // проверены — смотрим /diag после деплоя (fetched=0 у мёртвой ленты).
@@ -127,7 +143,7 @@ const ITEMS_MAX = 60;             // потолок подборки: сайту
 const SEEN_MAX = 1500;            // хватает на недели лент, JSON — десятки КБ
 const FEED_SCAN_MAX = 20;         // сколько свежих записей ленты смотреть за прогон
 const PER_HOST_PER_RUN = 3;       // квота на редакцию, как в образце (правка 29.08)
-const LLM_PER_RUN_MAX = 12;       // потолок платных вызовов за прогон (без повторов)
+const LLM_PER_RUN_MAX = 16;       // потолок платных вызовов за прогон (без повторов); реально ограничивает бюджет подзапросов
 const DESC_MAX = 500;
 // Free-план: не больше 50 исходящих fetch() за вызов. Запас, как в образце.
 const SUBREQUEST_STOP_AT = 45;
@@ -456,6 +472,12 @@ async function runEchoCollection(env, opts = {}) {
   let sources = parseSources(env);
   if (!sources.length) { summary.skipped = 'no_sources'; return await saveLast(env, summary); }
   if (opts.maxSources) sources = sources.slice(0, opts.maxSources);
+  else if (sources.length > GLOBAL_FEEDS_PER_RUN) {
+    // окно по кругу: номер трёхчасового слота определяет, с какой ленты начать
+    const slot = Math.floor(Date.now() / (3 * 3600000));
+    const start = (slot * GLOBAL_FEEDS_PER_RUN) % sources.length;
+    sources = sources.concat(sources).slice(start, start + GLOBAL_FEEDS_PER_RUN);
+  }
   // Быстрый /run местные ленты не трогает: он проверяет цепочку, а не улов.
   const localSources = opts.maxSources ? [] : parseLocalSources(env);
   const llmCap = opts.llmCap || LLM_PER_RUN_MAX;
@@ -636,7 +658,8 @@ export default {
       if (!payload) return json({ updated: null, live: live === '1', items: [] }, 503, PUBLIC);
       // Наружу — только поля, которые читает сайт (+ src для диагностики).
       const items = (payload.items || []).map(x => {
-        const o = { ru: x.ru, kk: x.kk, pr: x.pr, pk: x.pk, ll: x.ll || null, src: x.src };
+        // id и t — чтобы сайт помнил, что зритель уже видел, и показывал сначала свежее
+        const o = { id: x.id, t: x.t, ru: x.ru, kk: x.kk, pr: x.pr, pk: x.pk, ll: x.ll || null, src: x.src };
         if (x.dist) o.dist = x.dist;
         if (x.loc) o.loc = 1;
         return o;
