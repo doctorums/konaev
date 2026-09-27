@@ -1144,7 +1144,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
         &lt;/ol&gt;
         &lt;div class=&quot;row&quot;&gt;
           &lt;a class=&quot;btn g ph&quot; href=&quot;#&quot; data-msg=&quot;ЗАЯВКА: ФОРМА ЕЩЁ НЕ ПОДКЛЮЧЕНА&quot;&gt;Оставить заявку&lt;/a&gt;
-          &lt;a class=&quot;btn y&quot; href=&quot;tel:+77277246137&quot;&gt;Позвонить&lt;/a&gt;
+          &lt;a class=&quot;btn y&quot; href=&quot;tel:+77277246137&quot; target=&quot;_top&quot;&gt;Позвонить&lt;/a&gt;
         &lt;/div&gt;
         &lt;p class=&quot;small&quot;&gt;Условия подключения расскажем по телефону или при личной встрече в абонентском отделе.&lt;/p&gt;
       &lt;/section&gt;
@@ -1167,7 +1167,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
         &lt;/ol&gt;
         &lt;div class=&quot;row&quot;&gt;
           &lt;a class=&quot;btn r ph&quot; href=&quot;#&quot; data-msg=&quot;ЗАЯВКА: ФОРМА ЕЩЁ НЕ ПОДКЛЮЧЕНА&quot;&gt;Вызвать мастера&lt;/a&gt;
-          &lt;a class=&quot;btn y&quot; href=&quot;tel:+77277246137&quot;&gt;Позвонить&lt;/a&gt;
+          &lt;a class=&quot;btn y&quot; href=&quot;tel:+77277246137&quot; target=&quot;_top&quot;&gt;Позвонить&lt;/a&gt;
         &lt;/div&gt;
       &lt;/section&gt;
 
@@ -1175,7 +1175,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
         &lt;h2&gt;Абонентский отдел&lt;/h2&gt;
         &lt;p&gt;Жамбыла, 9 — вход с торца, со стороны мечети.&lt;/p&gt;
         &lt;p&gt;Пн–пт 8:00–17:00, обед 12:00–13:00.&lt;/p&gt;
-        &lt;p class=&quot;cy&quot;&gt;Телефон для заявок: &lt;a class=&quot;tel&quot; href=&quot;tel:+77277246137&quot;&gt;8 (72772) 4-61-37&lt;/a&gt;&lt;/p&gt;
+        &lt;p class=&quot;cy&quot;&gt;Телефон для заявок: &lt;a class=&quot;tel&quot; href=&quot;tel:+77277246137&quot; target=&quot;_top&quot;&gt;8 (72772) 4-61-37&lt;/a&gt;&lt;/p&gt;
         &lt;p&gt;Наш кабель есть в 1, 2, 3, 4, 5, 18, 19, 20 мкр, в мкр «Спутник» и «Ивушка», в ЖК «Балсу», на улицах Койчуманова и Кунаева.&lt;/p&gt;
         &lt;p class=&quot;warn&quot;&gt;Обслуживаем только многоквартирные дома.&lt;/p&gt;
       &lt;/section&gt;
@@ -1432,7 +1432,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     clack();turnTo(i);
     var p=POS[i];
     if(p.go!==undefined){go(p.go);}
-    else{showOsd(TR(p.msg));if(p.tel&amp;&amp;isPhone)location.href=p.tel;clearTimeout(backT);backT=setTimeout(function(){turnTo(curPos());},1600);}
+    else{showOsd(TR(p.msg));if(p.tel&amp;&amp;isPhone)callTel(p.tel);clearTimeout(backT);backT=setTimeout(function(){turnTo(curPos());},1600);}
   }
   function curPos(){for(var i=0;i&lt;POS.length;i++){if(POS[i].go===cur)return i;}return 0;}
 
@@ -1591,7 +1591,11 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
      набирает номер, на компьютере — показывает номер. */
   var isPhone=window.matchMedia&amp;&amp;matchMedia(&#x27;(hover:none) and (pointer:coarse)&#x27;).matches;
   [].forEach.call(document.querySelectorAll(&#x27;.ch a[data-msg]&#x27;),function(k){k.addEventListener(&#x27;click&#x27;,function(e){e.preventDefault();showOsd(k.getAttribute(&#x27;data-msg&#x27;));});});
-  [].forEach.call(document.querySelectorAll(&#x27;.ch a[href^=&quot;tel:&quot;]&#x27;),function(k){k.addEventListener(&#x27;click&#x27;,function(e){if(!isPhone){e.preventDefault();showOsd(&#x27;8 (72772) 4-61-37&#x27;);}});});
+  /* Сайт живёт внутри iframe, а iOS Safari не открывает tel: из iframe —
+     поэтому звоним от имени всей страницы (target=&quot;_top&quot; у ссылок, top.location
+     у переключателя). */
+  function callTel(h){try{window.top.location.href=h;}catch(e){location.href=h;}}
+  [].forEach.call(document.querySelectorAll(&#x27;.ch a[href^=&quot;tel:&quot;]&#x27;),function(k){k.addEventListener(&#x27;click&#x27;,function(e){showOsd(&#x27;8 (72772) 4-61-37&#x27;);if(!isPhone)e.preventDefault();});});
   function tick(){
     document.getElementById(&#x27;clock&#x27;).textContent=almaty();
   }
