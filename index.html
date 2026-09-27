@@ -857,6 +857,11 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 .scan{position:absolute;inset:0;pointer-events:none;z-index:6;background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.16) 3px)}
 .osd{position:absolute;top:.5rem;right:.8rem;z-index:7;font-size:clamp(.7rem,2.7vmin,1.9rem);font-weight:700;color:#6CCB5F;text-shadow:0 0 6px rgba(108,203,95,.6);transition:opacity .4s}
 .osd.hide{opacity:0}
+/* ручка на «позвонить» (телефон): iOS не набирает номер из скрипта, только по
+   нажатию на ссылку — поэтому показываем кнопку с номером посреди экрана */
+.callbar{position:absolute;left:4%;right:4%;margin:0 auto;width:fit-content;top:50%;transform:translateY(-50%);z-index:8;white-space:nowrap;
+  flex-wrap:wrap;column-gap:.35em;text-align:center;padding:.3rem 1.1rem;min-height:clamp(40px,13cqh,80px);font-size:clamp(.8rem,4.6cqh,1.6rem);box-shadow:0 4px 0 rgba(0,0,0,.35),0 0 0 100vmax rgba(10,14,28,.55)}
+.callbar[hidden]{display:none}
 .clock{position:absolute;top:.5rem;left:.8rem;z-index:7;font-size:clamp(.66rem,4cqh,1.7rem);color:#F3EBDD;opacity:.85}
 /* ҚАЗ / РУС — справа от часов; ширина часов ~3 кегля, отсюда 3.4× */
 .lang-tg{position:absolute;top:.5rem;left:calc(.8rem + 3.4*clamp(.66rem,4cqh,1.7rem));z-index:7;font-size:clamp(.55rem,3cqh,1.2rem);line-height:1;padding:.2em .45em;margin-top:.12em;border:1px solid rgba(243,235,221,.45);border-radius:5px;color:#F3EBDD;background:rgba(0,0,0,.25);opacity:.85;cursor:pointer;letter-spacing:.06em}
@@ -1204,6 +1209,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
           &lt;div class=&quot;clock px&quot; id=&quot;clock&quot;&gt;&lt;/div&gt;
           &lt;button type=&quot;button&quot; class=&quot;lang-tg px&quot; id=&quot;lang-tg&quot; aria-label=&quot;Тіл / Язык&quot;&gt;ҚАЗ&lt;/button&gt;
           &lt;div class=&quot;osd px&quot; id=&quot;osd&quot;&gt;&lt;/div&gt;
+          &lt;a class=&quot;btn g callbar&quot; id=&quot;callbar&quot; href=&quot;tel:+77277246137&quot; target=&quot;_top&quot; hidden&gt;&lt;span&gt;Позвонить&lt;/span&gt;&lt;span&gt;8&amp;nbsp;(72772)&amp;nbsp;4-61-37&lt;/span&gt;&lt;/a&gt;
           &lt;div class=&quot;vol px hide&quot; id=&quot;vol&quot;&gt;&lt;span&gt;ЗВУК&lt;/span&gt;&lt;span id=&quot;volbars&quot;&gt;&lt;/span&gt;&lt;/div&gt;
           &lt;div class=&quot;crawl&quot;&gt;&lt;div class=&quot;crawl-in&quot; id=&quot;crawl&quot;&gt;
             &lt;span class=&quot;display&quot;&gt;konaev.tv · КОНАЕВ · КАБЕЛЬНОЕ&lt;/span&gt;
@@ -1428,10 +1434,12 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     stopChase();initAudio();
     if(screen.className.indexOf(&#x27;is-off&#x27;)&gt;=0)return;
     if(i===pos)return;
+    if(!callbar.hidden){callbar.hidden=true;clearTimeout(callT);}
     clack();turnTo(i);
     var p=POS[i];
     if(p.go!==undefined){go(p.go);}
-    else{showOsd(TR(p.msg));if(p.tel&amp;&amp;isPhone)callTel(p.tel);clearTimeout(backT);backT=setTimeout(function(){turnTo(curPos());},1600);}
+    else if(p.tel&amp;&amp;isPhone){showCall();}
+    else{showOsd(TR(p.msg));clearTimeout(backT);backT=setTimeout(function(){turnTo(curPos());},1600);}
   }
   function curPos(){for(var i=0;i&lt;POS.length;i++){if(POS[i].go===cur)return i;}return 0;}
 
@@ -1589,9 +1597,12 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   /* «Позвонить» на телефоне набирает номер, на компьютере — показывает номер. */
   var isPhone=window.matchMedia&amp;&amp;matchMedia(&#x27;(hover:none) and (pointer:coarse)&#x27;).matches;
   /* Сайт живёт внутри iframe, а iOS Safari не открывает tel: из iframe —
-     поэтому звоним от имени всей страницы (target=&quot;_top&quot; у ссылок, top.location
-     у переключателя). */
-  function callTel(h){try{window.top.location.href=h;}catch(e){location.href=h;}}
+     поэтому у ссылок target=&quot;_top&quot;; для ручки — кнопка callbar. */
+  var callbar=document.getElementById(&#x27;callbar&#x27;),callT=null;
+  function hideCall(){if(callbar.hidden)return;callbar.hidden=true;clearTimeout(callT);turnTo(curPos());}
+  function showCall(){callbar.hidden=false;clearTimeout(backT);clearTimeout(callT);callT=setTimeout(hideCall,6000);}
+  callbar.addEventListener(&#x27;click&#x27;,function(){setTimeout(hideCall,300);});
+  screen.addEventListener(&#x27;pointerdown&#x27;,function(e){if(e.target!==callbar&amp;&amp;!callbar.contains(e.target))hideCall();});
   [].forEach.call(document.querySelectorAll(&#x27;.ch a[href^=&quot;tel:&quot;]&#x27;),function(k){k.addEventListener(&#x27;click&#x27;,function(e){showOsd(&#x27;8 (72772) 4-61-37&#x27;);if(!isPhone)e.preventDefault();});});
   function tick(){
     document.getElementById(&#x27;clock&#x27;).textContent=almaty();
