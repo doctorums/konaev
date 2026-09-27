@@ -835,6 +835,8 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 .ch p,.steps{line-height:1.35}
 .ch p{margin:0;font-size:clamp(.92rem,1.8vw,1.25rem);font-size:clamp(.68rem,4cqh,2rem);max-width:52rem}
 .cy{color:#5FD4D0}
+.ch a.tel{color:inherit;text-decoration:underline;text-underline-offset:.15em}
+.ch .warn{color:#F2C230}
 /* «Главный»: чего у нас нет — короткий список под описанием */
 .nos{display:flex;flex-direction:column;gap:.12em}
 .ch .nos p{color:#6CCB5F;padding-left:1.1em;text-indent:-1.1em}
@@ -864,7 +866,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 .vol i.on{background:#6CCB5F}
 .crawl{position:absolute;left:0;right:0;bottom:0;z-index:4;overflow:hidden;justify-content:center;height:clamp(1.5rem,4.4vmin,3.4rem);background:#F2C230;color:#1E1A16;overflow:hidden;display:flex;align-items:center;font-weight:600;font-size:clamp(.62rem,2.3vmin,1.5rem);white-space:nowrap}
 .crawl-in{display:flex;flex:none;align-items:center;white-space:nowrap;will-change:transform;
-  animation:crawl 47s linear infinite;animation-play-state:running}
+  animation:crawl 95s linear infinite;animation-play-state:running}
 .crawl-in span{padding-right:3rem;flex:none}
 .crawl.static .crawl-in{width:100%;justify-content:center}
 .crawl.static .crawl-in span{display:none;padding:0 1rem;white-space:normal;text-align:center}
@@ -1052,10 +1054,15 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
   /* «Главный» с тремя «нет»: заголовок и список мельче */
   .ch[data-n=&quot;01&quot;] h1{font-size:clamp(.78rem,6.4cqh,2.4rem)}
   .ch .nos p{font-size:clamp(.6rem,3.6cqh,1.1rem);line-height:1.2}
+  /* «Важное» — справка из шести строк: плотнее */
+  .ch[data-n=&quot;05&quot;]{gap:clamp(.15rem,1.2cqh,.6rem)}
+  .ch[data-n=&quot;05&quot;] p{line-height:1.2}
 }
 /* совсем маленькие экраны: подсказку про пульт убираем — её повторяет бегущая строка */
 @media (orientation:portrait) and (max-height:700px),(max-height:440px){
   .ch[data-n=&quot;01&quot;] .cy{display:none}
+  .steps{line-height:1.15;gap:.12rem}
+  .ch .row .btn{min-height:24px}
 }
 .echo .ebody{flex:1;min-height:0;display:flex;flex-direction:column;gap:max(.25rem,1.4cqh)}
 .echo .etop{display:flex;align-items:center;justify-content:space-between;gap:.6rem;font-size:clamp(.6rem,3.4cqh,1.3rem);color:#6CCB5F;letter-spacing:.08em;text-transform:uppercase}
@@ -1113,7 +1120,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
         &lt;div class=&quot;bar&quot; style=&quot;background:#E8E2D0&quot;&gt;&lt;/div&gt;&lt;div class=&quot;bar&quot; style=&quot;background:#E0A526&quot;&gt;&lt;/div&gt;&lt;div class=&quot;bar&quot; style=&quot;background:#3FA7A0&quot;&gt;&lt;/div&gt;&lt;div class=&quot;bar&quot; style=&quot;background:#5B9A4A&quot;&gt;&lt;/div&gt;&lt;div class=&quot;bar&quot; style=&quot;background:#B5477A&quot;&gt;&lt;/div&gt;&lt;div class=&quot;bar&quot; style=&quot;background:#C8341E&quot;&gt;&lt;/div&gt;&lt;div class=&quot;bar&quot; style=&quot;background:#2E4A8C&quot;&gt;&lt;/div&gt;
         &lt;div class=&quot;box&quot;&gt;
           &lt;h2 id=&quot;night-h&quot;&gt;Настроечная таблица&lt;/h2&gt;
-          &lt;p id=&quot;night-p&quot; style=&quot;font-size:1rem&quot;&gt;С полуночи до шести утра сайт показывает её сам и советует спать. Заявки принимаем и ночью, перезвоним утром.&lt;/p&gt;
+          &lt;p id=&quot;night-p&quot; style=&quot;font-size:1rem&quot;&gt;С полуночи до шести утра сайт показывает её сам и советует спать. Заявки принимаем и ночью, перезвоним в рабочее время.&lt;/p&gt;
         &lt;/div&gt;
       &lt;/section&gt;
 
@@ -1132,14 +1139,14 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
         &lt;h2&gt;Подключение без приложений&lt;/h2&gt;
         &lt;ol class=&quot;steps&quot;&gt;
           &lt;li&gt;&lt;b&gt;1&lt;/b&gt;&lt;span&gt;Позвоните или оставьте заявку. Адрес и удобное время, больше ничего не нужно.&lt;/span&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;b&gt;2&lt;/b&gt;&lt;span&gt;Мастер приходит: [СРОК]. Работаем по всему Конаеву.&lt;/span&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;b&gt;2&lt;/b&gt;&lt;span&gt;Мастер приходит в течение дня, созвон обязателен. По договорённости — и вечером, с 19 до 21.&lt;/span&gt;&lt;/li&gt;
           &lt;li&gt;&lt;b&gt;3&lt;/b&gt;&lt;span&gt;Включаете телевизор. Он показывает. Всё.&lt;/span&gt;&lt;/li&gt;
         &lt;/ol&gt;
         &lt;div class=&quot;row&quot;&gt;
           &lt;a class=&quot;btn g ph&quot; href=&quot;#&quot; data-msg=&quot;ЗАЯВКА: ФОРМА ЕЩЁ НЕ ПОДКЛЮЧЕНА&quot;&gt;Оставить заявку&lt;/a&gt;
-          &lt;a class=&quot;btn y ph&quot; href=&quot;#&quot; data-msg=&quot;ТЕЛЕФОН: НОМЕР НЕ ЗАДАН&quot;&gt;Позвонить [ТЕЛЕФОН]&lt;/a&gt;
+          &lt;a class=&quot;btn y&quot; href=&quot;tel:+77277246137&quot;&gt;Позвонить&lt;/a&gt;
         &lt;/div&gt;
-        &lt;p class=&quot;small&quot;&gt;Условия расскажем по телефону, это минута.&lt;/p&gt;
+        &lt;p class=&quot;small&quot;&gt;Условия подключения расскажем по телефону или при личной встрече в абонентском отделе.&lt;/p&gt;
       &lt;/section&gt;
 
       &lt;section class=&quot;ch&quot; data-n=&quot;03&quot; data-name=&quot;РОДИТЕЛЯМ&quot;&gt;
@@ -1160,16 +1167,17 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
         &lt;/ol&gt;
         &lt;div class=&quot;row&quot;&gt;
           &lt;a class=&quot;btn r ph&quot; href=&quot;#&quot; data-msg=&quot;ЗАЯВКА: ФОРМА ЕЩЁ НЕ ПОДКЛЮЧЕНА&quot;&gt;Вызвать мастера&lt;/a&gt;
-          &lt;a class=&quot;btn y ph&quot; href=&quot;#&quot; data-msg=&quot;ТЕЛЕФОН: НОМЕР НЕ ЗАДАН&quot;&gt;Позвонить [ТЕЛЕФОН]&lt;/a&gt;
+          &lt;a class=&quot;btn y&quot; href=&quot;tel:+77277246137&quot;&gt;Позвонить&lt;/a&gt;
         &lt;/div&gt;
       &lt;/section&gt;
 
       &lt;section class=&quot;ch&quot; data-n=&quot;05&quot; data-name=&quot;ВАЖНОЕ&quot;&gt;
-        &lt;h2&gt;Предупреждение&lt;/h2&gt;
-        &lt;p&gt;Три часа шортсов подряд сушат мозг. Это не медицинский факт. Это жизненный опыт.&lt;/p&gt;
-        &lt;p class=&quot;cy px&quot; style=&quot;font-size:clamp(.72rem,4cqh,1.2rem)&quot;&gt;Вы на этом сайте уже &lt;span id=&quot;onsite&quot;&gt;0:00&lt;/span&gt;.&lt;/p&gt;
-        &lt;p class=&quot;cy px&quot; style=&quot;font-size:clamp(.72rem,4cqh,1.2rem)&quot; id=&quot;swipes&quot;&gt;Попыток листать: 0. Уважаем.&lt;/p&gt;
-        &lt;p class=&quot;small&quot;&gt;Да, вы, скорее всего, пришли сюда из Инстаграма. Мы оценили иронию.&lt;/p&gt;
+        &lt;h2&gt;Абонентский отдел&lt;/h2&gt;
+        &lt;p&gt;Жамбыла, 9 — вход с торца, со стороны мечети.&lt;/p&gt;
+        &lt;p&gt;Пн–пт 8:00–17:00, обед 12:00–13:00.&lt;/p&gt;
+        &lt;p class=&quot;cy&quot;&gt;Телефон для заявок: &lt;a class=&quot;tel&quot; href=&quot;tel:+77277246137&quot;&gt;8 (72772) 4-61-37&lt;/a&gt;&lt;/p&gt;
+        &lt;p&gt;Наш кабель есть в 1, 2, 3, 4, 5, 18, 19, 20 мкр, в мкр «Спутник» и «Ивушка», в ЖК «Балсу», на улицах Койчуманова и Кунаева.&lt;/p&gt;
+        &lt;p class=&quot;warn&quot;&gt;Обслуживаем только многоквартирные дома.&lt;/p&gt;
       &lt;/section&gt;
       &lt;section class=&quot;ch echo&quot; data-n=&quot;06&quot; data-name=&quot;ЭХО ЭФИРА&quot; id=&quot;echo&quot;&gt;
         &lt;div class=&quot;etop px&quot;&gt;&lt;span class=&quot;etit&quot; id=&quot;echo-tit&quot;&gt;Эхо эфира&lt;/span&gt;&lt;span id=&quot;echo-cnt&quot;&gt;&lt;/span&gt;&lt;/div&gt;
@@ -1203,12 +1211,16 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
             &lt;span&gt;У фильма есть сюжет. И конец.&lt;/span&gt;
             &lt;span&gt;Листать нечего. Придётся смотреть.&lt;/span&gt;
             &lt;span&gt;Обновление не требуется. Никогда.&lt;/span&gt;
+            &lt;span&gt;Три часа шортсов подряд сушат мозг. Это не медицинский факт. Это жизненный опыт.&lt;/span&gt;
+            &lt;span&gt;Да, вы, скорее всего, пришли сюда из Инстаграма. Мы оценили иронию.&lt;/span&gt;
             &lt;span class=&quot;display&quot;&gt;konaev.tv · КОНАЕВ · КАБЕЛЬНОЕ&lt;/span&gt;
             &lt;span&gt;У фильма есть сюжет. И конец.&lt;/span&gt;
             &lt;span&gt;Листать нечего. Придётся смотреть.&lt;/span&gt;
             &lt;span&gt;Обновление не требуется. Никогда.&lt;/span&gt;
+            &lt;span&gt;Три часа шортсов подряд сушат мозг. Это не медицинский факт. Это жизненный опыт.&lt;/span&gt;
+            &lt;span&gt;Да, вы, скорее всего, пришли сюда из Инстаграма. Мы оценили иронию.&lt;/span&gt;
           &lt;/div&gt;&lt;/div&gt;
-          &lt;div class=&quot;off&quot;&gt;Тоже вариант. Тогда хотя бы прогуляйтесь.&lt;br&gt;Телефон [НОМЕР НЕ ЗАДАН] работает и с выключенным телевизором.&lt;br&gt;Чтобы включить, нажмите кнопку питания ещё раз.&lt;/div&gt;
+          &lt;div class=&quot;off&quot;&gt;Тоже вариант. Тогда хотя бы прогуляйтесь.&lt;br&gt;Телефон 8 (72772) 4-61-37 работает и с выключенным телевизором.&lt;br&gt;Чтобы включить, нажмите кнопку питания ещё раз.&lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
@@ -1261,7 +1273,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   var osd=document.getElementById(&#x27;osd&#x27;),volEl=document.getElementById(&#x27;vol&#x27;),volBars=document.getElementById(&#x27;volbars&#x27;);
   var noise=document.getElementById(&#x27;noise&#x27;),ctx=noise.getContext(&#x27;2d&#x27;);
   var reduce=window.matchMedia&amp;&amp;window.matchMedia(&#x27;(prefers-reduced-motion: reduce)&#x27;).matches;
-  var cur=1,busy=false,swipes=0,vol=0,ac=null,osdT=null,volT=null,backT=null,start=Date.now();
+  var cur=1,busy=false,vol=0,ac=null,osdT=null,volT=null,backT=null;
 
   /* позиции переключателя: 6 каналов + звонок */
   var chase=-1,chaseT=null,idleT=null;
@@ -1272,7 +1284,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     {t:&#x27;4&#x27;,s:&#x27;ремонт&#x27;,go:4},
     {t:&#x27;5&#x27;,s:&#x27;важное&#x27;,go:5},
     {t:&#x27;6&#x27;,s:&#x27;эхо эфира&#x27;,go:6},
-    {t:&#x27;T&#x27;,s:&#x27;позвонить&#x27;,msg:&#x27;ТЕЛЕФОН: НОМЕР НЕ ЗАДАН&#x27;}
+    {t:&#x27;T&#x27;,s:&#x27;позвонить&#x27;,msg:&#x27;8 (72772) 4-61-37&#x27;,tel:&#x27;tel:+77277246137&#x27;}
   ];
   var STEP=40, A0=-(STEP*(POS.length-1))/2, pos=0;
   var baseFS=12;
@@ -1420,7 +1432,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     clack();turnTo(i);
     var p=POS[i];
     if(p.go!==undefined){go(p.go);}
-    else{showOsd(TR(p.msg));clearTimeout(backT);backT=setTimeout(function(){turnTo(curPos());},1600);}
+    else{showOsd(TR(p.msg));if(p.tel&amp;&amp;isPhone)location.href=p.tel;clearTimeout(backT);backT=setTimeout(function(){turnTo(curPos());},1600);}
   }
   function curPos(){for(var i=0;i&lt;POS.length;i++){if(POS[i].go===cur)return i;}return 0;}
 
@@ -1492,7 +1504,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   var crawlEl=document.getElementById(&#x27;crawl&#x27;),crawlSlogans=crawlEl?crawlEl.innerHTML:&#x27;&#x27;,crawlMode=&#x27;slogans&#x27;,crawlSpeed=0;
   function crawlSet(mode){
     if(!crawlEl||(mode===crawlMode&amp;&amp;mode!==&#x27;echo&#x27;))return;
-    if(!crawlSpeed)crawlSpeed=(crawlEl.scrollWidth/2||1)/47; /* px/с, меряем на слоганах */
+    if(!crawlSpeed)crawlSpeed=(crawlEl.scrollWidth/2||1)/95; /* px/с, меряем на слоганах */
     var h=crawlSlogans;
     if(mode===&#x27;echo&#x27;){
       var one=&#x27;&#x27;,ord=shuffle(eItems.length);
@@ -1563,28 +1575,25 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   screen.addEventListener(&#x27;touchend&#x27;,function(e){
     var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
     if(Math.max(Math.abs(dx),Math.abs(dy))&lt;40)return;
-    swipes++;updSwipes();
     var fwd=Math.abs(dy)&gt;Math.abs(dx)?dy&lt;0:dx&lt;0;
     var i=Math.max(0,Math.min(5,curPos()+(fwd?1:-1)));select(i);
   },{passive:true});
   var wt=0;
   screen.addEventListener(&#x27;wheel&#x27;,function(e){
-    e.preventDefault();var now=Date.now();if(now-wt&lt;700)return;wt=now;swipes++;updSwipes();
+    e.preventDefault();var now=Date.now();if(now-wt&lt;700)return;wt=now;
     var i=Math.max(0,Math.min(5,curPos()+(e.deltaY&gt;0?1:-1)));select(i);
   },{passive:false});
   document.addEventListener(&#x27;keydown&#x27;,function(e){
     if(/^[1-6]$/.test(e.key))select(+e.key-1);
   });
 
-  function updSwipes(){
-    var t=TR(&#x27;Попыток листать:&#x27;)+&#x27; &#x27;+swipes+&#x27;. &#x27;;
-    t+=TR(swipes===0?&#x27;Уважаем.&#x27;:swipes&lt;5?&#x27;Рефлекс, мы понимаем.&#x27;:swipes&lt;15?&#x27;Это уже привычка.&#x27;:&#x27;Вам точно нужен телевизор.&#x27;);
-    document.getElementById(&#x27;swipes&#x27;).textContent=t;
-  }
+  /* Кнопки-заглушки показывают сообщение на экране; «Позвонить» на телефоне
+     набирает номер, на компьютере — показывает номер. */
+  var isPhone=window.matchMedia&amp;&amp;matchMedia(&#x27;(hover:none) and (pointer:coarse)&#x27;).matches;
+  [].forEach.call(document.querySelectorAll(&#x27;.ch a[data-msg]&#x27;),function(k){k.addEventListener(&#x27;click&#x27;,function(e){e.preventDefault();showOsd(k.getAttribute(&#x27;data-msg&#x27;));});});
+  [].forEach.call(document.querySelectorAll(&#x27;.ch a[href^=&quot;tel:&quot;]&#x27;),function(k){k.addEventListener(&#x27;click&#x27;,function(e){if(!isPhone){e.preventDefault();showOsd(&#x27;8 (72772) 4-61-37&#x27;);}});});
   function tick(){
     document.getElementById(&#x27;clock&#x27;).textContent=almaty();
-    var s=Math.floor((Date.now()-start)/1000);
-    document.getElementById(&#x27;onsite&#x27;).textContent=Math.floor(s/60)+&#x27;:&#x27;+(&#x27;0&#x27;+s%60).slice(-2);
   }
   setInterval(tick,1000);tick();
 
@@ -1869,7 +1878,6 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     i18nAttr.forEach(function(x){x.el.setAttribute(x.a,LANG===&#x27;kk&#x27;?KK[nrm(x.ru)]:x.ru);});
     [].forEach.call(dialEl.querySelectorAll(&#x27;.tick&#x27;),function(el,i){el.textContent=TR(POS[i].s);});
     pwBtn.textContent=TR(pwRu);
-    updSwipes();
     if(hrNight)nightText();
     if(langBtn)langBtn.textContent=LANG===&#x27;kk&#x27;?&#x27;РУС&#x27;:&#x27;ҚАЗ&#x27;;
     if(KK_OK)try{var pd=window.parent.document;if(pd!==document){pd.documentElement.lang=LANG;
@@ -1884,7 +1892,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   var hr=parseInt(almaty().slice(0,2),10),hrNight=hr&gt;=0&amp;&amp;hr&lt;6;
   function nightText(){
     document.getElementById(&#x27;night-h&#x27;).textContent=TR(&#x27;Эфир окончен&#x27;);
-    document.getElementById(&#x27;night-p&#x27;).textContent=TR(&#x27;В Конаеве ночь. Идите спать. Если очень нужно, переключите канал: заявку примем и ночью, перезвоним утром.&#x27;);
+    document.getElementById(&#x27;night-p&#x27;).textContent=TR(&#x27;В Конаеве ночь. Идите спать. Если очень нужно, переключите канал: заявку примем и ночью, перезвоним в рабочее время.&#x27;);
   }
   if(hrNight){cur=0;nightText();}
   (function initLang(){
