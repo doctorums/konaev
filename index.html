@@ -864,7 +864,7 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 .vol i.on{background:#6CCB5F}
 .crawl{position:absolute;left:0;right:0;bottom:0;z-index:4;overflow:hidden;justify-content:center;height:clamp(1.5rem,4.4vmin,3.4rem);background:#F2C230;color:#1E1A16;overflow:hidden;display:flex;align-items:center;font-weight:600;font-size:clamp(.62rem,2.3vmin,1.5rem);white-space:nowrap}
 .crawl-in{display:flex;flex:none;align-items:center;white-space:nowrap;will-change:transform;
-  animation:crawl 78s linear infinite;animation-play-state:running}
+  animation:crawl 47s linear infinite;animation-play-state:running}
 .crawl-in span{padding-right:3rem;flex:none}
 .crawl.static .crawl-in{width:100%;justify-content:center}
 .crawl.static .crawl-in span{display:none;padding:0 1rem;white-space:normal;text-align:center}
@@ -1200,15 +1200,11 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
           &lt;div class=&quot;vol px hide&quot; id=&quot;vol&quot;&gt;&lt;span&gt;ЗВУК&lt;/span&gt;&lt;span id=&quot;volbars&quot;&gt;&lt;/span&gt;&lt;/div&gt;
           &lt;div class=&quot;crawl&quot;&gt;&lt;div class=&quot;crawl-in&quot; id=&quot;crawl&quot;&gt;
             &lt;span class=&quot;display&quot;&gt;konaev.tv · КОНАЕВ · КАБЕЛЬНОЕ&lt;/span&gt;
-            &lt;span&gt;Не просит пароль. Не предлагает подписку.&lt;/span&gt;
             &lt;span&gt;У фильма есть сюжет. И конец.&lt;/span&gt;
-            &lt;span&gt;Алгоритм не знает, чего вы хотите. Зато есть пульт.&lt;/span&gt;
             &lt;span&gt;Листать нечего. Придётся смотреть.&lt;/span&gt;
             &lt;span&gt;Обновление не требуется. Никогда.&lt;/span&gt;
             &lt;span class=&quot;display&quot;&gt;konaev.tv · КОНАЕВ · КАБЕЛЬНОЕ&lt;/span&gt;
-            &lt;span&gt;Не просит пароль. Не предлагает подписку.&lt;/span&gt;
             &lt;span&gt;У фильма есть сюжет. И конец.&lt;/span&gt;
-            &lt;span&gt;Алгоритм не знает, чего вы хотите. Зато есть пульт.&lt;/span&gt;
             &lt;span&gt;Листать нечего. Придётся смотреть.&lt;/span&gt;
             &lt;span&gt;Обновление не требуется. Никогда.&lt;/span&gt;
           &lt;/div&gt;&lt;/div&gt;
@@ -1496,7 +1492,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   var crawlEl=document.getElementById(&#x27;crawl&#x27;),crawlSlogans=crawlEl?crawlEl.innerHTML:&#x27;&#x27;,crawlMode=&#x27;slogans&#x27;,crawlSpeed=0;
   function crawlSet(mode){
     if(!crawlEl||(mode===crawlMode&amp;&amp;mode!==&#x27;echo&#x27;))return;
-    if(!crawlSpeed)crawlSpeed=(crawlEl.scrollWidth/2||1)/78; /* px/с, меряем на слоганах */
+    if(!crawlSpeed)crawlSpeed=(crawlEl.scrollWidth/2||1)/47; /* px/с, меряем на слоганах */
     var h=crawlSlogans;
     if(mode===&#x27;echo&#x27;){
       var one=&#x27;&#x27;,ord=shuffle(eItems.length);
