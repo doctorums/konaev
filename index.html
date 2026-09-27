@@ -43,6 +43,12 @@ body{display:flex;align-items:center;justify-content:center}
   100%{transform:perspective(1400px) rotateY(-6deg) translate(-218px,-50px) scale(3.8)}}
 @media (prefers-reduced-motion: reduce){.play #lines .ln,.play #lines .fl,.play .rev,.play .scrin,.play #cam{animation:none!important}}
 
+/* подсказка «нажмите, чтобы пропустить» — только тем, кто уже заходил */
+#skip{position:fixed;left:50%;bottom:max(1.2rem,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:46;
+  padding:.45rem .9rem;border-radius:999px;background:rgba(30,26,22,.55);color:#F5EFE2;
+  font:600 .8rem/1.2 system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:.02em;white-space:nowrap;
+  pointer-events:none;opacity:0;transition:opacity .5s}
+#skip.on{opacity:1}
 @keyframes loadbar{0%{width:8%}100%{width:82%}}
 @keyframes flick{0%,100%{opacity:1}50%{opacity:.9}}
 @media (prefers-reduced-motion: reduce){.bar i,.scr{animation:none!important}}
@@ -1994,6 +2000,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
 &lt;/body&gt;
 &lt;/html&gt;
 " style="position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;border:0;z-index:40;opacity:0;pointer-events:none;background:#F3EBDD"></iframe>
+<div id="skip" hidden>Нажмите, чтобы пропустить</div>
 <canvas id="snow" width="200" height="120" style="position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;z-index:45;opacity:0;pointer-events:none;image-rendering:pixelated"></canvas>
 <script>
 (function(){
@@ -2011,7 +2018,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     if(l!=='kk')return;
     document.documentElement.lang='kk';
     if(d[document.title])document.title=d[document.title];
-    var w=document.createTreeWalker(st,NodeFilter.SHOW_TEXT),n,t;
+    var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n,t;
     while((n=w.nextNode())){t=n.nodeValue.replace(/\s+/g,' ').trim();if(d[t]!=null)n.nodeValue=d[t];}
   })();
 
@@ -2085,7 +2092,9 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     return {origin:cx+'px '+cy+'px', t:'translate('+(vw/2-cx)+'px,'+(vh/2-cy)+'px) scale('+s+')'};
   }
   function handoff(){
+    if(handed)return;
     if(!protoReady){setTimeout(handoff,100);return;}
+    handed=true; seen();
     var z=zoomOf(); if(!z){fr.style.opacity=1;fr.style.pointerEvents='auto';return;}
     fr.style.transformOrigin=z.origin; fr.style.transform=z.t;
     noise(420,function(){
@@ -2095,6 +2104,30 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     });
   }
   document.getElementById('cam').addEventListener('animationend',function(e){ if(e.animationName==='cam')setTimeout(handoff,500); });
+  /* Кто уже заходил, может не ждать заставку: тап/клик/клавиша — сразу шум
+     и главный канал, без наезда камеры. Отметка ставится, когда сайт показан. */
+  var handed=false, skipEl=document.getElementById('skip'), wasSeen=false;
+  try{wasSeen=localStorage.getItem('introSeen')==='1';}catch(e){}
+  function seen(){
+    try{localStorage.setItem('introSeen','1');}catch(e){}
+    skipEl.classList.remove('on');
+    document.removeEventListener('pointerdown',skip);document.removeEventListener('keydown',skip);
+  }
+  function skip(){
+    if(handed)return;
+    handed=true; seen();
+    fr.getAnimations().forEach(function(a){a.cancel();});
+    fr.style.transform='none';
+    noise(450,function after(){
+      if(!protoReady){noise(150,after);return;}
+      fr.style.opacity=1; fr.style.pointerEvents='auto';
+      document.getElementById('stage').style.visibility='hidden';
+    });
+  }
+  if(wasSeen){
+    document.addEventListener('pointerdown',skip);document.addEventListener('keydown',skip);
+    skipEl.hidden=false; setTimeout(function(){if(!handed)skipEl.classList.add('on');},700);
+  }
   function resetProto(){
     fr.getAnimations().forEach(function(a){a.cancel();});
     fr.style.opacity=0; fr.style.pointerEvents='none'; fr.style.transform='';
@@ -2103,7 +2136,7 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
 
   applyTime();setInterval(applyTime,60000);
   var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function go(){ st.classList.remove('pre'); if(rm){ (function w(){ if(protoReady){fr.style.opacity=1;fr.style.pointerEvents='auto';document.getElementById('stage').style.visibility='hidden';} else setTimeout(w,100); })(); return; } if(!rm){st.classList.remove('play');void st.offsetWidth;st.classList.add('play');} }
+  function go(){ st.classList.remove('pre'); if(rm){ (function w(){ if(protoReady){handed=true;seen();fr.style.opacity=1;fr.style.pointerEvents='auto';document.getElementById('stage').style.visibility='hidden';} else setTimeout(w,100); })(); return; } if(!rm){st.classList.remove('play');void st.offsetWidth;st.classList.add('play');} }
   if(document.readyState==='complete')setTimeout(go,150); else window.addEventListener('load',function(){setTimeout(go,150);});
   function fit(){
     var s=Math.min(window.innerWidth/1248, window.innerHeight/832);
