@@ -89,7 +89,7 @@ const DEFAULT_SOURCES = [
   // частые научные и русскоязычные ленты; вживую отсюда не проверены — /diag
   // и /probe покажут, какие отвечают.
   'https://phys.org/rss-feed/',
-  'https://www.sciencealert.com/feed',
+  // sciencealert.com убрана 27.09: воркеру отвечает 403 (в /diag fetched=0).
   'https://www.livescience.com/feeds/all',
   'https://newatlas.com/index.rss',
   'https://www.earth.com/feed/',
@@ -99,7 +99,7 @@ const DEFAULT_SOURCES = [
 ];
 // Мировых лент за прогон — не все сразу, по кругу: Free-план даёт 50
 // подзапросов на вызов, и каждая лента — это подзапрос, отнятый у LLM.
-// 16 лент по 8 — каждая раз в 6 часов при кроне раз в 3 часа.
+// 15 лент по 8 — каждая примерно раз в 6 часов при кроне раз в 3 часа.
 const GLOBAL_FEEDS_PER_RUN = 8;
 
 // Казахстанские ленты для местных эхо. Как и DEFAULT_SOURCES, отсюда вживую не
@@ -168,13 +168,14 @@ const ECHO_PROMPT = `Ты — редактор канала «Эхо эфира�
 Как писать, если годится:
 — ru: одна короткая фраза по-русски, до 70 знаков, с точкой в конце, спокойно и чуть с улыбкой, без оценок и восклицаний. Образцы тона: «Пингвин дослужился до генерала.» «Каланы спят, держась за лапы, чтобы не уплыть.» «Поезд ушёл на 20 секунд раньше. Компания извинилась.»
 — kk: та же фраза по-казахски (кириллица), по смыслу, не дословно.
-— place_en: где это случилось — город или регион и страна по-английски для геокодера («Monterey, USA»), иначе null.
+— place_en: где это случилось — город или регион и страна по-английски («Monterey, USA»). Если места события нет (открытие, исследование), укажи, где работают авторы или находится организация из новости («Kyoto, Japan»). Совсем ничего нет — null.
+— lat и lon: примерные координаты place_en в градусах, числами (Монтерей: 36.6 и -121.9), иначе null.
 — place_ru и place_kk: то же место коротко по-русски и по-казахски («Монтерей, США» / «Монтерей, АҚШ»), иначе null.
 — body: если событие на Луне, Солнце или МКС — "moon", "sun" или "iss", иначе null.
 — in_region: true, только если событие произошло в городе Конаев или в Алматинской области Казахстана (НЕ в городе Алматы — это отдельный город), иначе false.
 
 Ответь СТРОГО одним JSON без markdown и пояснений:
-{"ok":true или false,"political":true или false,"tragic":true или false,"ru":"...","kk":"...","place_en":"..." или null,"place_ru":"..." или null,"place_kk":"..." или null,"body":null,"in_region":false}
+{"ok":true или false,"political":true или false,"tragic":true или false,"ru":"...","kk":"...","place_en":"..." или null,"lat":число или null,"lon":число или null,"place_ru":"..." или null,"place_kk":"..." или null,"body":null,"in_region":false}
 Если не годится: {"ok":false,"political":...,"tragic":...}`;
 
 // Добавка к запросу для МЕСТНЫХ новостей: область редко даёт «лёгкие» темы
@@ -350,6 +351,15 @@ function cleanPhrase(s, max) {
   const t = String(s || '').replace(/\s+/g, ' ').trim();
   return t.length > max ? '' : t; // длиннее — не обрезаем посреди мысли, а отбрасываем
 }
+// Координаты от модели: числа в своих пределах, не «0,0» (так модель
+// отвечает, когда не знает). Точность до ~1 км, как у геокодера.
+function cleanLL(lat, lon) {
+  lat = typeof lat === 'string' ? parseFloat(lat) : lat;
+  lon = typeof lon === 'string' ? parseFloat(lon) : lon;
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  if (Math.abs(lat) > 90 || Math.abs(lon) > 180 || (Math.abs(lat) < 0.01 && Math.abs(lon) < 0.01)) return null;
+  return [Math.round(lat * 100) / 100, Math.round(lon * 100) / 100];
+}
 function cleanPlace(s) {
   const t = s == null ? '' : String(s).replace(/\s+/g, ' ').trim().slice(0, 60);
   return hasLetters(t) ? t : null;
@@ -419,7 +429,8 @@ function verdict(p) {
   if (!kk || !hasCyrillic(kk) || kk === ru) return { reject: 'bad_kk' };
   if (/https?:|www\./i.test(ru + kk)) return { reject: 'url_in_text' };
   const body = typeof p.body === 'string' && BODIES[p.body.toLowerCase()] ? p.body.toLowerCase() : null;
-  return { echo: { ru, kk, place_en: body ? null : cleanPlace(p.place_en), pr: cleanPlace(p.place_ru), pk: cleanPlace(p.place_kk), body, inRegion: p.in_region === true } };
+  const place_en = body ? null : cleanPlace(p.place_en);
+  return { echo: { ru, kk, place_en, ll: place_en ? cleanLL(p.lat, p.lon) : null, pr: cleanPlace(p.place_ru), pk: cleanPlace(p.place_kk), body, inRegion: p.in_region === true } };
 }
 
 // ── Геокодинг: Nominatim (OSM), без ключа, не чаще 1 запроса/с — как в образце.
@@ -465,7 +476,7 @@ async function kvJson(env, key, fallback) {
 // Общее тело сбора — и для cron, и для /run. Возвращает сводку; она же
 // кладётся в KV для /diag.
 async function runEchoCollection(env, opts = {}) {
-  const summary = { ranAt: new Date().toISOString(), skipped: null, sources: [], judged: 0, accepted: 0, rejected: {}, failed: 0, failSamples: [] };
+  const summary = { ranAt: new Date().toISOString(), skipped: null, sources: [], judged: 0, accepted: 0, rejected: {}, failed: 0, failSamples: [], geo: { llm: 0, osm: 0, osmFail: 0, none: 0 } };
   if (!env.ECHO_KV) { summary.skipped = 'no_kv_binding'; return summary; }
   if (!env.LLM_API_KEY && !env.MIMO_API_KEY) { summary.skipped = 'no_llm_key'; return await saveLast(env, summary); }
 
@@ -580,9 +591,16 @@ async function runEchoCollection(env, opts = {}) {
     const hit = stopHit(e.ru, STOP_RU) || stopHit(e.kk, STOP_KK) || stopHit(r.item.desc, STOP_EN);
     if (hit) { summary.rejected.stop_text = (summary.rejected.stop_text || 0) + 1; continue; }
     if (r.local && !e.inRegion) { summary.rejected.not_in_region = (summary.rejected.not_in_region || 0) + 1; continue; }
+    // Координаты: мировым — от модели (27.09: у 7 из 10 принятых их не было,
+    // «далеко, но долетело» шло через раз; геокодер к тому же тратит
+    // подзапросы). Местным — только геокодер: «рядом» должно быть проверено.
     let ll = null, dist;
     if (e.body) dist = BODIES[e.body];
-    else if (e.place_en && budgetLeft() >= 4) { ll = await geocodePlace(e.place_en); used++; }
+    else if (!r.local && e.ll) { ll = e.ll; summary.geo.llm++; }
+    else if (e.place_en && budgetLeft() >= 4) {
+      ll = await geocodePlace(e.place_en); used++;
+      if (ll) summary.geo.osm++; else summary.geo.osmFail++;
+    }
     // Местное эхо без координат или дальше радиуса — отказ: «рядом» должно
     // быть проверено, а не сказано моделью.
     // С городского сайта без названного места — это сам Конаев.
@@ -591,6 +609,7 @@ async function runEchoCollection(env, opts = {}) {
     if (r.local && havKm(ALMATY, ll) < ALMATY_KM) { summary.rejected.local_almaty = (summary.rejected.local_almaty || 0) + 1; continue; }
     const it = { id: r.id, ru: e.ru, kk: e.kk, pr: e.pr || '', pk: e.pk || e.pr || '', ll, src: sourceHost(r.url), t: summary.ranAt };
     if (dist) it.dist = dist;
+    if (!ll && !dist) summary.geo.none++;
     if (r.local) { it.loc = 1; summary.acceptedLocal = (summary.acceptedLocal || 0) + 1; }
     fresh.push(it);
   }
