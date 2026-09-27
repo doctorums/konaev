@@ -835,6 +835,10 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 .ch p,.steps{line-height:1.35}
 .ch p{margin:0;font-size:clamp(.92rem,1.8vw,1.25rem);font-size:clamp(.68rem,4cqh,2rem);max-width:52rem}
 .cy{color:#5FD4D0}
+/* «Главный»: чего у нас нет — короткий список под описанием */
+.nos{display:flex;flex-direction:column;gap:.12em}
+.ch .nos p{color:#6CCB5F;padding-left:1.1em;text-indent:-1.1em}
+.nos p:before{content:&quot;—&quot;;display:inline-block;width:1.1em;text-indent:0}
 .small{font-size:clamp(.6rem,3.2cqh,1.4rem)!important;color:#B9C3DD}
 .steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:max(.25rem,1.6cqh);font-size:clamp(.92rem,1.8vw,1.2rem);font-size:clamp(.66rem,3.6cqh,1.9rem);max-width:52rem}
 .steps li{display:flex;gap:.5rem;align-items:baseline}
@@ -1034,6 +1038,8 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
    чтобы «Подключить» влезал целиком. */
 @media (orientation:portrait) and (max-width:600px),(max-height:500px){
   .ch{gap:clamp(.2rem,1.6cqh,.8rem)}
+  /* снизу — ровно высота бегущей строки и небольшой зазор */
+  .stage .ch:not(.card){padding-bottom:calc(clamp(1.5rem,4.4vmin,3.4rem) + .6rem)}
   .steps{gap:max(.15rem,1cqh);line-height:1.25}
   .ch p{line-height:1.25}
   .steps li{gap:.35rem}
@@ -1043,6 +1049,13 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
   /* кнопки в один ряд: длинная подпись переносится внутри кнопки */
   .ch .row{flex-wrap:nowrap}
   .ch .row .btn{flex:0 1 auto;min-width:0;text-align:center;line-height:1.15;padding:.2rem .55rem}
+  /* «Главный» с тремя «нет»: заголовок и список мельче */
+  .ch[data-n=&quot;01&quot;] h1{font-size:clamp(.78rem,6.4cqh,2.4rem)}
+  .ch .nos p{font-size:clamp(.6rem,3.6cqh,1.1rem);line-height:1.2}
+}
+/* совсем маленькие экраны: подсказку про пульт убираем — её повторяет бегущая строка */
+@media (orientation:portrait) and (max-height:700px),(max-height:440px){
+  .ch[data-n=&quot;01&quot;] .cy{display:none}
 }
 .echo .ebody{flex:1;min-height:0;display:flex;flex-direction:column;gap:max(.25rem,1.4cqh)}
 .echo .etop{display:flex;align-items:center;justify-content:space-between;gap:.6rem;font-size:clamp(.6rem,3.4cqh,1.3rem);color:#6CCB5F;letter-spacing:.08em;text-transform:uppercase}
@@ -1107,6 +1120,11 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
       &lt;section class=&quot;ch&quot; data-n=&quot;01&quot; data-name=&quot;ГЛАВНЫЙ&quot;&gt;
         &lt;h1&gt;Досмотри&lt;br&gt;хоть что-нибудь&lt;br&gt;до конца.&lt;/h1&gt;
         &lt;p&gt;Кабельное телевидение в Конаеве. 90 каналов. Не зависает, не просит пароль, не предлагает подписку.&lt;/p&gt;
+        &lt;div class=&quot;nos&quot;&gt;
+          &lt;p&gt;Нет алгоритмов, которые выясняют, чем вы интересуетесь.&lt;/p&gt;
+          &lt;p&gt;Не подглядывает за вами.&lt;/p&gt;
+          &lt;p&gt;Не слушает ваши разговоры.&lt;/p&gt;
+        &lt;/div&gt;
         &lt;p class=&quot;cy&quot;&gt;Листать здесь нечего. Переключайте каналы пультом.&lt;/p&gt;
       &lt;/section&gt;
 
@@ -1187,18 +1205,12 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
             &lt;span&gt;Алгоритм не знает, чего вы хотите. Зато есть пульт.&lt;/span&gt;
             &lt;span&gt;Листать нечего. Придётся смотреть.&lt;/span&gt;
             &lt;span&gt;Обновление не требуется. Никогда.&lt;/span&gt;
-            &lt;span&gt;Нет алгоритмов, которые выясняют, чем вы интересуетесь.&lt;/span&gt;
-            &lt;span&gt;Не подглядывает за вами.&lt;/span&gt;
-            &lt;span&gt;Не слушает ваши разговоры.&lt;/span&gt;
             &lt;span class=&quot;display&quot;&gt;konaev.tv · КОНАЕВ · КАБЕЛЬНОЕ&lt;/span&gt;
             &lt;span&gt;Не просит пароль. Не предлагает подписку.&lt;/span&gt;
             &lt;span&gt;У фильма есть сюжет. И конец.&lt;/span&gt;
             &lt;span&gt;Алгоритм не знает, чего вы хотите. Зато есть пульт.&lt;/span&gt;
             &lt;span&gt;Листать нечего. Придётся смотреть.&lt;/span&gt;
             &lt;span&gt;Обновление не требуется. Никогда.&lt;/span&gt;
-            &lt;span&gt;Нет алгоритмов, которые выясняют, чем вы интересуетесь.&lt;/span&gt;
-            &lt;span&gt;Не подглядывает за вами.&lt;/span&gt;
-            &lt;span&gt;Не слушает ваши разговоры.&lt;/span&gt;
           &lt;/div&gt;&lt;/div&gt;
           &lt;div class=&quot;off&quot;&gt;Тоже вариант. Тогда хотя бы прогуляйтесь.&lt;br&gt;Телефон [НОМЕР НЕ ЗАДАН] работает и с выключенным телевизором.&lt;br&gt;Чтобы включить, нажмите кнопку питания ещё раз.&lt;/div&gt;
         &lt;/div&gt;
