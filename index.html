@@ -1661,11 +1661,11 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   var T={
     ru:{tit:&#x27;Эхо эфира&#x27;,lead:&#x27;Пока вы листали ленту, в мире:&#x27;,next:&#x27;Ещё эхо&#x27;,left:function(n){return &#x27;осталось на сегодня: &#x27;+n;},
         doneH:&#x27;На сегодня эха хватит.&#x27;,doneP:&#x27;Мир подождёт. Телевизор тоже.&#x27;,back:&#x27;На главный&#x27;,km:&#x27; км от Конаева&#x27;,
-        light:&#x27;свет долетел бы за &#x27;,near:&#x27;совсем рядом&#x27;,here:&#x27;прямо здесь&#x27;,far:&#x27;далеко, но долетело&#x27;,live:&#x27;ВЛАДЕЛЕЦ В ЭФИРЕ&#x27;,
+        light:&#x27;свет долетел бы за &#x27;,near:&#x27;совсем рядом&#x27;,here:&#x27;прямо здесь&#x27;,far:&#x27;далеко, но долетело&#x27;,far2:&#x27;откуда-то с планеты Земля&#x27;,far3:&#x27;адрес не указан, сигнал есть&#x27;,far4:&#x27;где-то на этой планете&#x27;,live:&#x27;ВЛАДЕЛЕЦ В ЭФИРЕ&#x27;,
         liveNote:&#x27;Заявки принимаем как обычно. Перезвонит после боя.&#x27;,lang:&#x27;ҚАЗ&#x27;,ph:&#x27;Здесь будет трансляция.&lt;br&gt;Пока владелец не нажал кнопку, это макет.&#x27;,s:&#x27; с&#x27;,min:&#x27; мин &#x27;},
     kk:{tit:&#x27;Эфир жаңғырығы&#x27;,lead:&#x27;Сіз лента ақтарып отырғанда, әлемде:&#x27;,next:&#x27;Тағы жаңғырық&#x27;,left:function(n){return &#x27;бүгінге қалды: &#x27;+n;},
         doneH:&#x27;Бүгінге жаңғырық жетеді.&#x27;,doneP:&#x27;Әлем күте тұрады. Теледидар да.&#x27;,back:&#x27;Басты арнаға&#x27;,km:&#x27; км Қонаевтан&#x27;,
-        light:&#x27;жарық жетер еді: &#x27;,near:&#x27;жап-жақын&#x27;,here:&#x27;дәл осында&#x27;,far:&#x27;алыс, бірақ жетті&#x27;,live:&#x27;ИЕСІ ЭФИРДЕ&#x27;,
+        light:&#x27;жарық жетер еді: &#x27;,near:&#x27;жап-жақын&#x27;,here:&#x27;дәл осында&#x27;,far:&#x27;алыс, бірақ жетті&#x27;,far2:&#x27;Жер планетасының бір түкпірінен&#x27;,far3:&#x27;мекенжайы жоқ, бірақ сигнал бар&#x27;,far4:&#x27;осы планетаның бір жерінде&#x27;,live:&#x27;ИЕСІ ЭФИРДЕ&#x27;,
         liveNote:&#x27;Өтінімдерді әдеттегідей қабылдаймыз. Ойыннан кейін хабарласады.&#x27;,lang:&#x27;РУС&#x27;,ph:&#x27;Мұнда трансляция болады.&lt;br&gt;Иесі батырманы басқанша, бұл макет.&#x27;,s:&#x27; с&#x27;,min:&#x27; мин &#x27;}
   };
   var eLang=&#x27;ru&#x27;; /* настоящий язык выставит setLang при запуске */
@@ -1737,14 +1737,19 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     /* Строка переносится только между частями «место · км · свет»: каждая часть
        неразрывна (.mseg), иначе на длинных строках «с» или «км» отрывались
        на новую строку. */
-    var place=eLang===&#x27;kk&#x27;?(it.pk||it.pr):it.pr,m=&#x27;&lt;b&gt;&#x27;+esc(place||&#x27;&#x27;)+&#x27;&lt;/b&gt;&#x27;;
-    function seg(x){m+=&#x27; &lt;span class=&quot;mseg&quot;&gt;· &#x27;+esc(x)+&#x27;&lt;/span&gt;&#x27;;}
+    var place=eLang===&#x27;kk&#x27;?(it.pk||it.pr):it.pr,m=place?&#x27;&lt;b&gt;&#x27;+esc(place)+&#x27;&lt;/b&gt;&#x27;:&#x27;&#x27;;
+    function seg(x){m+=(m?&#x27; &lt;span class=&quot;mseg&quot;&gt;· &#x27;:&#x27;&lt;span class=&quot;mseg&quot;&gt;&#x27;)+esc(x)+&#x27;&lt;/span&gt;&#x27;;}
     var km=it.dist||(it.ll?hav(KONAEV,it.ll):null);
     if(km!=null&amp;&amp;km&lt;15)seg(t.here); /* «0 км · свет за 0,0000 с» для самого Конаева звучит нелепо */
     else if(km!=null){
       seg(km&lt;150?t.near+&#x27;, &#x27;+fmtKm(km)+t.km:fmtKm(km)+t.km);
       seg(t.light+fmtLight(km));
-    }else seg(t.far);
+    }else if(place)seg(t.far);
+    else{ /* места нет совсем — одна из четырёх фраз, у одной записи всегда одна и та же */
+      var fs=[t.far,t.far2,t.far3,t.far4],key=String(it.id||it.ru||&#x27;&#x27;),h=0;
+      for(var q=0;q&lt;key.length;q++)h=(h*31+key.charCodeAt(q))|0;
+      seg(fs[Math.abs(h)%fs.length]);
+    }
     if(it.ago)seg(it.ago);
     meta.innerHTML=m;
     $e(&#x27;echo-cnt&#x27;).textContent=Math.min(eSeen,ECHO_CFG.dose)+&#x27;/&#x27;+ECHO_CFG.dose;
