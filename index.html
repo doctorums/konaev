@@ -1011,6 +1011,33 @@ h2{font-size:clamp(1.2rem,3.2vw,2.2rem);font-size:clamp(.88rem,6.6cqh,4rem)}
 /* верх канала — ниже часов, иначе заголовок под ними. .clock лежит вне .stage
    (контейнера), и его 4cqh считаются от окна — поэтому здесь 4svh, не 4cqh. */
 .ch.echo{padding-top:calc(.8rem + 1.25*clamp(.66rem,4svh,1.7rem))}
+/* То же для всех каналов: на телефоне в вертикали заголовки центрированных
+   каналов заезжали под часы и кнопку ҚАЗ/РУС. Настроечная таблица — ниже,
+   у неё своя раскладка (полосы во весь экран). */
+.stage .ch:not(.card){padding-top:calc(.8rem + 1.25*clamp(.66rem,4svh,1.7rem))}
+/* Табличка ночного канала — в свободной полосе между верхней строкой и
+   бегущей строкой, не выше и не ниже; текст ужимается под размер экрана. */
+.card .box{top:calc(50% + (.8rem + 1.25*clamp(.66rem,4svh,1.7rem) - clamp(1.5rem,4.4vmin,3.4rem))/2);
+  max-height:calc(100% - (.8rem + 1.25*clamp(.66rem,4svh,1.7rem)) - clamp(1.5rem,4.4vmin,3.4rem) - .6rem);overflow:hidden}
+.card .box h2{font-size:clamp(1rem,7cqh,2.4rem)}
+.card .box p{font-size:clamp(.7rem,3.8cqh,1rem)!important}
+/* Если содержимое не влезает, центрирование выталкивает верх под часы —
+   «safe» в таком случае прижимает к верху и даёт прокрутку. */
+.stage .ch{justify-content:safe center}
+/* Телефон (вертикаль, а также низкая горизонталь): плотнее шаги и кнопки,
+   чтобы «Подключить» влезал целиком. */
+@media (orientation:portrait) and (max-width:600px),(max-height:500px){
+  .ch{gap:clamp(.2rem,1.6cqh,.8rem)}
+  .steps{gap:max(.15rem,1cqh);line-height:1.25}
+  .ch p{line-height:1.25}
+  .steps li{gap:.35rem}
+  .steps b{min-width:.9rem}
+  .ch .row{margin-top:0}
+  .small{font-size:clamp(.56rem,2.8cqh,1rem)!important;line-height:1.25}
+  /* кнопки в один ряд: длинная подпись переносится внутри кнопки */
+  .ch .row{flex-wrap:nowrap}
+  .ch .row .btn{flex:0 1 auto;min-width:0;text-align:center;line-height:1.15;padding:.2rem .55rem}
+}
 .echo .ebody{flex:1;min-height:0;display:flex;flex-direction:column;gap:max(.25rem,1.4cqh)}
 .echo .etop{display:flex;align-items:center;justify-content:space-between;gap:.6rem;font-size:clamp(.6rem,3.4cqh,1.3rem);color:#6CCB5F;letter-spacing:.08em;text-transform:uppercase}
 .echo .etit{cursor:default;-webkit-user-select:none;user-select:none}
