@@ -1423,12 +1423,18 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   }
   /* Надпись под ручкой — кнопка: пока подсветка бегает по позициям, нажатие
      включает ту, что сейчас написана (надпись крупная и выглядит нажимаемой). */
-  (function(){var lg=document.getElementById(&#x27;legend&#x27;),lj=-1;
-    /* позицию запоминаем при касании: следом документ по mousedown/touchstart
-       останавливает перебор, и к click подсветки уже нет */
-    function grab(){lj=chase&gt;=0?chase:pos;}
-    [&#x27;pointerdown&#x27;,&#x27;touchstart&#x27;,&#x27;mousedown&#x27;,&#x27;keydown&#x27;].forEach(function(ev){lg.addEventListener(ev,grab,{passive:true});});
-    lg.addEventListener(&#x27;click&#x27;,function(){var j=lj&gt;=0?lj:pos;lj=-1;if(j!==pos)select(j);});
+  (function(){var lg=document.getElementById(&#x27;legend&#x27;),lj=-1,done=0;
+    /* Включаем сразу при касании, не ждём click: касание останавливает
+       перебор, надпись тут же меняется, и iOS Safari после такой смены
+       содержимого click не присылает. Клавиатура — через keydown + click. */
+    lg.addEventListener(&#x27;pointerdown&#x27;,function(){
+      var j=chase&gt;=0?chase:pos;done=Date.now();if(j!==pos)select(j);
+    });
+    lg.addEventListener(&#x27;keydown&#x27;,function(){lj=chase&gt;=0?chase:pos;});
+    lg.addEventListener(&#x27;click&#x27;,function(){
+      if(Date.now()-done&lt;1000){lj=-1;return;}   /* уже включили по касанию */
+      var j=lj&gt;=0?lj:pos;lj=-1;if(j!==pos)select(j);
+    });
   })();
   function stopChase(){clearInterval(chaseT);chaseT=null;chase=-1;dialEl.className=&#x27;dial&#x27;;paintTicks();clearTimeout(idleT);idleT=setTimeout(startChase,7000);}
   function startChase(){
