@@ -1644,12 +1644,12 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   /* ═══ КАНАЛ 6 · ЭХО ЭФИРА ═══════════════════════════════════════════
      Прототип на встроенном запасе. Когда появится воркер konaev-echo,
      впишите его адрес в ECHO_CFG.worker: сайт сам начнёт брать свежие эхо,
-     а при отказе или устаревании (&gt;48 ч) тихо вернётся к запасу.
+     а при отказе тихо вернётся к запасу. Возраст не проверяется: свежие
+     доставляет владелец кнопкой в диагностике, до неё показываются последние.
      Трансляция владельца: ECHO_CFG.live. Предпросмотр плашки: ?live=1 в адресе.
      Диагностика: 5 быстрых тапов по надписи «Эхо эфира». */
   var ECHO_CFG={
     worker:&#x27;https://konaev-echo.sv2txxznjm.workers.dev&#x27;,  /* воркер konaev-echo, код в workers/ */
-    maxAgeH:48,           /* старше — считаем, что воркер умер, показываем запас */
     dose:10,              /* эхо за визит */
     localShare:0.34,      /* доля местных эхо (loc:1 от воркера — Конаев и область), если они есть */
     live:{platform:&#x27;twitch&#x27;,channel:&#x27;&#x27;}  /* канал владельца; пусто = трансляции нет */
@@ -1836,8 +1836,9 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
   function diag(){
     var d=$e(&#x27;echo-diag&#x27;);
     d.innerHTML=esc(&#x27;ДИАГНОСТИКА ЭХА\nисточник: &#x27;+eSrc+&#x27;\nзаписей: &#x27;+eItems.length+&#x27; (местных: &#x27;+eItems.filter(function(x){return x.loc;}).length+&#x27;, ещё не видели: &#x27;+eItems.filter(function(x){return !eEverSet[eKey(x)];}).length+&#x27;)&#x27;+&#x27;\nворкер: &#x27;+(ECHO_CFG.worker||&#x27;не задан&#x27;)+&#x27;\nзапрос: &#x27;+eFetch+
-      &#x27;\nпоказано за визит: &#x27;+eSeen+&#x27; из &#x27;+ECHO_CFG.dose+&#x27;\nязык: &#x27;+eLang+&#x27;\nэфир владельца: &#x27;+(eLive?&#x27;ВКЛ&#x27;:&#x27;выкл&#x27;)+&#x27; · канал: &#x27;+(ECHO_CFG.live.channel||&#x27;не задан&#x27;))+
-      &#x27;&lt;br&gt;&lt;button type=&quot;button&quot; data-a=&quot;reset&quot;&gt;сбросить дозу&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;forget&quot;&gt;забыть увиденное&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;live&quot;&gt;эфир вкл/выкл&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;close&quot;&gt;закрыть&lt;/button&gt;&#x27;;
+      &#x27;\nпоказано за визит: &#x27;+eSeen+&#x27; из &#x27;+ECHO_CFG.dose+&#x27;\nязык: &#x27;+eLang+&#x27;\nэфир владельца: &#x27;+(eLive?&#x27;ВКЛ&#x27;:&#x27;выкл&#x27;)+&#x27; · канал: &#x27;+(ECHO_CFG.live.channel||&#x27;не задан&#x27;)+
+      &#x27;\nдоставка свежих: &#x27;+(ePull||&#x27;—&#x27;))+
+      &#x27;&lt;br&gt;&lt;button type=&quot;button&quot; data-a=&quot;pull&quot;&gt;доставить свежие&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;reset&quot;&gt;сбросить дозу&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;forget&quot;&gt;забыть увиденное&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;live&quot;&gt;эфир вкл/выкл&lt;/button&gt;&lt;button type=&quot;button&quot; data-a=&quot;close&quot;&gt;закрыть&lt;/button&gt;&#x27;;
     d.className=&#x27;ediag px show&#x27;;
   }
   $e(&#x27;echo-tit&#x27;).addEventListener(&#x27;click&#x27;,function(){
@@ -1849,10 +1850,33 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
     if(a===&#x27;reset&#x27;){eSeen=0;ss(&#x27;echoSeen&#x27;,&#x27;0&#x27;);echoNext();diag();}
     else if(a===&#x27;forget&#x27;){eEver=[];eEverSet={};try{localStorage.removeItem(&#x27;echoEver&#x27;);}catch(e){}diag();}
     else if(a===&#x27;live&#x27;){eLive=!eLive;echoLive();diag();}
+    else if(a===&#x27;pull&#x27;)echoPull();
     else this.className=&#x27;ediag px&#x27;;
   });
-  /* свежие эхо от воркера (когда появится) */
-  (function echoFetch(){
+  /* Доставка свежих — только владелец: воркер с ключом ECHO_KEY (спросим
+     один раз, хранится в этом браузере), не чаще раза в 3 часа. Модель
+     работает только тут — расписания у воркера больше нет. */
+  var ePull=&#x27;&#x27;;
+  function echoPull(){
+    if(!ECHO_CFG.worker||!window.fetch)return;
+    var k=null;try{k=localStorage.getItem(&#x27;echoKey&#x27;);}catch(e){}
+    if(!k){k=(window.prompt(&#x27;Ключ воркера (ECHO_KEY):&#x27;)||&#x27;&#x27;).trim();if(!k)return;try{localStorage.setItem(&#x27;echoKey&#x27;,k);}catch(e){}}
+    var W=ECHO_CFG.worker.replace(/\/$/,&#x27;&#x27;);ePull=&#x27;запрос…&#x27;;diag();
+    fetch(W+&#x27;/run?full=1&amp;key=&#x27;+encodeURIComponent(k),{cache:&#x27;no-store&#x27;}).then(function(r){
+      if(r.status===404){try{localStorage.removeItem(&#x27;echoKey&#x27;);}catch(e){}throw new Error(&#x27;неверный ключ, спрошу заново&#x27;);}
+      return r.json();
+    }).then(function(j){
+      if(j.cooldown){ePull=&#x27;уже доставляли, следующая через &#x27;+j.waitMin+&#x27; мин&#x27;;diag();return;}
+      var had={};eItems.forEach(function(x){had[eKey(x)]=1;});
+      ePull=&#x27;доставка идёт, около минуты…&#x27;;diag();
+      setTimeout(function(){echoFetch(function(ok){
+        var n=ok.filter(function(x){return !had[eKey(x)];}).length;
+        ePull=&#x27;готово: новых &#x27;+n+&#x27; (всего &#x27;+ok.length+&#x27;)&#x27;;diag();
+      });},75000);
+    }).catch(function(e){ePull=&#x27;ошибка: &#x27;+String(e.message||e).slice(0,80);diag();});
+  }
+  /* свежие эхо от воркера */
+  function echoFetch(cb){
     if(!ECHO_CFG.worker||!window.fetch)return;
     eFetch=&#x27;идёт…&#x27;;
     var done=false,to=setTimeout(function(){if(!done){done=true;eFetch=&#x27;таймаут 6 с, остаёмся на запасе&#x27;;}},6000);
@@ -1864,13 +1888,14 @@ window.onerror=function(m,s,l){var e=document.getElementById(&#x27;err&#x27;);e.
         if(!(x&amp;&amp;x.ru&amp;&amp;x.kk))return false;
         var k=x.ru.toLowerCase().replace(/[^0-9a-zа-яёәғқңөұүһі]+/g,&#x27;&#x27;);
         if(txts[k])return false;txts[k]=1;return true;});
-      if(!(age&lt;ECHO_CFG.maxAgeH)){eFetch=&#x27;данные устарели (&#x27;+Math.round(age)+&#x27; ч), остаёмся на запасе&#x27;;return;}
       if(ok.length&lt;3){eFetch=&#x27;мало записей (&#x27;+ok.length+&#x27;), остаёмся на запасе&#x27;;return;}
       eItems=ok;eSrc=&#x27;воркер&#x27;;eShown={};eCur=-1;eFetch=&#x27;ок, &#x27;+ok.length+&#x27; шт., возраст &#x27;+age.toFixed(1)+&#x27; ч&#x27;;
       if(chans[cur]&amp;&amp;chans[cur].id===&#x27;echo&#x27;)crawlSet(&#x27;echo&#x27;); /* строка уже на эхо — подменяем на свежие */
       if(j.live!=null){eLive=!!j.live;echoLive();}
+      if(cb)cb(ok);
     }).catch(function(err){if(!done){done=true;clearTimeout(to);eFetch=&#x27;ошибка: &#x27;+String(err).slice(0,80);}});
-  })();
+  }
+  echoFetch();
   echoText();
 
   /* ═══ ЯЗЫК · РУС / ҚАЗ ════════════════════════════════════════════════
