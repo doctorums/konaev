@@ -18,11 +18,11 @@
 //   • отдаёт GET /echo → {updated, live, items[]} ровно в формате, который
 //     уже читает сайт (ECHO_CFG.worker в index.html, echoFetch).
 //
-// Как сайт этим пользуется (см. echoFetch в index.html): берёт /echo, и если
-// updated старше 48 ч или годных записей меньше трёх — тихо остаётся на
-// встроенном запасе. Поэтому `updated` двигается ТОЛЬКО после прогона, который
-// реально дошёл до конца: сломался ключ LLM или все ленты — updated стоит,
-// через 48 ч сайт сам откатится на запас. Это вторая половина fail-closed.
+// Как сайт этим пользуется (см. echoFetch в index.html): берёт /echo и, если
+// годных записей меньше трёх, тихо остаётся на встроенном запасе. Возраст
+// не проверяется (с 11.10): свежие доставляются только по кнопке, а до неё
+// показываются последние. `updated` двигается ТОЛЬКО после прогона, который
+// реально дошёл до конца (сломался ключ LLM или все ленты — updated стоит).
 //
 // Привязки и переменные (Cloudflare → Workers → konaev-echo → Settings):
 //   ECHO_KV       (KV binding)  пространство KV, например `konaev-echo-kv`.
@@ -50,12 +50,15 @@
 // не дальше LOCAL_RADIUS_KM от Конаева, стоп-лист с акиматами. Прошедшие
 // помечаются loc:1; сайт подмешивает их примерно каждым третьим эхо.
 //
-// Cron Trigger (Settings → Trigger events): например `0 */3 * * *` — раз в
-// три часа. Интервал в коде не зашит.
+// Расписания нет (с 11.10): модель работает только по кнопке владельца
+// «доставить свежие» в скрытой диагностике канала (= /run?full=1), не чаще
+// раза в 3 часа. Cron Trigger в дашборде можно удалить; если остался —
+// scheduled() ничего не делает.
 //
 // Служебные адреса (все с ?key=<ECHO_KEY>):
 //   /run            быстрый прогон (2 ленты, до 2 записей), ответ — сводка;
 //   /run?full=1     полный прогон в фоне (ответ сразу, итог — в /diag);
+//                   не чаще раза в 3 часа, &force=1 — в обход;
 //   /run?full=1&wait=1  полный прогон с ожиданием сводки;
 //   /live?on=1|0    «владелец в эфире» — плашка на канале, без передеплоя;
 //   /diag           сводка последнего прогона, чтобы видеть причину нуля
@@ -137,6 +140,10 @@ const KV_PAYLOAD = 'echo';        // то, что отдаётся сайту
 const KV_SEEN = 'echo:seen';      // хэши уже разобранных записей (и принятых, и отсеянных)
 const KV_LIVE = 'echo:live';      // '1' — владелец в эфире
 const KV_LAST = 'echo:last';      // сводка последнего прогона для /diag
+const KV_PULL = 'echo:pull';      // когда владелец последний раз запускал доставку
+// Доставка свежих — только по кнопке владельца и не чаще раза в 3 часа
+// (11.10: расписание выключено, чтобы модель не работала впустую).
+const PULL_COOLDOWN_H = 3;
 
 const KEEP_DAYS_DEFAULT = 7;
 const ITEMS_MAX = 60;             // потолок подборки: сайту за визит нужно три
@@ -662,9 +669,9 @@ function json(obj, status, extra) {
 const PUBLIC = { 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=120' };
 
 export default {
-  async scheduled(event, env, ctx) {
-    await runEchoCollection(env);
-  },
+  // Расписание выключено (11.10): свежие эхо — только по кнопке владельца
+  // (/run?full=1). Если Cron Trigger в дашборде остался, вызов ничего не делает.
+  async scheduled(event, env, ctx) {},
 
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
@@ -720,17 +727,26 @@ export default {
       return json(out);
     }
     if (path === '/diag') {
-      const [last, payload, live] = await Promise.all([kvJson(env, KV_LAST, null), kvJson(env, KV_PAYLOAD, null), env.ECHO_KV.get(KV_LIVE)]);
-      return json({ last, updated: payload && payload.updated, items: payload ? payload.items.length : 0, live: live === '1' });
+      const [last, payload, live, pull] = await Promise.all([kvJson(env, KV_LAST, null), kvJson(env, KV_PAYLOAD, null), env.ECHO_KV.get(KV_LIVE), env.ECHO_KV.get(KV_PULL)]);
+      return json({ last, updated: payload && payload.updated, items: payload ? payload.items.length : 0, live: live === '1', lastPull: pull ? new Date(Number(pull)).toISOString() : null }, 200, { 'Access-Control-Allow-Origin': '*' });
     }
     if (path === '/run') {
+      // CORS — чтобы кнопка «доставить свежие» на сайте видела ответ.
+      const CORS = { 'Access-Control-Allow-Origin': '*' };
       const full = url.searchParams.get('full') === '1';
-      if (full && url.searchParams.get('wait') === '1') return json(await runEchoCollection(env));
       if (full) {
+        // Не чаще раза в PULL_COOLDOWN_H часов; &force=1 — в обход.
+        const last = Number(await env.ECHO_KV.get(KV_PULL)) || 0;
+        const waitMin = Math.ceil((last + PULL_COOLDOWN_H * 3600000 - Date.now()) / 60000);
+        if (waitMin > 0 && url.searchParams.get('force') !== '1') {
+          return json({ started: false, cooldown: true, waitMin, note: 'свежие уже доставляли — следующая доставка через ' + waitMin + ' мин' }, 200, CORS);
+        }
+        await env.ECHO_KV.put(KV_PULL, String(Date.now()));
+        if (url.searchParams.get('wait') === '1') return json(await runEchoCollection(env), 200, CORS);
         ctx.waitUntil(runEchoCollection(env));
-        return json({ started: true, note: 'полный прогон идёт в фоне — итог через минуту в /diag' });
+        return json({ started: true, note: 'полный прогон идёт в фоне — итог через минуту в /diag' }, 200, CORS);
       }
-      return json(await runEchoCollection(env, { maxSources: 2, perHost: 1, llmCap: 2 }));
+      return json(await runEchoCollection(env, { maxSources: 2, perHost: 1, llmCap: 2 }), 200, CORS);
     }
     return new Response('not found', { status: 404 });
   },
